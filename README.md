@@ -6,7 +6,6 @@
 3. Выполните команду `yarn dev --scope=client` чтобы запустить только клиент
 4. Выполните команду `yarn dev --scope=server` чтобы запустить только server
 
-
 ### Как добавить зависимости?
 В этом проекте используется `monorepo` на основе [`lerna`](https://github.com/lerna/lerna)
 
@@ -44,17 +43,14 @@
 
 И чтобы посмотреть что получилось
 
-
 `yarn preview --scope client`
 `yarn preview --scope server`
 
 ## Хуки
+Установка lefthook hooks - `yarn lefthook install`
 В проекте используется [lefthook](https://github.com/evilmartians/lefthook)
-Если очень-очень нужно пропустить проверки, используйте `--no-verify` (но не злоупотребляйте :)
-
-## Ой, ничего не работает :(
-
-Откройте issue, я приду :)
+Пропустить pre-commit hook (в самом крайнем случае, лучше не пользоваться) - `git commit -m "message" --no-verify`
+Пропустить pre-push hook (в самом крайнем случае, лучше не пользоваться) - `git push --no-verify`
 
 ## Автодеплой статики на vercel
 Зарегистрируйте аккаунт на [vercel](https://vercel.com/)
@@ -74,3 +70,4 @@
 
 Если вам понадобится только один сервис, просто уточните какой в команде
 `docker compose up {sevice_name}`, например `docker compose up server`
+

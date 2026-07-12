@@ -23,3 +23,50 @@ jobs:
         run: yarn lint
       - name: Test
         run: yarn test
+  lint:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Bootstrap packages
+        run: yarn lerna bootstrap
+      - name: Run ESLint
+        run: yarn lint
+      - name: Check formatting
+        run: yarn prettier --check "**/*.{js,ts,jsx,tsx,css,json,md}"
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Bootstrap packages
+        run: yarn lerna bootstrap
+      - name: Run tests
+        run: yarn test
+  type-check:
+    name: TypeScript Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Bootstrap packages
+        run: yarn lerna bootstrap
+      - name: Type check
+        run: yarn lerna run type-check
