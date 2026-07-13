@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import cors from 'cors'
-dotenv.config()
+dotenv.config({ path: '../../.env' })
 
 import express from 'express'
 import { createClientAndConnect } from './db'
@@ -20,7 +20,7 @@ app.get('/friends', (_, res) => {
 })
 
 app.get('/user', (_, res) => {
-  res.json({ name: '</script>Степа', secondName: 'Степанов' })
+  res.json({ name: 'Степа', secondName: 'Степанов' })
 })
 
 app.get('/', (_, res) => {
