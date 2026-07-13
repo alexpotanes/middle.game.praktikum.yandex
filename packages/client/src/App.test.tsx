@@ -21,6 +21,16 @@ const createMockStore = () => {
       friends: friendsReducer,
       ssr: ssrReducer,
     },
+    preloadedState: {
+      user: {
+        data: { name: 'User', secondName: 'User' },
+        isLoading: false,
+      },
+      friends: { data: [], isLoading: false },
+      ssr: {
+        pageHasBeenInitializedOnServer: false,
+      },
+    },
   })
 }
 
