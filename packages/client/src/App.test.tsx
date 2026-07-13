@@ -6,8 +6,6 @@ import userReducer from './slices/userSlice'
 import friendsReducer from './slices/friendsSlice'
 import ssrReducer from './slices/ssrSlice'
 
-const appContent = 'Вот тут будет жить ваше приложение :)'
-
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 global.fetch = jest.fn(() =>
@@ -21,16 +19,6 @@ const createMockStore = () => {
       friends: friendsReducer,
       ssr: ssrReducer,
     },
-    preloadedState: {
-      user: {
-        data: { name: 'User', secondName: 'User' },
-        isLoading: false,
-      },
-      friends: { data: [], isLoading: false },
-      ssr: {
-        pageHasBeenInitializedOnServer: false,
-      },
-    },
   })
 }
 
@@ -41,5 +29,5 @@ test('Example test', async () => {
       <App />
     </Provider>
   )
-  expect(screen.getByText(appContent)).toBeDefined()
+  expect(screen.getByText('Пользователь не найден!')).toBeDefined()
 })
