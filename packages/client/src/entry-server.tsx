@@ -18,7 +18,7 @@ import {
   createUrl,
 } from './entry-server.utils'
 import { reducer } from './store'
-import { routes } from './router'
+import { routes } from './router/routes'
 import './index.css'
 import { setPageHasBeenInitializedOnServer } from './slices/ssrSlice'
 

@@ -4,13 +4,12 @@ dotenv.config()
 import { HelmetData } from 'react-helmet'
 import express, { Request as ExpressRequest } from 'express'
 import path from 'path'
-
 import fs from 'fs/promises'
-import { createServer as createViteServer, ViteDevServer } from 'vite'
 import serialize from 'serialize-javascript'
 import cookieParser from 'cookie-parser'
+import type { ViteDevServer } from 'vite' with { 'resolution-mode': 'import' }
 
-const port = process.env.PORT || 80
+const port = process.env.PORT || 3000
 const clientPath = path.join(__dirname, '..')
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -20,6 +19,8 @@ async function createServer() {
   app.use(cookieParser())
   let vite: ViteDevServer | undefined
   if (isDev) {
+    const { createServer: createViteServer } = await import('vite')
+
     vite = await createViteServer({
       server: { middlewareMode: true },
       root: clientPath,
@@ -57,11 +58,10 @@ async function createServer() {
 
         // Загружаем модуль клиента, который писали выше,
         // он будет рендерить HTML-код
-        render = (
-          await vite.ssrLoadModule(
-            path.join(clientPath, 'src/entry-server.tsx')
-          )
-        ).render
+        const serverEntry = await vite.ssrLoadModule(
+          path.join(clientPath, 'src/entry-server.tsx')
+        )
+        render = serverEntry.render
       } else {
         template = await fs.readFile(
           path.join(clientPath, 'dist/client/index.html'),
@@ -104,7 +104,7 @@ async function createServer() {
       // Завершаем запрос и отдаём HTML-страницу
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
-      vite.ssrFixStacktrace(e as Error)
+      vite?.ssrFixStacktrace(e as Error)
       next(e)
     }
   })

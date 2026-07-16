@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import { styled } from 'styled-components'
 import { Helmet } from 'react-helmet'
 import { useSelector } from '../store'
 import { fetchUserThunk, selectUser } from '../slices/userSlice'

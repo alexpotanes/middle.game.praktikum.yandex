@@ -18,6 +18,7 @@ export default defineConfig({
   },
   ssr: {
     format: 'cjs',
+    noExternal: ['@reduxjs/toolkit', 'redux-thunk'],
   },
   plugins: [react()],
 })
