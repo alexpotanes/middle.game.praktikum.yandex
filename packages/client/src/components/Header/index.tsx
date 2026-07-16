@@ -1,18 +1,16 @@
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+
+import { navigationRoutes } from './constants'
 
 export const Header = () => {
   return (
     <nav>
       <ul>
-        <li>
-          <Link to="/">Главная</Link>
-        </li>
-        <li>
-          <Link to="/friends">Страница со списком друзей</Link>
-        </li>
-        <li>
-          <Link to="/404">404</Link>
-        </li>
+        {navigationRoutes.map(({ path, navTitle }) => (
+          <li key={path}>
+            <NavLink to={path}>{navTitle}</NavLink>
+          </li>
+        ))}
       </ul>
     </nav>
   )
