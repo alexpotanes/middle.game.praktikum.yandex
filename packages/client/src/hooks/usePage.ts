@@ -5,21 +5,10 @@ import {
   selectPageHasBeenInitializedOnServer,
 } from '../slices/ssrSlice'
 import type { PageInitArgs, PageInitContext } from '../router'
-
-const getCookie = (name: string) => {
-  const matches = document.cookie.match(
-    new RegExp(
-      '(?:^|; )' +
-        // eslint-disable-next-line
-        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') +
-        '=([^;]*)'
-    )
-  )
-  return matches ? decodeURIComponent(matches[1]) : undefined
-}
+import { getAuthToken } from '../utils/auth'
 
 const createContext = (): PageInitContext => ({
-  clientToken: getCookie('token'),
+  clientToken: getAuthToken(),
 })
 
 type PageProps = {

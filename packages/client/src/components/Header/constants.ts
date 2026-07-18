@@ -3,11 +3,18 @@ type NavigationRoute = {
   navTitle: string
 }
 
-export const navigationRoutes: NavigationRoute[] = [
+export const publicNavigationRoutes: NavigationRoute[] = [
   {
     path: '/',
     navTitle: 'Главная',
   },
+  {
+    path: '/rules',
+    navTitle: 'Как играть',
+  },
+]
+
+export const guestNavigationRoutes: NavigationRoute[] = [
   {
     path: '/login',
     navTitle: 'Логин',
@@ -16,6 +23,9 @@ export const navigationRoutes: NavigationRoute[] = [
     path: '/registration',
     navTitle: 'Регистрация',
   },
+]
+
+export const privateNavigationRoutes: NavigationRoute[] = [
   {
     path: '/profile',
     navTitle: 'Профиль',

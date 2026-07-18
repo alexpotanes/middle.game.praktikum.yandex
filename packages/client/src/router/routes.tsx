@@ -7,17 +7,29 @@ import {
 } from '../pages/RegistrationPage'
 import { initProfilePage, ProfilePage } from '../pages/ProfilePage'
 import { initGamePage, GamePage } from '../pages/GamePage'
+import { RulesPage, initRulesPage } from '../pages/RulesPage'
 import { initLeaderboardPage, LeaderboardPage } from '../pages/LeaderboardPage'
 import { initForumPage, ForumPage } from '../pages/ForumPage'
 import { ForumTopicPage, initForumTopicPage } from '../pages/ForumTopicPage'
+import { GuestRoute, PrivateRoute } from './ProtectedRoute'
 import type { AppRoute } from './types'
 
-export const routes: AppRoute[] = [
+// Доступны всем пользователям
+const publicRoutes: AppRoute[] = [
   {
     path: '/',
     element: <MainPage />,
     fetchData: initMainPage,
   },
+  {
+    path: '/rules',
+    element: <RulesPage />,
+    fetchData: initRulesPage,
+  },
+]
+
+// Доступны только неавторизованным пользователям
+const guestRoutes: AppRoute[] = [
   {
     path: '/login',
     element: <LoginPage />,
@@ -28,6 +40,10 @@ export const routes: AppRoute[] = [
     element: <RegistrationPage />,
     fetchData: initRegistrationPage,
   },
+]
+
+// Доступны только авторизованным пользователям
+const privateRoutes: AppRoute[] = [
   {
     path: '/profile',
     element: <ProfilePage />,
@@ -53,9 +69,27 @@ export const routes: AppRoute[] = [
     element: <ForumTopicPage />,
     fetchData: initForumTopicPage,
   },
-  {
-    path: '*',
-    element: <NotFoundPage />,
-    fetchData: initNotFoundPage,
-  },
+]
+
+const notFoundRoute: AppRoute = {
+  path: '*',
+  element: <NotFoundPage />,
+  fetchData: initNotFoundPage,
+}
+
+const withGuestRoute = (route: AppRoute): AppRoute => ({
+  ...route,
+  element: <GuestRoute>{route.element}</GuestRoute>,
+})
+
+const withPrivateRoute = (route: AppRoute): AppRoute => ({
+  ...route,
+  element: <PrivateRoute>{route.element}</PrivateRoute>,
+})
+
+export const routes: AppRoute[] = [
+  ...publicRoutes,
+  ...guestRoutes.map(withGuestRoute),
+  ...privateRoutes.map(withPrivateRoute),
+  notFoundRoute,
 ]
