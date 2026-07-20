@@ -67,8 +67,8 @@ export const render = async (req: ExpressRequest) => {
       sheet.collectStyles(
         <Provider store={store}>
           <StaticRouterProvider router={router} context={context} />
-        </Provider>
-      )
+        </Provider>,
+      ),
     )
     const styleTags = sheet.getStyleTags()
 

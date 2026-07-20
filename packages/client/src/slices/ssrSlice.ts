@@ -16,7 +16,7 @@ export const ssrSlice = createSlice({
   reducers: {
     setPageHasBeenInitializedOnServer: (
       state,
-      { payload }: PayloadAction<boolean>
+      { payload }: PayloadAction<boolean>,
     ) => {
       state.pageHasBeenInitializedOnServer = payload
     },
