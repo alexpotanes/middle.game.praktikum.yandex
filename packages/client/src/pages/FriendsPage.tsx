@@ -1,12 +1,10 @@
 import { Helmet } from 'react-helmet'
 import { useSelector } from '../store'
 import { Header } from '../components/Header'
-import {
-  fetchFriendsThunk,
-  selectFriends,
-  selectIsLoadingFriends,
-} from '../slices/friendsSlice'
-import { fetchUserThunk, selectUser } from '../slices/userSlice'
+import { selectFriends, selectIsLoadingFriends } from '../slices/friendsSlice'
+import { fetchFriendsThunk } from '../thunks/friendsThunks'
+import { selectUser } from '../slices/userSlice'
+import { fetchUserThunk } from '../thunks/userThunks'
 import { PageInitArgs } from '../routes'
 import { usePage } from '../hooks/usePage'
 

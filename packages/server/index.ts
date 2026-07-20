@@ -4,12 +4,16 @@ dotenv.config({ path: '../../.env' })
 
 import express from 'express'
 import { createClientAndConnect } from './db'
+import { authRouter } from './routes/auth'
 
 const app = express()
-app.use(cors())
+app.use(cors({ origin: true, credentials: true }))
+app.use(express.json())
 const port = Number(process.env.SERVER_PORT) || 3001
 
 createClientAndConnect()
+
+app.use('/auth', authRouter)
 
 app.get('/friends', (_, res) => {
   res.json([

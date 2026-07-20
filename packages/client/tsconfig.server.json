@@ -2,7 +2,8 @@
   "compilerOptions": {
     "composite": true,
     "target": "es2019",
-    "module": "commonjs",
+    "module": "node16",
+    "moduleResolution": "node16",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "lib": ["es2019", "DOM"]

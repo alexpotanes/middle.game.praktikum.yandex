@@ -17,7 +17,17 @@ export default defineConfig({
     outDir: path.join(__dirname, 'dist/client'),
   },
   ssr: {
-    format: 'cjs',
+    noExternal: [
+      '@reduxjs/toolkit',
+      'react-redux',
+      'react-helmet',
+      'redux',
+      'redux-thunk',
+      'immer',
+      'reselect',
+      'react-router-dom',
+      'styled-components',
+    ],
   },
   plugins: [react()],
 })

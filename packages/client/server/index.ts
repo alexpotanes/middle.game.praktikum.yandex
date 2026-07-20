@@ -6,7 +6,7 @@ import express, { Request as ExpressRequest } from 'express'
 import path from 'path'
 
 import fs from 'fs/promises'
-import { createServer as createViteServer, ViteDevServer } from 'vite'
+import type { ViteDevServer } from 'vite' with { 'resolution-mode': 'import' }
 import serialize from 'serialize-javascript'
 import cookieParser from 'cookie-parser'
 
@@ -20,6 +20,7 @@ async function createServer() {
   app.use(cookieParser())
   let vite: ViteDevServer | undefined
   if (isDev) {
+    const { createServer: createViteServer } = await import('vite')
     vite = await createViteServer({
       server: { middlewareMode: true },
       root: clientPath,
@@ -29,7 +30,7 @@ async function createServer() {
     app.use(vite.middlewares)
   } else {
     app.use(
-      express.static(path.join(clientPath, 'dist/client'), { index: false })
+      express.static(path.join(clientPath, 'dist/client'), { index: false }),
     )
   }
 
@@ -49,7 +50,7 @@ async function createServer() {
       if (vite) {
         template = await fs.readFile(
           path.resolve(clientPath, 'index.html'),
-          'utf-8'
+          'utf-8',
         )
 
         // Применяем встроенные HTML-преобразования vite и плагинов
@@ -59,19 +60,19 @@ async function createServer() {
         // он будет рендерить HTML-код
         render = (
           await vite.ssrLoadModule(
-            path.join(clientPath, 'src/entry-server.tsx')
+            path.join(clientPath, 'src/entry-server.tsx'),
           )
         ).render
       } else {
         template = await fs.readFile(
           path.join(clientPath, 'dist/client/index.html'),
-          'utf-8'
+          'utf-8',
         )
 
         // Получаем путь до сбилдженого модуля клиента, чтобы не тащить средства сборки клиента на сервер
         const pathToServer = path.join(
           clientPath,
-          'dist/server/entry-server.js'
+          'dist/server/entry-server.js',
         )
 
         // Импортируем этот модуль и вызываем с инишл стейтом
@@ -91,14 +92,14 @@ async function createServer() {
         .replace('<!--ssr-styles-->', styleTags)
         .replace(
           `<!--ssr-helmet-->`,
-          `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`
+          `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`,
         )
         .replace(`<!--ssr-outlet-->`, appHtml)
         .replace(
           `<!--ssr-initial-state-->`,
           `<script>window.APP_INITIAL_STATE = ${serialize(initialState, {
             isJSON: true,
-          })}</script>`
+          })}</script>`,
         )
 
       // Завершаем запрос и отдаём HTML-страницу
