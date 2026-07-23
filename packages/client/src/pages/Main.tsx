@@ -1,11 +1,10 @@
-import styled from 'styled-components'
+import { styled } from 'styled-components'
 import { Helmet } from 'react-helmet'
-
 import { useSelector } from '../store'
 import { fetchUserThunk, selectUser } from '../slices/userSlice'
 import { Header } from '../components/Header'
 import { usePage } from '../hooks/usePage'
-import { PageInitArgs } from '../routes'
+import type { PageInitArgs } from '../router'
 
 export const MainPage = () => {
   const user = useSelector(selectUser)
