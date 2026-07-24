@@ -8,8 +8,6 @@ import { initForumPage, ForumPage } from '../pages/ForumPage'
 import { ForumTopicPage, initForumTopicPage } from '../pages/ForumTopicPage'
 import type { AppRoute } from './types'
 import { RequireAuth } from './RequireAuth'
-import { SignIn, initSignInPage } from '../pages/SignIn'
-import { SignUp, initSignUpPage } from '../pages/SignUp'
 import { initLoginPage, LoginPage } from '../pages/LoginPage'
 import {
   initRegistrationPage,
@@ -79,6 +77,24 @@ const notFoundRoute: AppRoute = {
   fetchData: initNotFoundPage,
 }
 
+const errorRoutes: AppRoute[] = [
+  {
+    path: '/400',
+    element: <BadRequestPage />,
+    fetchData: initBadRequestPage,
+  },
+  {
+    path: '/500',
+    element: <ServerErrorPage />,
+    fetchData: initServerErrorPage,
+  },
+]
+
+const withGuestRoute = (route: AppRoute): AppRoute => ({
+  ...route,
+  element: <GuestRoute>{route.element}</GuestRoute>,
+})
+
 const withPrivateGuard = (route: AppRoute): AppRoute => ({
   ...route,
   element: <RequireAuth>{route.element as JSX.Element}</RequireAuth>,
@@ -88,5 +104,6 @@ export const routes: AppRoute[] = [
   ...publicRoutes,
   ...guestRoutes,
   ...privateRoutes.map(withPrivateGuard),
+  notFoundRoute,
   notFoundRoute,
 ]
