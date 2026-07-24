@@ -4,6 +4,9 @@ import { RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { store } from './store'
 import { router } from './router'
+import { fetchCurrentUserThunk } from './thunks/authThunks'
+
+store.dispatch(fetchCurrentUserThunk())
 
 ReactDOM.hydrateRoot(
   document.getElementById('root') as HTMLElement,

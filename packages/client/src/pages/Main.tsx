@@ -1,14 +1,30 @@
 import { styled } from 'styled-components'
 import { Helmet } from 'react-helmet'
-import { useSelector } from '../store'
+import { useDispatch, useSelector } from '../store'
 import { selectUser } from '../slices/userSlice'
 import { fetchUserThunk } from '../thunks/userThunks'
 import { Header } from '../components/Header'
 import { usePage } from '../hooks/usePage'
 import type { PageInitArgs } from '../router'
+import { fetchCurrentUserThunk, logoutThunk } from '../thunks/authThunks'
+import { useNavigate } from 'react-router-dom'
+import { selectAuthUser } from '../slices/authSlice'
+import { useEffect } from 'react'
 
 export const MainPage = () => {
-  const user = useSelector(selectUser)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const user = useSelector(selectAuthUser)
+
+  const handleLogout = async () => {
+    await dispatch(logoutThunk())
+    navigate('/')
+  }
+
+  useEffect(() => {
+    dispatch(fetchCurrentUserThunk())
+  }, [])
 
   usePage({ initPage: initMainPage })
   return (
@@ -30,8 +46,10 @@ export const MainPage = () => {
       </Link>
       {user ? (
         <div>
-          <p>{user.name}</p>
-          <p>{user.secondName}</p>
+          <span>{user.first_name || user.second_name}</span>
+          <button type="button" onClick={handleLogout}>
+            Выйти
+          </button>
         </div>
       ) : (
         <p>Пользователь не найден!</p>

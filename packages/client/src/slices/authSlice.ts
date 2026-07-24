@@ -12,6 +12,7 @@ import {
 export interface AuthState {
   user: UserResponse | null
   isAuthenticated: boolean
+  sessionChecked: boolean
   status: Status
   error: string | null
 }
@@ -19,17 +20,19 @@ export interface AuthState {
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
+  sessionChecked: false,
   status: STATUS.IDLE,
   error: null,
 }
 
 const setAuthenticated = (
   state: AuthState,
-  { payload }: PayloadAction<UserResponse>,
+  { payload }: PayloadAction<UserResponse>
 ) => {
   state.status = STATUS.SUCCEEDED
   state.user = payload
   state.isAuthenticated = true
+  state.sessionChecked = true
   state.error = null
 }
 
@@ -42,6 +45,7 @@ const clearAuthenticated = (state: AuthState) => {
   state.status = STATUS.FAILED
   state.user = null
   state.isAuthenticated = false
+  state.sessionChecked = true
 }
 
 export const authSlice = createSlice({
@@ -73,6 +77,7 @@ export const authSlice = createSlice({
         state.status = STATUS.IDLE
         state.user = null
         state.isAuthenticated = false
+        state.sessionChecked = true
         state.error = null
       })
   },
@@ -81,6 +86,8 @@ export const authSlice = createSlice({
 export const selectAuthUser = (state: RootState) => state.auth.user
 export const selectIsAuthenticated = (state: RootState) =>
   state.auth.isAuthenticated
+export const selectSessionChecked = (state: RootState) =>
+  state.auth.sessionChecked
 export const selectAuthStatus = (state: RootState) => state.auth.status
 export const selectAuthError = (state: RootState) => state.auth.error
 

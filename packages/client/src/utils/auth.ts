@@ -16,5 +16,3 @@ const getCookie = (name: string) => {
 }
 
 export const getAuthToken = () => getCookie('token')
-
-export const isAuthorized = () => Boolean(getAuthToken())

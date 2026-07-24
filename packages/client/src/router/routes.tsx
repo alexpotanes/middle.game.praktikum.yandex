@@ -1,18 +1,20 @@
 import { initMainPage, MainPage } from '../pages/Main'
 import { initNotFoundPage, NotFoundPage } from '../pages/NotFound'
-import { initLoginPage, LoginPage } from '../pages/LoginPage'
-import {
-  initRegistrationPage,
-  RegistrationPage,
-} from '../pages/RegistrationPage'
 import { initProfilePage, ProfilePage } from '../pages/ProfilePage'
 import { initGamePage, GamePage } from '../pages/GamePage'
 import { RulesPage, initRulesPage } from '../pages/RulesPage'
 import { initLeaderboardPage, LeaderboardPage } from '../pages/LeaderboardPage'
 import { initForumPage, ForumPage } from '../pages/ForumPage'
 import { ForumTopicPage, initForumTopicPage } from '../pages/ForumTopicPage'
-import { GuestRoute, PrivateRoute } from './ProtectedRoute'
 import type { AppRoute } from './types'
+import { RequireAuth } from './RequireAuth'
+import { SignIn, initSignInPage } from '../pages/SignIn'
+import { SignUp, initSignUpPage } from '../pages/SignUp'
+import { initLoginPage, LoginPage } from '../pages/LoginPage'
+import {
+  initRegistrationPage,
+  RegistrationPage,
+} from '../pages/RegistrationPage'
 
 // Доступны всем пользователям
 const publicRoutes: AppRoute[] = [
@@ -77,19 +79,14 @@ const notFoundRoute: AppRoute = {
   fetchData: initNotFoundPage,
 }
 
-const withGuestRoute = (route: AppRoute): AppRoute => ({
+const withPrivateGuard = (route: AppRoute): AppRoute => ({
   ...route,
-  element: <GuestRoute>{route.element}</GuestRoute>,
-})
-
-const withPrivateRoute = (route: AppRoute): AppRoute => ({
-  ...route,
-  element: <PrivateRoute>{route.element}</PrivateRoute>,
+  element: <RequireAuth>{route.element as JSX.Element}</RequireAuth>,
 })
 
 export const routes: AppRoute[] = [
   ...publicRoutes,
-  ...guestRoutes.map(withGuestRoute),
-  ...privateRoutes.map(withPrivateRoute),
+  ...guestRoutes,
+  ...privateRoutes.map(withPrivateGuard),
   notFoundRoute,
 ]
