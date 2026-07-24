@@ -1,24 +1,21 @@
 import { Helmet } from 'react-helmet'
 
-import { Header } from '../components/Header'
+import { Layout } from '../components/Layout'
 import { usePage } from '../hooks/usePage'
 
 export const LeaderboardPage = () => {
   usePage({ initPage: initLeaderboardPage })
 
   return (
-    <div className="App">
+    <Layout>
       <Helmet>
         <meta charSet="utf-8" />
         <title>Лидерборд</title>
-        <meta name="description" content="Страница таблицы лидеров" />
+        <meta name="description" content="Страница лидерборда" />
       </Helmet>
-      <Header />
-      <main>
-        <h1>Лидерборд</h1>
-        <p>Таблица лидеров в разработке</p>
-      </main>
-    </div>
+      <h1>Лидерборд</h1>
+      <p>Лидерборд в разработке</p>
+    </Layout>
   )
 }
 

@@ -21,6 +21,7 @@ import { reducer } from './store'
 import { routes } from './router/routes'
 import './index.css'
 import { setPageHasBeenInitializedOnServer } from './slices/ssrSlice'
+import { GlobalStyle } from './styles/GlobalStyle'
 
 export const render = async (req: ExpressRequest) => {
   const { query, dataRoutes } = createStaticHandler(routes)
@@ -66,6 +67,7 @@ export const render = async (req: ExpressRequest) => {
     const html = ReactDOM.renderToString(
       sheet.collectStyles(
         <Provider store={store}>
+          <GlobalStyle />
           <StaticRouterProvider router={router} context={context} />
         </Provider>
       )

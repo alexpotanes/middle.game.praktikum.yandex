@@ -1,24 +1,21 @@
 import { Helmet } from 'react-helmet'
 
-import { Header } from '../components/Header'
+import { Layout } from '../components/Layout'
 import { usePage } from '../hooks/usePage'
 
 export const ForumPage = () => {
   usePage({ initPage: initForumPage })
 
   return (
-    <div className="App">
+    <Layout>
       <Helmet>
         <meta charSet="utf-8" />
         <title>Форум</title>
         <meta name="description" content="Страница форума" />
       </Helmet>
-      <Header />
-      <main>
-        <h1>Форум</h1>
-        <p>Форум в разработке</p>
-      </main>
-    </div>
+      <h1>Форум</h1>
+      <p>Форум в разработке</p>
+    </Layout>
   )
 }
 
