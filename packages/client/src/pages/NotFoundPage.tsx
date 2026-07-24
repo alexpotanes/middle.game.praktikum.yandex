@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet'
 
-import { Header } from '../components/Header'
+import { ErrorPageLayout } from '../components/error-layout'
 import { usePage } from '../hooks/usePage'
 
 export const NotFoundPage = () => {
@@ -13,8 +13,11 @@ export const NotFoundPage = () => {
         <title>404</title>
         <meta name="description" content="Страница не найдена" />
       </Helmet>
-      <Header />
-      Страница не найдена!
+      <ErrorPageLayout
+        code="404"
+        title="Страница не найдена"
+        description="Такой страницы нет или она была перемещена. Можно вернуться на главную и продолжить оттуда."
+      />
     </div>
   )
 }
