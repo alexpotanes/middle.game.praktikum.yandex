@@ -1,5 +1,7 @@
 import { initMainPage, MainPage } from '../pages/Main'
-import { initNotFoundPage, NotFoundPage } from '../pages/NotFound'
+import { initNotFoundPage, NotFoundPage } from '../pages/NotFoundPage'
+import { BadRequestPage, initBadRequestPage } from '../pages/BadRequestPage'
+import { ServerErrorPage, initServerErrorPage } from '../pages/ServerErrorPage'
 import { initLoginPage, LoginPage } from '../pages/LoginPage'
 import {
   initRegistrationPage,
@@ -7,7 +9,7 @@ import {
 } from '../pages/RegistrationPage'
 import { initProfilePage, ProfilePage } from '../pages/ProfilePage'
 import { initGamePage, GamePage } from '../pages/GamePage'
-import { RulesPage, initRulesPage } from '../pages/RulesPage'
+import { initRulesPage, RulesPage } from '../pages/RulesPage'
 import { initLeaderboardPage, LeaderboardPage } from '../pages/LeaderboardPage'
 import { initForumPage, ForumPage } from '../pages/ForumPage'
 import { ForumTopicPage, initForumTopicPage } from '../pages/ForumTopicPage'
@@ -77,6 +79,19 @@ const notFoundRoute: AppRoute = {
   fetchData: initNotFoundPage,
 }
 
+const errorRoutes: AppRoute[] = [
+  {
+    path: '/400',
+    element: <BadRequestPage />,
+    fetchData: initBadRequestPage,
+  },
+  {
+    path: '/500',
+    element: <ServerErrorPage />,
+    fetchData: initServerErrorPage,
+  },
+]
+
 const withGuestRoute = (route: AppRoute): AppRoute => ({
   ...route,
   element: <GuestRoute>{route.element}</GuestRoute>,
@@ -91,5 +106,6 @@ export const routes: AppRoute[] = [
   ...publicRoutes,
   ...guestRoutes.map(withGuestRoute),
   ...privateRoutes.map(withPrivateRoute),
+  ...errorRoutes,
   notFoundRoute,
 ]

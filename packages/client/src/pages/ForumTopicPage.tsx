@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet'
 import { useParams } from 'react-router'
 
-import { Header } from '../components/Header'
+import { Header } from '../components/header'
 import { usePage } from '../hooks/usePage'
 
 export const ForumTopicPage = () => {
