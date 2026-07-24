@@ -1,8 +1,12 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink } from 'react-router-dom'
 
-import { useDispatch, useSelector } from '../../store'
-import { selectAuthUser } from '../../slices/authSlice'
-import { logoutThunk } from '../../thunks/authThunks'
+import { isAuthorized } from '../../utils/auth'
+import {
+  guestNavigationRoutes,
+  privateNavigationRoutes,
+  publicNavigationRoutes,
+} from './constants'
 
 export const Header = () => {
   const dispatch = useDispatch()
@@ -14,18 +18,24 @@ export const Header = () => {
     navigate('/signin')
   }
 
+  const [hasAuth, setHasAuth] = useState(false)
+
+  useEffect(() => {
+    setHasAuth(isAuthorized())
+  }, [])
+
+  const navigationRoutes = hasAuth
+    ? [...publicNavigationRoutes, ...privateNavigationRoutes]
+    : [...publicNavigationRoutes, ...guestNavigationRoutes]
+
   return (
     <nav>
       <ul>
-        <li>
-          <Link to="/">Главная</Link>
-        </li>
-        <li>
-          <Link to="/friends">Страница со списком друзей</Link>
-        </li>
-        <li>
-          <Link to="/404">404</Link>
-        </li>
+        {navigationRoutes.map(({ path, navTitle }) => (
+          <li key={path}>
+            <NavLink to={path}>{navTitle}</NavLink>
+          </li>
+        ))}
       </ul>
       {user && (
         <div>

@@ -18,7 +18,7 @@ import {
   createUrl,
 } from './entry-server.utils'
 import { reducer } from './store'
-import { routes } from './routes'
+import { routes } from './router/routes'
 import './index.css'
 import { setPageHasBeenInitializedOnServer } from './slices/ssrSlice'
 
@@ -67,8 +67,8 @@ export const render = async (req: ExpressRequest) => {
       sheet.collectStyles(
         <Provider store={store}>
           <StaticRouterProvider router={router} context={context} />
-        </Provider>,
-      ),
+        </Provider>
+      )
     )
     const styleTags = sheet.getStyleTags()
 

@@ -4,22 +4,11 @@ import {
   setPageHasBeenInitializedOnServer,
   selectPageHasBeenInitializedOnServer,
 } from '../slices/ssrSlice'
-import { PageInitArgs, PageInitContext } from '../routes'
-
-const getCookie = (name: string) => {
-  const matches = document.cookie.match(
-    new RegExp(
-      '(?:^|; )' +
-        // eslint-disable-next-line
-        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') +
-        '=([^;]*)',
-    ),
-  )
-  return matches ? decodeURIComponent(matches[1]) : undefined
-}
+import type { PageInitArgs, PageInitContext } from '../router'
+import { getAuthToken } from '../utils/auth'
 
 const createContext = (): PageInitContext => ({
-  clientToken: getCookie('token'),
+  clientToken: getAuthToken(),
 })
 
 type PageProps = {
@@ -29,7 +18,7 @@ type PageProps = {
 export const usePage = ({ initPage }: PageProps) => {
   const dispatch = useDispatch()
   const pageHasBeenInitializedOnServer = useSelector(
-    selectPageHasBeenInitializedOnServer,
+    selectPageHasBeenInitializedOnServer
   )
   const store = useStore()
 

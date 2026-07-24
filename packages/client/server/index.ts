@@ -4,11 +4,10 @@ dotenv.config()
 import { HelmetData } from 'react-helmet'
 import express, { Request as ExpressRequest } from 'express'
 import path from 'path'
-
 import fs from 'fs/promises'
-import type { ViteDevServer } from 'vite' with { 'resolution-mode': 'import' }
 import serialize from 'serialize-javascript'
 import cookieParser from 'cookie-parser'
+import type { ViteDevServer } from 'vite' with { 'resolution-mode': 'import' }
 
 const port = process.env.PORT || 80
 const clientPath = path.join(__dirname, '..')
@@ -21,6 +20,7 @@ async function createServer() {
   let vite: ViteDevServer | undefined
   if (isDev) {
     const { createServer: createViteServer } = await import('vite')
+
     vite = await createViteServer({
       server: { middlewareMode: true },
       root: clientPath,
@@ -30,7 +30,7 @@ async function createServer() {
     app.use(vite.middlewares)
   } else {
     app.use(
-      express.static(path.join(clientPath, 'dist/client'), { index: false }),
+      express.static(path.join(clientPath, 'dist/client'), { index: false })
     )
   }
 
@@ -50,7 +50,7 @@ async function createServer() {
       if (vite) {
         template = await fs.readFile(
           path.resolve(clientPath, 'index.html'),
-          'utf-8',
+          'utf-8'
         )
 
         // Применяем встроенные HTML-преобразования vite и плагинов
@@ -58,21 +58,20 @@ async function createServer() {
 
         // Загружаем модуль клиента, который писали выше,
         // он будет рендерить HTML-код
-        render = (
-          await vite.ssrLoadModule(
-            path.join(clientPath, 'src/entry-server.tsx'),
-          )
-        ).render
+        const serverEntry = await vite.ssrLoadModule(
+          path.join(clientPath, 'src/entry-server.tsx')
+        )
+        render = serverEntry.render
       } else {
         template = await fs.readFile(
           path.join(clientPath, 'dist/client/index.html'),
-          'utf-8',
+          'utf-8'
         )
 
         // Получаем путь до сбилдженого модуля клиента, чтобы не тащить средства сборки клиента на сервер
         const pathToServer = path.join(
           clientPath,
-          'dist/server/entry-server.js',
+          'dist/server/entry-server.js'
         )
 
         // Импортируем этот модуль и вызываем с инишл стейтом
@@ -92,20 +91,20 @@ async function createServer() {
         .replace('<!--ssr-styles-->', styleTags)
         .replace(
           `<!--ssr-helmet-->`,
-          `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`,
+          `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`
         )
         .replace(`<!--ssr-outlet-->`, appHtml)
         .replace(
           `<!--ssr-initial-state-->`,
           `<script>window.APP_INITIAL_STATE = ${serialize(initialState, {
             isJSON: true,
-          })}</script>`,
+          })}</script>`
         )
 
       // Завершаем запрос и отдаём HTML-страницу
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
-      vite.ssrFixStacktrace(e as Error)
+      vite?.ssrFixStacktrace(e as Error)
       next(e)
     }
   })

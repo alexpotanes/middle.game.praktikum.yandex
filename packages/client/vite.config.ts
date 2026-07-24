@@ -17,6 +17,7 @@ export default defineConfig({
     outDir: path.join(__dirname, 'dist/client'),
   },
   ssr: {
+    format: 'cjs',
     noExternal: [
       '@reduxjs/toolkit',
       'react-redux',
