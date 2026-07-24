@@ -27,7 +27,7 @@ export const userSlice = createSlice({
         (state, { payload }: PayloadAction<User>) => {
           state.data = payload
           state.isLoading = false
-        },
+        }
       )
       .addCase(fetchUserThunk.rejected.type, state => {
         state.isLoading = false

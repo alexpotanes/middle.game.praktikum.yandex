@@ -11,5 +11,5 @@ export const fetchUserThunk = createAsyncThunk(
   async () => {
     const url = `${SERVER_HOST}/user`
     return fetch(url).then(res => res.json())
-  },
+  }
 )

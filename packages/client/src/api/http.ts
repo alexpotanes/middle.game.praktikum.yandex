@@ -3,7 +3,7 @@ import { ApiError } from './types'
 
 export const request = async <T>(
   path: string,
-  init: RequestInit = {},
+  init: RequestInit = {}
 ): Promise<T> => {
   const res = await fetch(`${SERVER_HOST}${path}`, {
     ...init,

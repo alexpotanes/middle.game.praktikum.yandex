@@ -27,7 +27,7 @@ export const friendsSlice = createSlice({
         (state, { payload }: PayloadAction<Friend[]>) => {
           state.data = payload
           state.isLoading = false
-        },
+        }
       )
       .addCase(fetchFriendsThunk.rejected.type, state => {
         state.isLoading = false

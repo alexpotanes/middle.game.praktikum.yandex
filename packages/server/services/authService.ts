@@ -39,7 +39,7 @@ export const signin = async (body: unknown, cookie?: string) =>
       method: 'POST',
       body: JSON.stringify(body),
       headers: withCookie(cookie),
-    }),
+    })
   )
 
 export const signup = async (body: unknown, cookie?: string) =>
@@ -48,7 +48,7 @@ export const signup = async (body: unknown, cookie?: string) =>
       method: 'POST',
       body: JSON.stringify(body),
       headers: withCookie(cookie),
-    }),
+    })
   )
 
 export const logout = async (cookie?: string) =>
@@ -56,7 +56,7 @@ export const logout = async (cookie?: string) =>
     await praktikumFetch('/auth/logout', {
       method: 'POST',
       headers: withCookie(cookie),
-    }),
+    })
   )
 
 export const getUser = async (cookie?: string) =>
@@ -64,5 +64,5 @@ export const getUser = async (cookie?: string) =>
     await praktikumFetch('/auth/user', {
       method: 'GET',
       headers: withCookie(cookie),
-    }),
+    })
   )

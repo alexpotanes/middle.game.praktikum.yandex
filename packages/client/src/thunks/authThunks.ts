@@ -39,5 +39,5 @@ export const logoutThunk = createAsyncThunk('auth/logout', async () => {
 
 export const fetchCurrentUserThunk = createAsyncThunk<UserResponse>(
   'auth/fetchCurrentUser',
-  async () => authApi.getUser(),
+  async () => authApi.getUser()
 )

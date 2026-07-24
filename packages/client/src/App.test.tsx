@@ -9,7 +9,7 @@ import ssrReducer from './slices/ssrSlice'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 global.fetch = jest.fn(() =>
-  Promise.resolve({ json: () => Promise.resolve('hey') }),
+  Promise.resolve({ json: () => Promise.resolve('hey') })
 )
 
 const createMockStore = () => {
@@ -27,7 +27,7 @@ test('Example test', async () => {
   render(
     <Provider store={store}>
       <App />
-    </Provider>,
+    </Provider>
   )
   expect(screen.getByText('Пользователь не найден!')).toBeDefined()
 })

@@ -20,10 +20,10 @@ const handle =
   }
 
 export const signin = handle(req =>
-  authService.signin(req.body, req.headers.cookie),
+  authService.signin(req.body, req.headers.cookie)
 )
 export const signup = handle(req =>
-  authService.signup(req.body, req.headers.cookie),
+  authService.signup(req.body, req.headers.cookie)
 )
 export const logout = handle(req => authService.logout(req.headers.cookie))
 export const getUser = handle(req => authService.getUser(req.headers.cookie))
