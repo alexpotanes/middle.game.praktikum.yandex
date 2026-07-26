@@ -1,23 +1,16 @@
-import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-
-import { isAuthorized } from '../../utils/auth'
+import { hasAuthToken } from '../../utils/auth'
 import {
-  guestNavigationRoutes,
-  privateNavigationRoutes,
-  publicNavigationRoutes,
+  authorizedNavigationRoutes,
+  unauthorizedNavigationRoutes,
 } from './constants'
 
 export const Header = () => {
-  const [hasAuth, setHasAuth] = useState(false)
-
-  useEffect(() => {
-    setHasAuth(isAuthorized())
-  }, [])
+  const hasAuth = hasAuthToken()
 
   const navigationRoutes = hasAuth
-    ? [...publicNavigationRoutes, ...privateNavigationRoutes]
-    : [...publicNavigationRoutes, ...guestNavigationRoutes]
+    ? authorizedNavigationRoutes
+    : unauthorizedNavigationRoutes
 
   return (
     <nav>

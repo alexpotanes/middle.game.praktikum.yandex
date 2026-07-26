@@ -1,6 +1,5 @@
 import { Helmet } from 'react-helmet'
-
-import { Header } from '../components/header'
+import { Header } from '../components/Header'
 import { usePage } from '../hooks/usePage'
 
 export const ProfilePage = () => {

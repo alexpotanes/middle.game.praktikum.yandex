@@ -1,20 +1,23 @@
-const getCookie = (name: string) => {
-  if (typeof document === 'undefined') {
-    return undefined
-  }
+import Cookies from 'js-cookie'
 
-  const matches = document.cookie.match(
-    new RegExp(
-      '(?:^|; )' +
-        // eslint-disable-next-line
-        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') +
-        '=([^;]*)'
-    )
-  )
+export const AUTH_TOKEN_COOKIE_NAME = 'token'
 
-  return matches ? decodeURIComponent(matches[1]) : undefined
+export const getAuthToken = (): string | undefined => {
+  return Cookies.get(AUTH_TOKEN_COOKIE_NAME)
 }
 
-export const getAuthToken = () => getCookie('token')
+export const setAuthToken = (token: string): void => {
+  Cookies.set(AUTH_TOKEN_COOKIE_NAME, token, {
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/',
+  })
+}
 
-export const isAuthorized = () => Boolean(getAuthToken())
+export const removeAuthToken = (): void => {
+  Cookies.remove(AUTH_TOKEN_COOKIE_NAME, { path: '/' })
+}
+
+export const hasAuthToken = (): boolean => {
+  return Boolean(getAuthToken())
+}
