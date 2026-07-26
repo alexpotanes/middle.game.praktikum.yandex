@@ -1,11 +1,6 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { SERVER_HOST } from '../constants'
-
-interface User {
-  name: string
-  secondName: string
-}
+import { fetchUserThunk, User } from '../thunks/userThunks'
 
 export interface UserState {
   data: User | null
@@ -16,14 +11,6 @@ const initialState: UserState = {
   data: null,
   isLoading: false,
 }
-
-export const fetchUserThunk = createAsyncThunk(
-  'user/fetchUserThunk',
-  async () => {
-    const url = `${SERVER_HOST}/user`
-    return fetch(url).then(res => res.json())
-  }
-)
 
 export const userSlice = createSlice({
   name: 'user',
