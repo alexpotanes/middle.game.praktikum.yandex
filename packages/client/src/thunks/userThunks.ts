@@ -1,15 +1,44 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { SERVER_HOST } from '../constants'
+import * as userApi from '../api/userApi'
+import {
+  ApiError,
+  ChangePasswordRequest,
+  ProfileRequest,
+  UserResponse,
+} from '../api/types'
 
-export interface User {
-  name: string
-  secondName: string
-}
-
-export const fetchUserThunk = createAsyncThunk(
-  'user/fetchUserThunk',
-  async () => {
-    const url = `${SERVER_HOST}/user`
-    return fetch(url).then(res => res.json())
+export const updateProfileThunk = createAsyncThunk<
+  UserResponse,
+  ProfileRequest,
+  { rejectValue: string }
+>('user/updateProfile', async (data, { rejectWithValue }) => {
+  try {
+    return await userApi.updateProfile(data)
+  } catch (e) {
+    return rejectWithValue((e as ApiError).reason)
   }
-)
+})
+
+export const changePasswordThunk = createAsyncThunk<
+  string,
+  ChangePasswordRequest,
+  { rejectValue: string }
+>('user/changePassword', async (data, { rejectWithValue }) => {
+  try {
+    return await userApi.changePassword(data)
+  } catch (e) {
+    return rejectWithValue((e as ApiError).reason)
+  }
+})
+
+export const updateAvatarThunk = createAsyncThunk<
+  UserResponse,
+  File,
+  { rejectValue: string }
+>('user/updateAvatar', async (avatar, { rejectWithValue }) => {
+  try {
+    return await userApi.updateAvatar(avatar)
+  } catch (e) {
+    return rejectWithValue((e as ApiError).reason)
+  }
+})

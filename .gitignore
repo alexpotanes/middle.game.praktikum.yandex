@@ -6,4 +6,4 @@ dist
 tmp
 packages/client/server/index.d.ts
 packages/client/server/index.js
-packages/client/tsconfig.server.tsbuildinfo
+*.tsbuildinfo

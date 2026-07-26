@@ -1,6 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { UserResponse } from '../api/types'
 import { STATUS, Status } from './constants'
 import {
   fetchCurrentUserThunk,
@@ -10,7 +9,6 @@ import {
 } from '../thunks/authThunks'
 
 export interface AuthState {
-  user: UserResponse | null
   isAuthenticated: boolean
   sessionChecked: boolean
   status: Status
@@ -18,19 +16,14 @@ export interface AuthState {
 }
 
 const initialState: AuthState = {
-  user: null,
   isAuthenticated: false,
   sessionChecked: false,
   status: STATUS.IDLE,
   error: null,
 }
 
-const setAuthenticated = (
-  state: AuthState,
-  { payload }: PayloadAction<UserResponse>
-) => {
+const setAuthenticated = (state: AuthState) => {
   state.status = STATUS.SUCCEEDED
-  state.user = payload
   state.isAuthenticated = true
   state.sessionChecked = true
   state.error = null
@@ -43,7 +36,6 @@ const setLoading = (state: AuthState) => {
 
 const clearAuthenticated = (state: AuthState) => {
   state.status = STATUS.FAILED
-  state.user = null
   state.isAuthenticated = false
   state.sessionChecked = true
 }
@@ -75,7 +67,6 @@ export const authSlice = createSlice({
       .addCase(fetchCurrentUserThunk.rejected, clearAuthenticated)
       .addCase(logoutThunk.fulfilled, state => {
         state.status = STATUS.IDLE
-        state.user = null
         state.isAuthenticated = false
         state.sessionChecked = true
         state.error = null
@@ -83,7 +74,8 @@ export const authSlice = createSlice({
   },
 })
 
-export const selectAuthUser = (state: RootState) => state.auth.user
+export const { clearAuthError } = authSlice.actions
+
 export const selectIsAuthenticated = (state: RootState) =>
   state.auth.isAuthenticated
 export const selectSessionChecked = (state: RootState) =>

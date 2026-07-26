@@ -228,8 +228,4 @@ export const MainPage = () => {
   )
 }
 
-export const initMainPage = async ({ dispatch, state }: PageInitArgs) => {
-  if (!selectUser(state)) {
-    return dispatch(fetchUserThunk())
-  }
-}
+export const initMainPage = () => Promise.resolve()

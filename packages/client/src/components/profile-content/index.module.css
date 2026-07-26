@@ -1,0 +1,23 @@
+.page {
+  min-height: 100vh;
+  background: #fcf5e5;
+  color: #1b1b1b;
+}
+
+.content {
+  width: min(1080px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 48px 0 64px;
+}
+
+.formsGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+  gap: 24px;
+}
+
+@media (max-width: 860px) {
+  .formsGrid {
+    grid-template-columns: 1fr;
+  }
+}
