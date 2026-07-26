@@ -7,7 +7,7 @@
     "preview": "node server/index.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "jest ./"
+    "test": "jest ./ --passWithNoTests"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
