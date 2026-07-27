@@ -1,0 +1,118 @@
+import { styled } from 'styled-components'
+
+import { colors, shadows } from '../styles/theme'
+
+export const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 16px;
+`
+
+export const FormCard = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 380px;
+  max-width: 100%;
+  padding: 36px 32px 32px;
+  border-radius: 12px;
+  border: 1px solid rgba(86, 72, 68, 0.15);
+  border-top: 3px solid ${colors.gold};
+  background: #fff;
+  box-shadow: ${shadows.card};
+`
+
+export const Eyebrow = styled.p`
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-align: center;
+  color: ${colors.gold};
+`
+
+export const Title = styled.h1`
+  margin: 0 0 8px;
+  font-size: 30px;
+  line-height: 1.1;
+  text-align: center;
+  color: ${colors.heading};
+`
+
+export const Input = styled.input`
+  padding: 12px 14px;
+  border: 1px solid rgba(86, 72, 68, 0.25);
+  border-radius: 8px;
+  background: #fff;
+  color: ${colors.text};
+  font-family: inherit;
+  font-size: 14px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: rgba(27, 27, 27, 0.45);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: ${colors.header};
+    box-shadow: 0 0 0 3px rgba(201, 162, 76, 0.25);
+  }
+`
+
+export const SubmitButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  padding: 12px 24px;
+  border: 1px solid ${colors.header};
+  border-radius: 8px;
+  background: ${colors.header};
+  color: ${colors.onHeader};
+  box-shadow: ${shadows.card};
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+`
+
+export const ErrorText = styled.p`
+  margin: 0;
+  color: ${colors.crimson};
+  font-size: 13px;
+  text-align: center;
+`
+
+export const Hint = styled.p`
+  margin: 4px 0 0;
+  font-size: 13px;
+  text-align: center;
+  color: rgba(27, 27, 27, 0.6);
+
+  a {
+    color: ${colors.heading};
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+`

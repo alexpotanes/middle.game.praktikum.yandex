@@ -7,6 +7,7 @@ import {
   selectSessionChecked,
 } from '../slices/authSlice'
 import { Loader } from '../components/Loader'
+import { ROUTES } from './constants'
 
 export interface FromLocationState {
   from?: Location
@@ -22,7 +23,7 @@ export const RequireAuth = ({ children }: { children: ReactElement }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />
+    return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />
   }
 
   return children
