@@ -1,3 +1,5 @@
+import { ROUTES } from '../../router/constants'
+
 type NavigationRoute = {
   path: string
   navTitle: string
@@ -16,11 +18,11 @@ export const publicNavigationRoutes: NavigationRoute[] = [
 
 export const guestNavigationRoutes: NavigationRoute[] = [
   {
-    path: '/login',
+    path: ROUTES.LOGIN,
     navTitle: 'Логин',
   },
   {
-    path: '/registration',
+    path: ROUTES.REGISTRATION,
     navTitle: 'Регистрация',
   },
 ]
