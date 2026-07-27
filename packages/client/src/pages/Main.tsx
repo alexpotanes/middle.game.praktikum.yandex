@@ -1,15 +1,101 @@
-import { styled } from 'styled-components'
+import { useEffect } from 'react'
 import { Helmet } from 'react-helmet'
+import { useNavigate } from 'react-router-dom'
+
 import { useDispatch, useSelector } from '../store'
 import { selectUser } from '../slices/userSlice'
 import { fetchUserThunk } from '../thunks/userThunks'
-import { Header } from '../components/header'
+import { fetchCurrentUserThunk, logoutThunk } from '../thunks/authThunks'
+import { selectAuthUser } from '../slices/authSlice'
+import { Header } from '../components/Header'
+import { SectionTitle } from '../components/SectionTitle'
+import { Flourish } from '../components/Flourish'
 import { usePage } from '../hooks/usePage'
 import type { PageInitArgs } from '../router'
-import { fetchCurrentUserThunk, logoutThunk } from '../thunks/authThunks'
-import { useNavigate } from 'react-router-dom'
-import { selectAuthUser } from '../slices/authSlice'
-import { useEffect } from 'react'
+import {
+  ForumIcon,
+  GameIcon,
+  LeaderboardIcon,
+  ProfileIcon,
+} from '../shared/icons'
+import screenshotGame from '../assets/screenshot-game.png'
+import screenshotCloseUp from '../assets/screenshot-close-up.png'
+import screenshotBoard from '../assets/screenshot-board.png'
+import {
+  Description,
+  Eyebrow,
+  FeatureCard,
+  FeatureGrid,
+  FeatureText,
+  FeatureTitle,
+  Greeting,
+  Hero,
+  HeroActions,
+  HeroText,
+  NavCard,
+  NavCardDescription,
+  NavCardIcon,
+  NavCardTitle,
+  NavGrid,
+  Page,
+  PrimaryButton,
+  ScreenshotFigure,
+  ScreenshotImage,
+  ScreenshotsGrid,
+  SecondaryAction,
+  SecondaryButton,
+  Section,
+  Title,
+} from './Main.styles'
+
+const screenshots = [
+  {
+    src: screenshotGame,
+    alt: 'Партия War Chest Online: игровое поле и панели игроков',
+  },
+  {
+    src: screenshotCloseUp,
+    alt: 'Крупный план отрядов на игровой доске',
+  },
+  {
+    src: screenshotBoard,
+    alt: 'Состояние партии на двоих на гексагональной доске',
+  },
+]
+
+type NavCardItem = {
+  to: string
+  title: string
+  description: string
+  icon: JSX.Element
+}
+
+const navCards: NavCardItem[] = [
+  {
+    to: '/game',
+    title: 'Играть',
+    description: 'Найдите соперника и начните партию на игровой доске',
+    icon: <GameIcon />,
+  },
+  {
+    to: '/forum',
+    title: 'Форум',
+    description: 'Обсудите стратегии и делитесь опытом с другими игроками',
+    icon: <ForumIcon />,
+  },
+  {
+    to: '/leaderboard',
+    title: 'Лидерборд',
+    description: 'Следите за рейтингом лучших полководцев',
+    icon: <LeaderboardIcon />,
+  },
+  {
+    to: '/profile',
+    title: 'Профиль',
+    description: 'Управляйте своим аккаунтом и историей сыгранных партий',
+    icon: <ProfileIcon />,
+  },
+]
 
 export const MainPage = () => {
   const dispatch = useDispatch()
@@ -24,69 +110,123 @@ export const MainPage = () => {
 
   useEffect(() => {
     dispatch(fetchCurrentUserThunk())
-  }, [])
+  }, [dispatch])
 
   usePage({ initPage: initMainPage })
+
+  const displayName = user?.display_name || user?.first_name
+
   return (
-    <div>
+    <Page>
       <Helmet>
         <meta charSet="utf-8" />
-        <title>Главная</title>
+        <title>Главная — War Chest Online</title>
         <meta
           name="description"
-          content="Главная страница с информацией о пользователе"
+          content="War Chest Online — фанатская онлайн-адаптация настольной стратегии War Chest. Играйте, обсуждайте партии на форуме и соревнуйтесь в лидерборде."
         />
       </Helmet>
       <Header />
-      <Link href="#">
-        <Icon viewBox="0 0 20 20">
-          <path d="M10 15h8c1 0 2-1 2-2V3c0-1-1-2-2-2H2C1 1 0 2 0 3v10c0 1 1 2 2 2h4v4l4-4zM5 7h2v2H5V7zm4 0h2v2H9V7zm4 0h2v2h-2V7z" />
-        </Icon>
-        <Label>Hovering my parent changes my style!</Label>
-      </Link>
-      {user ? (
-        <div>
-          <span>{user.first_name || user.second_name}</span>
-          <button type="button" onClick={handleLogout}>
-            Выйти
-          </button>
-        </div>
-      ) : (
-        <p>Пользователь не найден!</p>
-      )}
-    </div>
+
+      <main>
+        <Hero>
+          <HeroText>
+            <Eyebrow>Абстрактная военная стратегия онлайн</Eyebrow>
+            <Title>War Chest</Title>
+            <Greeting>
+              {displayName
+                ? `С возвращением, ${displayName}!`
+                : 'Соберите войско, займите базы соперника и станьте лучшим полководцем.'}
+            </Greeting>
+            <Description>
+              War Chest — это настольная стратегия для двух или четырёх игроков,
+              в которой соперники сражаются за контроль над базами на игровом
+              поле, используя отряды с уникальными способностями.
+            </Description>
+            <HeroActions>
+              <PrimaryButton to="/game">Начать игру</PrimaryButton>
+              <SecondaryButton to="/rules">Как играть</SecondaryButton>
+              {user && (
+                <SecondaryAction type="button" onClick={handleLogout}>
+                  Выйти
+                </SecondaryAction>
+              )}
+            </HeroActions>
+          </HeroText>
+        </Hero>
+
+        <Flourish />
+
+        <Section>
+          <SectionTitle
+            eyebrow="Быстрый переход"
+            title="Всё, что нужно для игры"
+            subtitle="Игра, сообщество и статистика - в двух шагах от главной страницы"
+          />
+          <NavGrid>
+            {navCards.map(({ to, title, description, icon }) => (
+              <NavCard key={to} to={to}>
+                <NavCardIcon>{icon}</NavCardIcon>
+                <NavCardTitle>{title}</NavCardTitle>
+                <NavCardDescription>{description}</NavCardDescription>
+              </NavCard>
+            ))}
+          </NavGrid>
+        </Section>
+
+        <Flourish />
+
+        <Section>
+          <SectionTitle
+            eyebrow="Скриншоты"
+            title="Как выглядит игра"
+            subtitle="Игровое поле, отряды и партии на двоих"
+          />
+          <ScreenshotsGrid>
+            {screenshots.map(({ src, alt }) => (
+              <ScreenshotFigure key={alt}>
+                <ScreenshotImage src={src} alt={alt} loading="lazy" />
+              </ScreenshotFigure>
+            ))}
+          </ScreenshotsGrid>
+        </Section>
+
+        <Flourish />
+
+        <Section>
+          <SectionTitle
+            eyebrow="Об игре"
+            title="Три отряда, одна победа"
+            subtitle="Соберите войско из уникальных отрядов и заберите базы соперника раньше, чем он заберёт ваши"
+          />
+          <FeatureGrid>
+            <FeatureCard>
+              <FeatureTitle>Уникальные отряды</FeatureTitle>
+              <FeatureText>
+                Каждая партия начинается с выбора войска - комбинации отрядов с
+                особыми способностями, от которой зависит ваша стратегия.
+              </FeatureText>
+            </FeatureCard>
+            <FeatureCard>
+              <FeatureTitle>Контроль базы</FeatureTitle>
+              <FeatureText>
+                Захватывайте базы соперника и удерживайте свои - тот, кто первым
+                потеряет все базы, проигрывает партию.
+              </FeatureText>
+            </FeatureCard>
+            <FeatureCard>
+              <FeatureTitle>Игра на двоих и четверых</FeatureTitle>
+              <FeatureText>
+                Собирайте команду или сражайтесь один на один - правила War
+                Chest поддерживают оба формата.
+              </FeatureText>
+            </FeatureCard>
+          </FeatureGrid>
+        </Section>
+      </main>
+    </Page>
   )
 }
-
-const Link = styled.a`
-  display: flex;
-  align-items: center;
-  padding: 5px 10px;
-  background: papayawhip;
-  color: #bf4f74;
-`
-
-const Icon = styled.svg`
-  flex: none;
-  transition: fill 0.25s;
-  width: 48px;
-  height: 48px;
-
-  ${Link}:hover & {
-    fill: rebeccapurple;
-  }
-`
-
-const Label = styled.span`
-  display: flex;
-  align-items: center;
-  line-height: 1.2;
-
-  &::before {
-    content: '◀';
-    margin: 0 10px;
-  }
-`
 
 export const initMainPage = async ({ dispatch, state }: PageInitArgs) => {
   if (!selectUser(state)) {
