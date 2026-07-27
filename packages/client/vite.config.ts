@@ -18,7 +18,17 @@ export default defineConfig({
   },
   ssr: {
     format: 'cjs',
-    noExternal: ['@reduxjs/toolkit', 'redux-thunk'],
+    noExternal: [
+      '@reduxjs/toolkit',
+      'react-redux',
+      'react-helmet',
+      'redux',
+      'redux-thunk',
+      'immer',
+      'reselect',
+      'react-router-dom',
+      'styled-components',
+    ],
   },
   plugins: [react()],
 })

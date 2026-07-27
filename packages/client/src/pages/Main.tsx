@@ -1,7 +1,12 @@
+import { useEffect } from 'react'
 import { Helmet } from 'react-helmet'
+import { useNavigate } from 'react-router-dom'
 
-import { useSelector } from '../store'
-import { fetchUserThunk, selectUser } from '../slices/userSlice'
+import { useDispatch, useSelector } from '../store'
+import { selectUser } from '../slices/userSlice'
+import { fetchUserThunk } from '../thunks/userThunks'
+import { fetchCurrentUserThunk, logoutThunk } from '../thunks/authThunks'
+import { selectAuthUser } from '../slices/authSlice'
 import { Header } from '../components/Header'
 import { SectionTitle } from '../components/SectionTitle'
 import { Flourish } from '../components/Flourish'
@@ -37,6 +42,7 @@ import {
   ScreenshotFigure,
   ScreenshotImage,
   ScreenshotsGrid,
+  SecondaryAction,
   SecondaryButton,
   Section,
   Title,
@@ -92,9 +98,23 @@ const navCards: NavCardItem[] = [
 ]
 
 export const MainPage = () => {
-  const user = useSelector(selectUser)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const user = useSelector(selectAuthUser)
+
+  const handleLogout = async () => {
+    await dispatch(logoutThunk())
+    navigate('/')
+  }
+
+  useEffect(() => {
+    dispatch(fetchCurrentUserThunk())
+  }, [dispatch])
 
   usePage({ initPage: initMainPage })
+
+  const displayName = user?.display_name || user?.first_name
 
   return (
     <Page>
@@ -114,8 +134,8 @@ export const MainPage = () => {
             <Eyebrow>Абстрактная военная стратегия онлайн</Eyebrow>
             <Title>War Chest</Title>
             <Greeting>
-              {user
-                ? `С возвращением, ${user.name}!`
+              {displayName
+                ? `С возвращением, ${displayName}!`
                 : 'Соберите войско, займите базы соперника и станьте лучшим полководцем.'}
             </Greeting>
             <Description>
@@ -126,6 +146,11 @@ export const MainPage = () => {
             <HeroActions>
               <PrimaryButton to="/game">Начать игру</PrimaryButton>
               <SecondaryButton to="/rules">Как играть</SecondaryButton>
+              {user && (
+                <SecondaryAction type="button" onClick={handleLogout}>
+                  Выйти
+                </SecondaryAction>
+              )}
             </HeroActions>
           </HeroText>
         </Hero>

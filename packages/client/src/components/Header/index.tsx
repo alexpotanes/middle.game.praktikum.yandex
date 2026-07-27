@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react'
-
-import { isAuthorized } from '../../utils/auth'
 import {
   guestNavigationRoutes,
   privateNavigationRoutes,
@@ -15,13 +12,11 @@ import {
   NavList,
   Wrapper,
 } from './styles'
+import { useSelector } from '../../store'
+import { selectIsAuthenticated } from '../../slices/authSlice'
 
 export const Header = () => {
-  const [hasAuth, setHasAuth] = useState(false)
-
-  useEffect(() => {
-    setHasAuth(isAuthorized())
-  }, [])
+  const hasAuth = useSelector(selectIsAuthenticated)
 
   const navigationRoutes = hasAuth
     ? [...publicNavigationRoutes, ...privateNavigationRoutes]

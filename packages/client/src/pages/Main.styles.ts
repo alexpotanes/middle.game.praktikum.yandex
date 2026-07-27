@@ -82,6 +82,15 @@ export const SecondaryButton = styled(Link)`
   border: 1px solid ${colors.header};
 `
 
+export const SecondaryAction = styled.button`
+  ${buttonBase}
+  background: transparent;
+  color: ${colors.heading};
+  border: 1px solid ${colors.header};
+  cursor: pointer;
+  font-family: inherit;
+`
+
 export const Section = styled.section`
   max-width: 1080px;
   margin: 0 auto;
