@@ -39,6 +39,11 @@
   line-height: 1.5;
 }
 
+.logoutButton {
+  width: auto;
+  margin-top: 18px;
+}
+
 @media (max-width: 640px) {
   .hero {
     align-items: center;
