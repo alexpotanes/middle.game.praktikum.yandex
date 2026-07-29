@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router-dom'
 import App from './App'
 import { router } from './router'
 import { store } from './store'
+import { GlobalStyle } from './styles/GlobalStyle'
 import { fetchCurrentUserThunk } from './thunks/authThunks'
 import './index.css'
 

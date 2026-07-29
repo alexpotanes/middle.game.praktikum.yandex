@@ -27,7 +27,7 @@ type ProfileField = {
 const profileFields: ProfileField[] = [
   { field: 'first_name', label: 'Имя', required: true },
   { field: 'second_name', label: 'Фамилия', required: true },
-  { field: 'display_name', label: 'Имя в игре' },
+  { field: 'display_name', label: 'Отображаемое имя' },
   { field: 'login', label: 'Логин', required: true },
   { field: 'email', label: 'Email', type: 'email', required: true },
   { field: 'phone', label: 'Телефон', required: true },

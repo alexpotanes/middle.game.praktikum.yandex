@@ -1,17 +1,13 @@
-import { useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import { useNavigate } from 'react-router-dom'
 
 import { useDispatch, useSelector } from '../store'
 import { selectUser } from '../slices/userSlice'
-import { fetchUserThunk } from '../thunks/userThunks'
-import { fetchCurrentUserThunk, logoutThunk } from '../thunks/authThunks'
-import { selectAuthUser } from '../slices/authSlice'
-import { Header } from '../components/Header'
+import { logoutThunk } from '../thunks/authThunks'
+import { Header } from '../components/header'
 import { SectionTitle } from '../components/SectionTitle'
 import { Flourish } from '../components/Flourish'
 import { usePage } from '../hooks/usePage'
-import type { PageInitArgs } from '../router'
 import {
   ForumIcon,
   GameIcon,
@@ -101,16 +97,12 @@ export const MainPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const user = useSelector(selectAuthUser)
+  const user = useSelector(selectUser)
 
   const handleLogout = async () => {
     await dispatch(logoutThunk())
     navigate('/')
   }
-
-  useEffect(() => {
-    dispatch(fetchCurrentUserThunk())
-  }, [dispatch])
 
   usePage({ initPage: initMainPage })
 

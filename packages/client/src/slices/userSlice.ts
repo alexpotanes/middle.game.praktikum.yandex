@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { UserResponse } from '../api/types'
+import { RESOURCE_HOST } from '../constants'
 import { RootState } from '../store'
 import {
   fetchCurrentUserThunk,
@@ -48,8 +49,19 @@ export const userSlice = createSlice({
 })
 
 export const selectUser = (state: RootState) => state.user.data
-export const selectUserAvatar = (state: RootState) =>
-  state.user.data?.avatar ?? null
+export const selectUserAvatar = (state: RootState) => {
+  const avatar = state.user.data?.avatar
+
+  if (!avatar) {
+    return null
+  }
+
+  const avatarPath = avatar.startsWith('/') ? avatar : `/${avatar}`
+
+  return avatar.startsWith('http')
+    ? avatar
+    : `${RESOURCE_HOST}${encodeURI(avatarPath)}`
+}
 export const selectUserDisplayName = (state: RootState) =>
   state.user.data?.display_name ?? null
 export const selectUserLogin = (state: RootState) =>
