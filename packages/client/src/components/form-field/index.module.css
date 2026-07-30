@@ -1,0 +1,32 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  color: #564844;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid rgba(86, 72, 68, 0.16);
+  border-radius: 8px;
+  background: #fff;
+  color: #1b1b1b;
+  font: inherit;
+}
+
+.input:focus {
+  outline: 2px solid rgba(201, 162, 76, 0.35);
+  border-color: #c9a24c;
+}
+
+.input:disabled {
+  opacity: 0.65;
+}

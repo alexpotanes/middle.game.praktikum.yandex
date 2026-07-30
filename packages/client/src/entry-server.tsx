@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom/server'
-import { Provider } from 'react-redux'
 import { ServerStyleSheet } from 'styled-components'
 import { Helmet } from 'react-helmet'
 import { Request as ExpressRequest } from 'express'
@@ -17,6 +16,7 @@ import {
   createFetchRequest,
   createUrl,
 } from './entry-server.utils'
+import App from './App'
 import { reducer } from './store'
 import { routes } from './router/routes'
 import './index.css'
@@ -66,10 +66,10 @@ export const render = async (req: ExpressRequest) => {
   try {
     const html = ReactDOM.renderToString(
       sheet.collectStyles(
-        <Provider store={store}>
+        <App store={store}>
           <GlobalStyle />
           <StaticRouterProvider router={router} context={context} />
-        </Provider>
+        </App>
       )
     )
     const styleTags = sheet.getStyleTags()

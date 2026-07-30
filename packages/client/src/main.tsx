@@ -1,18 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
-import { Provider } from 'react-redux'
-import { store } from './store'
+import App from './App'
 import { router } from './router'
+import { store } from './store'
 import { GlobalStyle } from './styles/GlobalStyle'
 import { fetchCurrentUserThunk } from './thunks/authThunks'
+import './index.css'
 
 store.dispatch(fetchCurrentUserThunk())
 
 ReactDOM.hydrateRoot(
   document.getElementById('root') as HTMLElement,
-  <Provider store={store}>
+  <App store={store}>
     <GlobalStyle />
     <RouterProvider router={router} />
-  </Provider>
+  </App>
 )

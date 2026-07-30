@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import * as authService from '../services/authService'
+import * as userService from '../services/userService'
 import { UpstreamResult } from '../services/praktikumApi'
 
 const relay = (res: Response, result: UpstreamResult) => {
@@ -20,11 +20,14 @@ const handle =
     }
   }
 
-export const signin = handle(req =>
-  authService.signin(req.body, req.headers.cookie)
+export const updateProfile = handle(req =>
+  userService.updateProfile(req.body, req.headers.cookie)
 )
-export const signup = handle(req =>
-  authService.signup(req.body, req.headers.cookie)
+
+export const changePassword = handle(req =>
+  userService.changePassword(req.body, req.headers.cookie)
 )
-export const logout = handle(req => authService.logout(req.headers.cookie))
-export const getUser = handle(req => authService.getUser(req.headers.cookie))
+
+export const updateAvatar = handle(req =>
+  userService.updateAvatar(req, req.headers, req.headers.cookie)
+)
