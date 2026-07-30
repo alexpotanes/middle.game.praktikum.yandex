@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 
+import { colors } from '../styles/theme'
+
 export const Loader = () => (
   <Wrapper>
     <Spinner />
@@ -16,8 +18,8 @@ const Wrapper = styled.div`
 const Spinner = styled.div`
   width: 48px;
   height: 48px;
-  border: 4px solid var(--wc-border);
-  border-top-color: var(--wc-gold);
+  border: 4px solid rgba(86, 72, 68, 0.2);
+  border-top-color: ${colors.gold};
   border-radius: 50%;
   animation: wc-spin 0.8s linear infinite;
 
