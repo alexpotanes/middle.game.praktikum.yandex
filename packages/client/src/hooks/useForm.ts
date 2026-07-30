@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useState } from 'react'
+import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
 import { ValidatorKey, validators } from '../utils/validation'
 
 type Fields = Partial<Record<ValidatorKey, string>>
@@ -50,5 +50,18 @@ export function useForm<T extends Fields>(initial: T) {
       if (validate()) onValid(values)
     }
 
-  return { values, errors, handleChange, handleBlur, handleSubmit }
+  const setFormValues = useCallback((next: T) => {
+    setValues(next)
+    setErrors({})
+    setTouched({})
+  }, [])
+
+  return {
+    values,
+    errors,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setFormValues,
+  }
 }

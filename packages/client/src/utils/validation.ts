@@ -35,8 +35,14 @@ export const validators = {
     if (!v) return 'Обязательное поле'
     if (!PHONE.test(v)) return 'От 10 до 15 цифр, допускается «+» в начале'
   },
-  display_name: (v: string) => {
+  display_name: () => undefined,
+  oldPassword: (v: string) => {
     if (!v) return 'Обязательное поле'
+  },
+  newPassword: (v: string) => {
+    if (!v) return 'Обязательное поле'
+    if (!PASSWORD.test(v))
+      return 'От 8 до 40 символов, минимум одна заглавная буква и одна цифра'
   },
 }
 
