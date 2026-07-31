@@ -47,13 +47,6 @@ export const FieldWrapper = styled.div`
   gap: 4px;
 `
 
-export const FieldLabel = styled.label`
-  font-size: 12px;
-  font-weight: 600;
-  color: ${colors.heading};
-  letter-spacing: 0.03em;
-`
-
 export const Input = styled.input<{ $error?: boolean }>`
   padding: 12px 14px;
   border: 1px solid

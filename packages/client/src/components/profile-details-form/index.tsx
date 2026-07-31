@@ -49,6 +49,7 @@ export const ProfileDetailsForm = ({ user }: ProfileDetailsFormProps) => {
   const {
     values,
     errors,
+    isValid,
     handleChange,
     handleBlur,
     handleSubmit,
@@ -58,6 +59,8 @@ export const ProfileDetailsForm = ({ user }: ProfileDetailsFormProps) => {
   useEffect(() => {
     setFormValues(getProfileForm(user))
   }, [user, setFormValues])
+
+  const isSubmitDisabled = isProfileSubmitting || !isValid
 
   const onSubmit = handleSubmit(async data => {
     setNotice(null)
@@ -89,7 +92,7 @@ export const ProfileDetailsForm = ({ user }: ProfileDetailsFormProps) => {
         )
       }
       actions={
-        <Button type="submit" disabled={isProfileSubmitting}>
+        <Button type="submit" disabled={isSubmitDisabled}>
           {isProfileSubmitting ? 'Сохранение...' : 'Обновить данные'}
         </Button>
       }>

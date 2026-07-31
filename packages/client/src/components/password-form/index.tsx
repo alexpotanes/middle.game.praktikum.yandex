@@ -28,11 +28,14 @@ export const PasswordForm = () => {
   const {
     values,
     errors,
+    isValid,
     handleChange,
     handleBlur,
     handleSubmit,
     setFormValues,
   } = useForm(initialPasswordForm)
+
+  const isSubmitDisabled = isSubmitting || !isValid
 
   const onSubmit = handleSubmit(async data => {
     setNotice(null)
@@ -64,7 +67,7 @@ export const PasswordForm = () => {
         )
       }
       actions={
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitDisabled}>
           {isSubmitting ? 'Сохранение...' : 'Изменить пароль'}
         </Button>
       }>

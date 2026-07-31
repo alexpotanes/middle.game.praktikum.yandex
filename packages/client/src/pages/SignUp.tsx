@@ -67,14 +67,15 @@ export const SignUp = () => {
   const sessionChecked = useSelector(selectSessionChecked)
   const isAuthenticated = useSelector(selectIsAuthenticated)
 
-  const { values, errors, handleChange, handleBlur, handleSubmit } = useForm({
-    first_name: '',
-    second_name: '',
-    login: '',
-    email: '',
-    password: '',
-    phone: '',
-  })
+  const { values, errors, isValid, handleChange, handleBlur, handleSubmit } =
+    useForm({
+      first_name: '',
+      second_name: '',
+      login: '',
+      email: '',
+      password: '',
+      phone: '',
+    })
 
   const from =
     (location.state as FromLocationState | null)?.from?.pathname ?? '/'
@@ -86,6 +87,9 @@ export const SignUp = () => {
   if (isAuthenticated) {
     return <Navigate to={from} replace />
   }
+
+  const isLoading = status === STATUS.LOADING
+  const isSubmitDisabled = isLoading || !isValid
 
   const onSubmit = handleSubmit(async data => {
     const result = await dispatch(registerThunk(data))
@@ -120,8 +124,8 @@ export const SignUp = () => {
           </FieldWrapper>
         ))}
         {error && <ErrorText>{error}</ErrorText>}
-        <SubmitButton type="submit" disabled={status === STATUS.LOADING}>
-          {status === STATUS.LOADING ? 'Регистрируем…' : 'Зарегистрироваться'}
+        <SubmitButton type="submit" disabled={isSubmitDisabled}>
+          {isLoading ? 'Регистрируем…' : 'Зарегистрироваться'}
         </SubmitButton>
         <Hint>
           Уже есть аккаунт? <Link to={ROUTES.LOGIN}>Вход</Link>

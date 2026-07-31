@@ -1,7 +1,22 @@
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
 import { ValidatorKey, validators } from '../utils/validation'
 
+// Partial: у формы только нужные поля (login/password ≠ весь ValidatorKey)
 type Fields = Partial<Record<ValidatorKey, string>>
+
+const getFieldError = (key: ValidatorKey, value: string) =>
+  validators[key]?.(value)
+
+const collectErrors = <T extends Fields>(
+  values: T
+): Partial<Record<ValidatorKey, string>> => {
+  const newErrors: Partial<Record<ValidatorKey, string>> = {}
+  for (const key of Object.keys(values) as ValidatorKey[]) {
+    const error = getFieldError(key, values[key] ?? '')
+    if (error) newErrors[key] = error
+  }
+  return newErrors
+}
 
 export function useForm<T extends Fields>(initial: T) {
   const [values, setValues] = useState<T>(initial)
@@ -15,8 +30,9 @@ export function useForm<T extends Fields>(initial: T) {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setValues(prev => ({ ...prev, [name]: value }))
+    // live-валидация только после blur; на submit validate() проверяет всё
     if (touched[name as ValidatorKey]) {
-      const error = validators[name as ValidatorKey]?.(value)
+      const error = getFieldError(name as ValidatorKey, value)
       setErrors(prev => ({ ...prev, [name]: error }))
     }
   }
@@ -24,16 +40,12 @@ export function useForm<T extends Fields>(initial: T) {
   const handleBlur = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setTouched(prev => ({ ...prev, [name]: true }))
-    const error = validators[name as ValidatorKey]?.(value)
+    const error = getFieldError(name as ValidatorKey, value)
     setErrors(prev => ({ ...prev, [name]: error }))
   }
 
   const validate = (): boolean => {
-    const newErrors: Partial<Record<ValidatorKey, string>> = {}
-    for (const key of Object.keys(values) as ValidatorKey[]) {
-      const error = validators[key]?.(values[key] ?? '')
-      if (error) newErrors[key] = error
-    }
+    const newErrors = collectErrors(values)
     setErrors(newErrors)
     setTouched(
       Object.keys(values).reduce(
@@ -56,9 +68,12 @@ export function useForm<T extends Fields>(initial: T) {
     setTouched({})
   }, [])
 
+  const isValid = Object.keys(collectErrors(values)).length === 0
+
   return {
     values,
     errors,
+    isValid,
     handleChange,
     handleBlur,
     handleSubmit,
