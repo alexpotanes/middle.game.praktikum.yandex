@@ -4,6 +4,10 @@ import { initGamePage, GamePage } from '../pages/GamePage'
 import { RulesPage, initRulesPage } from '../pages/RulesPage'
 import { initLeaderboardPage, LeaderboardPage } from '../pages/LeaderboardPage'
 import { initForumPage, ForumPage } from '../pages/ForumPage'
+import {
+  ForumCreateTopicPage,
+  initForumCreateTopicPage,
+} from '../pages/ForumCreateTopicPage'
 import { ForumTopicPage, initForumTopicPage } from '../pages/ForumTopicPage'
 import type { AppRoute } from './types'
 import { RequireAuth } from './RequireAuth'
@@ -63,6 +67,11 @@ const privateRoutes: AppRoute[] = [
     path: '/forum',
     element: <ForumPage />,
     fetchData: initForumPage,
+  },
+  {
+    path: '/forum/new',
+    element: <ForumCreateTopicPage />,
+    fetchData: initForumCreateTopicPage,
   },
   {
     path: '/forum/:topicId',
