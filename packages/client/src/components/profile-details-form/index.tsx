@@ -1,6 +1,7 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { ProfileRequest, UserResponse } from '../../api/types'
+import { useForm } from '../../hooks/useForm'
 import { useDispatch } from '../../store'
 import { updateProfileThunk } from '../../thunks/userThunks'
 import { Button } from '../button'
@@ -21,16 +22,15 @@ type ProfileField = {
   field: keyof ProfileRequest
   label: string
   type?: string
-  required?: boolean
 }
 
 const profileFields: ProfileField[] = [
-  { field: 'first_name', label: 'Имя', required: true },
-  { field: 'second_name', label: 'Фамилия', required: true },
+  { field: 'first_name', label: 'Имя' },
+  { field: 'second_name', label: 'Фамилия' },
   { field: 'display_name', label: 'Отображаемое имя' },
-  { field: 'login', label: 'Логин', required: true },
-  { field: 'email', label: 'Email', type: 'email', required: true },
-  { field: 'phone', label: 'Телефон', required: true },
+  { field: 'login', label: 'Логин' },
+  { field: 'email', label: 'Email', type: 'email' },
+  { field: 'phone', label: 'Телефон' },
 ]
 
 const getProfileForm = (user?: UserResponse | null): ProfileRequest => ({
@@ -44,26 +44,30 @@ const getProfileForm = (user?: UserResponse | null): ProfileRequest => ({
 
 export const ProfileDetailsForm = ({ user }: ProfileDetailsFormProps) => {
   const dispatch = useDispatch()
-  const [form, setForm] = useState<ProfileRequest>(getProfileForm())
   const [notice, setNotice] = useState<FormNotice | null>(null)
   const [isProfileSubmitting, setIsProfileSubmitting] = useState(false)
+  const {
+    values,
+    errors,
+    isValid,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setFormValues,
+  } = useForm(getProfileForm())
 
   useEffect(() => {
-    setForm(getProfileForm(user))
-  }, [user])
+    setFormValues(getProfileForm(user))
+  }, [user, setFormValues])
 
-  const handleChange =
-    (field: keyof ProfileRequest) => (event: ChangeEvent<HTMLInputElement>) => {
-      setForm(prev => ({ ...prev, [field]: event.target.value }))
-    }
+  const isSubmitDisabled = isProfileSubmitting || !isValid
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const onSubmit = handleSubmit(async data => {
     setNotice(null)
     setIsProfileSubmitting(true)
 
     try {
-      await dispatch(updateProfileThunk(form)).unwrap()
+      await dispatch(updateProfileThunk(data)).unwrap()
       setNotice({ isSuccess: true, message: 'Профиль обновлён' })
     } catch (error) {
       setNotice({
@@ -71,15 +75,15 @@ export const ProfileDetailsForm = ({ user }: ProfileDetailsFormProps) => {
         message:
           typeof error === 'string' ? error : 'Не удалось обновить профиль',
       })
+    } finally {
+      setIsProfileSubmitting(false)
     }
-
-    setIsProfileSubmitting(false)
-  }
+  })
 
   return (
     <Form
       title="Данные профиля"
-      onSubmit={handleSubmit}
+      onSubmit={onSubmit}
       notice={
         notice && (
           <Notice tone={notice.isSuccess ? 'success' : 'error'}>
@@ -88,20 +92,21 @@ export const ProfileDetailsForm = ({ user }: ProfileDetailsFormProps) => {
         )
       }
       actions={
-        <Button type="submit" disabled={isProfileSubmitting}>
+        <Button type="submit" disabled={isSubmitDisabled}>
           {isProfileSubmitting ? 'Сохранение...' : 'Обновить данные'}
         </Button>
       }>
-      {profileFields.map(({ field, label, type, required }) => (
+      {profileFields.map(({ field, label, type }) => (
         <FormField
           key={field}
           id={field}
           label={label}
           type={type}
-          value={form[field]}
-          onChange={handleChange(field)}
+          value={values[field]}
+          onChange={handleChange}
+          onBlur={handleBlur}
           disabled={isProfileSubmitting}
-          required={required}
+          error={errors[field]}
         />
       ))}
     </Form>

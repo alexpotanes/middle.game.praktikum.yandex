@@ -1,4 +1,3 @@
-import { FormEvent, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 
@@ -14,9 +13,12 @@ import { STATUS } from '../slices/constants'
 import { Loader } from '../components/Loader'
 import type { FromLocationState } from '../router/RequireAuth'
 import { ROUTES } from '../router/constants'
+import { useForm } from '../hooks/useForm'
 import {
   ErrorText,
   Eyebrow,
+  FieldError,
+  FieldWrapper,
   FormCard,
   Hint,
   Input,
@@ -34,8 +36,11 @@ export const SignIn = () => {
   const sessionChecked = useSelector(selectSessionChecked)
   const isAuthenticated = useSelector(selectIsAuthenticated)
 
-  const [login, setLogin] = useState('')
-  const [password, setPassword] = useState('')
+  const { values, errors, isValid, handleChange, handleBlur, handleSubmit } =
+    useForm({
+      login: '',
+      password: '',
+    })
 
   const from =
     (location.state as FromLocationState | null)?.from?.pathname ?? '/'
@@ -48,38 +53,54 @@ export const SignIn = () => {
     return <Navigate to={from} replace />
   }
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault()
-    const result = await dispatch(loginThunk({ login, password }))
+  const isLoading = status === STATUS.LOADING
+  const isSubmitDisabled = isLoading || !isValid
+
+  const onSubmit = handleSubmit(async data => {
+    const result = await dispatch(loginThunk(data))
     if (loginThunk.fulfilled.match(result)) {
       navigate(from, { replace: true })
     }
-  }
+  })
 
   return (
     <Wrapper>
       <Helmet>
         <title>Вход</title>
       </Helmet>
-      <FormCard onSubmit={handleSubmit}>
+      <FormCard onSubmit={onSubmit} noValidate>
         <Eyebrow>War Chest Online</Eyebrow>
         <Title>Вход</Title>
-        <Input
-          name="login"
-          placeholder="Логин"
-          value={login}
-          onChange={e => setLogin(e.target.value)}
-        />
-        <Input
-          name="password"
-          type="password"
-          placeholder="Пароль"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
+        <FieldWrapper>
+          <Input
+            name="login"
+            placeholder="Логин"
+            autoComplete="username"
+            value={values.login}
+            $error={!!errors.login}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          {errors.login && <FieldError role="alert">{errors.login}</FieldError>}
+        </FieldWrapper>
+        <FieldWrapper>
+          <Input
+            name="password"
+            type="password"
+            placeholder="Пароль"
+            autoComplete="current-password"
+            value={values.password}
+            $error={!!errors.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          {errors.password && (
+            <FieldError role="alert">{errors.password}</FieldError>
+          )}
+        </FieldWrapper>
         {error && <ErrorText>{error}</ErrorText>}
-        <SubmitButton type="submit" disabled={status === STATUS.LOADING}>
-          {status === STATUS.LOADING ? 'Входим…' : 'Войти'}
+        <SubmitButton type="submit" disabled={isSubmitDisabled}>
+          {isLoading ? 'Входим…' : 'Войти'}
         </SubmitButton>
         <Hint>
           Нет аккаунта? <Link to={ROUTES.REGISTRATION}>Регистрация</Link>

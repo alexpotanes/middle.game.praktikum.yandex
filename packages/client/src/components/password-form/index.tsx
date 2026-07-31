@@ -1,6 +1,6 @@
-import { ChangeEvent, FormEvent, useState } from 'react'
+import { useState } from 'react'
 
-import { ChangePasswordRequest } from '../../api/types'
+import { useForm } from '../../hooks/useForm'
 import { useDispatch } from '../../store'
 import { changePasswordThunk } from '../../thunks/userThunks'
 import { Button } from '../button'
@@ -13,7 +13,7 @@ type FormNotice = {
   message: string
 }
 
-const initialPasswordForm: ChangePasswordRequest = {
+const initialPasswordForm = {
   oldPassword: '',
   newPassword: '',
 }
@@ -23,39 +23,42 @@ const getErrorMessage = (error: unknown, fallback: string) =>
 
 export const PasswordForm = () => {
   const dispatch = useDispatch()
-  const [form, setForm] = useState<ChangePasswordRequest>(initialPasswordForm)
   const [notice, setNotice] = useState<FormNotice | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const {
+    values,
+    errors,
+    isValid,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setFormValues,
+  } = useForm(initialPasswordForm)
 
-  const handleChange =
-    (field: keyof ChangePasswordRequest) =>
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setForm(prev => ({ ...prev, [field]: event.target.value }))
-    }
+  const isSubmitDisabled = isSubmitting || !isValid
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const onSubmit = handleSubmit(async data => {
     setNotice(null)
     setIsSubmitting(true)
 
     try {
-      await dispatch(changePasswordThunk(form)).unwrap()
+      await dispatch(changePasswordThunk(data)).unwrap()
       setNotice({ isSuccess: true, message: 'Пароль изменён' })
-      setForm(initialPasswordForm)
+      setFormValues(initialPasswordForm)
     } catch (error) {
       setNotice({
         isSuccess: false,
         message: getErrorMessage(error, 'Не удалось изменить пароль'),
       })
+    } finally {
+      setIsSubmitting(false)
     }
-
-    setIsSubmitting(false)
-  }
+  })
 
   return (
     <Form
       title="Пароль"
-      onSubmit={handleSubmit}
+      onSubmit={onSubmit}
       notice={
         notice && (
           <Notice tone={notice.isSuccess ? 'success' : 'error'}>
@@ -64,7 +67,7 @@ export const PasswordForm = () => {
         )
       }
       actions={
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitDisabled}>
           {isSubmitting ? 'Сохранение...' : 'Изменить пароль'}
         </Button>
       }>
@@ -72,19 +75,23 @@ export const PasswordForm = () => {
         id="oldPassword"
         label="Текущий пароль"
         type="password"
-        value={form.oldPassword}
-        onChange={handleChange('oldPassword')}
+        value={values.oldPassword}
+        onChange={handleChange}
+        onBlur={handleBlur}
         disabled={isSubmitting}
-        required
+        error={errors.oldPassword}
+        autoComplete="current-password"
       />
       <FormField
         id="newPassword"
         label="Новый пароль"
         type="password"
-        value={form.newPassword}
-        onChange={handleChange('newPassword')}
+        value={values.newPassword}
+        onChange={handleChange}
+        onBlur={handleBlur}
         disabled={isSubmitting}
-        required
+        error={errors.newPassword}
+        autoComplete="new-password"
       />
     </Form>
   )

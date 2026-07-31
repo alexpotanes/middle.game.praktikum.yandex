@@ -20,7 +20,7 @@ export const Form = ({
   <section className={styles.panel}>
     <h2 className={styles.panelTitle}>{title}</h2>
 
-    <form className={styles.form} onSubmit={onSubmit}>
+    <form className={styles.form} onSubmit={onSubmit} noValidate>
       <div className={styles.fields}>{children}</div>
       <div className={styles.footer}>
         {notice && <div className={styles.formNotice}>{notice}</div>}

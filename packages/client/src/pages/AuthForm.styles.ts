@@ -41,9 +41,16 @@ export const Title = styled.h1`
   color: ${colors.heading};
 `
 
-export const Input = styled.input`
+export const FieldWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`
+
+export const Input = styled.input<{ $error?: boolean }>`
   padding: 12px 14px;
-  border: 1px solid rgba(86, 72, 68, 0.25);
+  border: 1px solid
+    ${({ $error }) => ($error ? colors.crimson : 'rgba(86, 72, 68, 0.25)')};
   border-radius: 8px;
   background: #fff;
   color: ${colors.text};
@@ -59,9 +66,17 @@ export const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: ${colors.header};
-    box-shadow: 0 0 0 3px rgba(201, 162, 76, 0.25);
+    border-color: ${({ $error }) => ($error ? colors.crimson : colors.header)};
+    box-shadow: 0 0 0 3px
+      ${({ $error }) =>
+        $error ? 'rgba(124, 38, 38, 0.18)' : 'rgba(201, 162, 76, 0.25)'};
   }
+`
+
+export const FieldError = styled.span`
+  font-size: 12px;
+  color: ${colors.crimson};
+  line-height: 1.3;
 `
 
 export const SubmitButton = styled.button`
