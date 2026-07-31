@@ -33,6 +33,17 @@
 
 Невалидный роут ведёт на страницу 404.
 
+### Игровой движок (Canvas API)
+
+Движок лежит в `packages/client/src/game/` и не зависит от React — подключается к любому `<canvas>`.
+
+- `core` — `Game` (точка входа: canvas, цикл, сцены, `destroy()`), `GameLoop` (`requestAnimationFrame` + delta time), `Scene` и `GameObject` (базовые классы: `update(dt, input)` + `render(renderer)`, zIndex)
+- `input` — `InputManager`: клавиатура (`isKeyDown`, `wasKeyPressed`) и мышь (позиция в логических координатах, клики), покадровые флаги
+- `render` — `Renderer`: обёртка над Canvas 2D (`fillRect`, `drawPolygon`, `drawText`, `drawImage`)
+- `math` — `Vector2` и `Rect` с `intersects()` для обнаружения столкновений
+- `hex` — гексагональная сетка: axial-координаты, `HexGrid` с hit-test'ом клика, соседями и дистанцией (основа поля War Chest)
+- `animation` — `Animator` (спрайтовые клипы) и `Tween`/`TweenManager` (плавные перемещения)
+
 ### Как добавить зависимости?
 
 В этом проекте используется `monorepo` на основе [`lerna`](https://github.com/lerna/lerna)
