@@ -1,74 +1,123 @@
+/* global importScripts */
+
+importScripts('/precache-manifest.js')
+
 // Версия кеша меняется вручную, когда нужно сбросить старый кеш или поменялась стратегия кеширования.
 const CACHE_NAME = 'app-cache-v1'
-const STATIC_URLS = ['/', '/vite.svg']
-const CACHEABLE_RESPONSE_TYPES = ['basic', 'cors', 'opaque']
+const PRECACHE_NAME = `${CACHE_NAME}-precache`
+const RUNTIME_NAME = `${CACHE_NAME}-runtime`
+const APP_SHELL_URL = '/'
+const BUILD_ASSET_URLS = self.__PRECACHE_MANIFEST__ || []
+const PRECACHE_URLS = [...new Set([APP_SHELL_URL, ...BUILD_ASSET_URLS])]
+const RUNTIME_CACHE_LIMIT = 50
+const MAX_RUNTIME_RESPONSE_SIZE = 5 * 1024 * 1024
 
-function getAssetUrlsFromText(text) {
-  const assets = text.match(/\/assets\/[^"'`)<>\s]+/g) || []
-
-  return [...new Set(assets)]
+function isSameOrigin(url) {
+  return url.origin === location.origin
 }
 
-function isCacheableResponse(response) {
+function isSuccessfulBasicResponse(response) {
+  return response && response.ok && response.type === 'basic'
+}
+
+function isRuntimeResponseSizeAllowed(response) {
+  const contentLength = response.headers.get('content-length')
+
+  return !contentLength || Number(contentLength) <= MAX_RUNTIME_RESPONSE_SIZE
+}
+
+function isPrecacheUrl(url) {
+  return PRECACHE_URLS.includes(url.pathname)
+}
+
+function isStaticAssetRequest(request) {
+  const url = new URL(request.url)
+  const allowedDestinations = ['script', 'style', 'image', 'font']
+
   return (
-    CACHEABLE_RESPONSE_TYPES.includes(response.type) &&
-    (response.status === 200 || response.type === 'opaque')
+    isSameOrigin(url) &&
+    allowedDestinations.includes(request.destination) &&
+    (url.pathname.startsWith('/assets/') || isPrecacheUrl(url))
   )
 }
 
-function getPrecacheUrls() {
-  return fetch('/')
-    .then(response => response.text())
-    .then(html => {
-      const htmlAssetUrls = getAssetUrlsFromText(html)
-      const scriptUrls = htmlAssetUrls.filter(url => url.endsWith('.js'))
+function trimRuntimeCache() {
+  return caches.open(RUNTIME_NAME).then(cache => {
+    return cache.keys().then(keys => {
+      if (keys.length <= RUNTIME_CACHE_LIMIT) {
+        return undefined
+      }
 
-      return Promise.all(
-        scriptUrls.map(url => fetch(url).then(response => response.text()))
-      ).then(scripts => {
-        const scriptAssetUrls = scripts.flatMap(getAssetUrlsFromText)
-
-        return [
-          ...new Set([...STATIC_URLS, ...htmlAssetUrls, ...scriptAssetUrls]),
-        ]
-      })
+      return cache.delete(keys[0]).then(trimRuntimeCache)
     })
-    .catch(() => STATIC_URLS)
+  })
 }
 
-function putResponseInCache(request, response) {
-  if (!response || !isCacheableResponse(response)) {
-    return Promise.resolve()
-  }
+function precacheUrl(cache, url) {
+  return fetch(url).then(response => {
+    if (!isSuccessfulBasicResponse(response)) {
+      throw new Error(`Precache failed for ${url}`)
+    }
 
-  const responseToCache = response.clone()
+    return cache.put(url, response)
+  })
+}
 
-  return caches.open(CACHE_NAME).then(cache => {
-    return cache.put(request, responseToCache)
+function handleNavigation(request) {
+  return fetch(request).catch(() => {
+    return caches.match(APP_SHELL_URL).then(response => {
+      return response || Response.error()
+    })
+  })
+}
+
+function handleStaticAsset(request) {
+  return caches.match(request).then(cachedResponse => {
+    if (cachedResponse) {
+      return cachedResponse
+    }
+
+    return fetch(request).then(response => {
+      if (
+        isSuccessfulBasicResponse(response) &&
+        isRuntimeResponseSizeAllowed(response)
+      ) {
+        const responseToCache = response.clone()
+
+        caches
+          .open(RUNTIME_NAME)
+          .then(cache => cache.put(request, responseToCache))
+          .then(trimRuntimeCache)
+          .catch(() => undefined)
+      }
+
+      return response
+    })
   })
 }
 
 this.addEventListener('install', event => {
-  // console.log('install')
-
   event.waitUntil(
     caches
-      .open(CACHE_NAME)
-      .then(cache => getPrecacheUrls().then(urls => cache.addAll(urls)))
+      .open(PRECACHE_NAME)
+      .then(cache =>
+        Promise.all(PRECACHE_URLS.map(url => precacheUrl(cache, url)))
+      )
       .then(() => this.skipWaiting())
   )
 })
 
 this.addEventListener('activate', event => {
-  // console.log('activate')
-
   event.waitUntil(
     caches
       .keys()
       .then(cacheNames =>
         Promise.all(
           cacheNames
-            .filter(cacheName => cacheName !== CACHE_NAME)
+            .filter(
+              cacheName =>
+                cacheName !== PRECACHE_NAME && cacheName !== RUNTIME_NAME
+            )
             .map(cacheName => caches.delete(cacheName))
         )
       )
@@ -81,25 +130,12 @@ this.addEventListener('fetch', event => {
     return
   }
 
-  event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        event.waitUntil(
-          putResponseInCache(event.request, response).catch(() => undefined)
-        )
+  if (event.request.mode === 'navigate') {
+    event.respondWith(handleNavigation(event.request))
+    return
+  }
 
-        return response
-      })
-      .catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match(event.request).then(response => {
-            return response || caches.match('/')
-          })
-        }
-
-        return caches.match(event.request).then(response => {
-          return response || Response.error()
-        })
-      })
-  )
+  if (isStaticAssetRequest(event.request)) {
+    event.respondWith(handleStaticAsset(event.request))
+  }
 })
