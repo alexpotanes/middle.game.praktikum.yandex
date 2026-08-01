@@ -1,7 +1,6 @@
 import {
-  guestNavigationRoutes,
-  privateNavigationRoutes,
-  publicNavigationRoutes,
+  authorizedNavigationRoutes,
+  unauthorizedNavigationRoutes,
 } from './constants'
 import {
   Inner,
@@ -19,8 +18,8 @@ export const Header = () => {
   const hasAuth = useSelector(selectIsAuthenticated)
 
   const navigationRoutes = hasAuth
-    ? [...publicNavigationRoutes, ...privateNavigationRoutes]
-    : [...publicNavigationRoutes, ...guestNavigationRoutes]
+    ? authorizedNavigationRoutes
+    : unauthorizedNavigationRoutes
 
   return (
     <Wrapper>
