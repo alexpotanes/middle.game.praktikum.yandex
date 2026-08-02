@@ -10,6 +10,10 @@ jest.mock('../components/button', () => ({
   ),
 }))
 
+jest.mock('../hooks/usePage', () => ({
+  usePage: jest.fn(),
+}))
+
 import { reducer, RootState } from '../store'
 import { GameState } from '../slices/gameSlice'
 import { GamePage } from './GamePage'
