@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from '../store'
 import { selectUser } from '../slices/userSlice'
 import { logoutThunk } from '../thunks/authThunks'
+import { Header } from '../components/Header'
 import { SectionTitle } from '../components/SectionTitle'
 import { Flourish } from '../components/Flourish'
 import { usePage } from '../hooks/usePage'
@@ -42,7 +43,6 @@ import {
   Section,
   Title,
 } from './Main.styles'
-import { Header } from '../components/Header'
 
 const screenshots = [
   {

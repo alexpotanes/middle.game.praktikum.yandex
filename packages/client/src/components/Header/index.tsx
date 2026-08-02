@@ -1,9 +1,10 @@
 import {
-  guestNavigationRoutes,
-  privateNavigationRoutes,
-  publicNavigationRoutes,
+  authorizedNavigationRoutes,
+  unauthorizedNavigationRoutes,
 } from './constants'
+import { FullscreenButton } from './FullscreenButton'
 import {
+  Actions,
   Inner,
   Logo,
   LogoBadge,
@@ -19,8 +20,8 @@ export const Header = () => {
   const hasAuth = useSelector(selectIsAuthenticated)
 
   const navigationRoutes = hasAuth
-    ? [...publicNavigationRoutes, ...privateNavigationRoutes]
-    : [...publicNavigationRoutes, ...guestNavigationRoutes]
+    ? authorizedNavigationRoutes
+    : unauthorizedNavigationRoutes
 
   return (
     <Wrapper>
@@ -29,17 +30,20 @@ export const Header = () => {
           <LogoBadge>WC</LogoBadge>
           War Chest
         </Logo>
-        <Nav>
-          <NavList>
-            {navigationRoutes.map(({ path, navTitle }) => (
-              <li key={path}>
-                <NavItem to={path} end={path === '/'}>
-                  {navTitle}
-                </NavItem>
-              </li>
-            ))}
-          </NavList>
-        </Nav>
+        <Actions>
+          <Nav>
+            <NavList>
+              {navigationRoutes.map(({ path, navTitle }) => (
+                <li key={path}>
+                  <NavItem to={path} end={path === '/'}>
+                    {navTitle}
+                  </NavItem>
+                </li>
+              ))}
+            </NavList>
+          </Nav>
+          <FullscreenButton />
+        </Actions>
       </Inner>
     </Wrapper>
   )

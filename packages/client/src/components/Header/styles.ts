@@ -48,6 +48,14 @@ export const LogoBadge = styled.span`
 
 export const Nav = styled.nav``
 
+export const Actions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+`
+
 export const NavList = styled.ul`
   display: flex;
   align-items: center;
@@ -77,5 +85,35 @@ export const NavItem = styled(NavLink)`
   &.active {
     background: rgba(255, 255, 255, 0.16);
     color: ${colors.onHeader};
+  }
+`
+
+export const FullscreenToggle = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 128px;
+  min-height: 36px;
+  padding: 8px 14px;
+  border: 1px solid rgba(232, 200, 119, 0.7);
+  border-radius: 8px;
+  background: rgba(124, 38, 38, 0.28);
+  color: ${colors.onHeader};
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(124, 38, 38, 0.48);
+    border-color: ${colors.goldLight};
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.55;
   }
 `
