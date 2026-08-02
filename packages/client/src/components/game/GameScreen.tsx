@@ -16,7 +16,7 @@ interface GameScreenProps {
   matchState: MatchState
   you: PlayerIndex
   error: string | null
-  canvasRef: RefObject<HTMLCanvasElement | null>
+  canvasRef: RefObject<HTMLCanvasElement>
   onResign: () => void
 }
 

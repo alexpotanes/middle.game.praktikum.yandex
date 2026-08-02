@@ -20,10 +20,13 @@ export interface GameClientEvents {
 }
 
 export class GameClient {
+  private static readonly RECONNECT_DELAY_MS = 250
+
   private socket: WebSocket | null = null
   private url: string | null = null
   private seq = 0
   private readonly openQueue: Array<() => void> = []
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null
 
   constructor(private readonly events: GameClientEvents) {}
 
@@ -57,6 +60,10 @@ export class GameClient {
   disconnect(): void {
     this.url = null
     this.openQueue.length = 0
+    if (this.reconnectTimer !== null) {
+      clearTimeout(this.reconnectTimer)
+      this.reconnectTimer = null
+    }
     this.socket?.close()
     this.socket = null
   }
@@ -71,19 +78,40 @@ export class GameClient {
     const socket = new WebSocket(this.url)
     this.socket = socket
     socket.onopen = () => {
+      if (this.socket !== socket) {
+        return
+      }
       const pending = this.openQueue.splice(0)
       for (const fn of pending) {
         fn()
       }
     }
-    socket.onmessage = event => this.handleMessage(event.data as string)
+    socket.onmessage = event => {
+      if (this.socket !== socket) {
+        return
+      }
+      this.handleMessage(event.data as string)
+    }
     socket.onclose = () => {
+      if (this.socket !== socket) {
+        return
+      }
       this.socket = null
       this.events.onDisconnect()
       if (this.openQueue.length > 0) {
-        this.openSocket()
+        this.scheduleReconnect()
       }
     }
+  }
+
+  private scheduleReconnect(): void {
+    if (this.reconnectTimer !== null) {
+      return
+    }
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null
+      this.openSocket()
+    }, GameClient.RECONNECT_DELAY_MS)
   }
 
   private whenOpen(fn: () => void): void {

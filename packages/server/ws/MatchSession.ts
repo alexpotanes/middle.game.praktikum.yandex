@@ -52,6 +52,7 @@ export class MatchSession {
     }
     const playerIndex = this.playerIndexOf(socket)
     if (playerIndex === null) {
+      this.rejectInvalidSocket(socket, null)
       return
     }
     const result = applyDraftPick(this.draft, playerIndex, unit)
@@ -94,6 +95,7 @@ export class MatchSession {
     }
     const playerIndex = this.playerIndexOf(socket)
     if (playerIndex === null) {
+      this.rejectInvalidSocket(socket, seq)
       return
     }
     const result = applyAction(this.state, playerIndex, action)
@@ -132,6 +134,16 @@ export class MatchSession {
       return
     }
     this.finish(playerIndex === 0 ? 1 : 0, 'disconnect')
+  }
+
+  private rejectInvalidSocket(socket: WebSocket, seq: number | null): void {
+    this.send(socket, {
+      type: 'match.error',
+      seq,
+      code: 'INVALID_SESSION',
+      message: 'Socket not in this match',
+    })
+    socket.close(1008, 'Invalid session')
   }
 
   private broadcastDraft(): void {
