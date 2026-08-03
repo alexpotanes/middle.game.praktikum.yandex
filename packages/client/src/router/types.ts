@@ -1,6 +1,10 @@
-import type { RouteObject } from 'react-router-dom'
+import type { Location, RouteObject } from 'react-router-dom'
 
 import type { AppDispatch, RootState } from '../store'
+
+export interface FromLocationState {
+  from?: Location
+}
 
 export type PageInitContext = {
   clientToken?: string
