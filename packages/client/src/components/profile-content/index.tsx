@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { ProfileHero } from '../profile-hero'
 import { PasswordForm } from '../password-form'
 import { ProfileDetailsForm } from '../profile-details-form'
-import { selectAuthStatus } from '../../slices/authSlice'
-import { STATUS } from '../../slices/constants'
+import { useAuth } from '../../hooks/useAuth'
 import {
   selectUser,
   selectUserAvatar,
@@ -26,8 +25,7 @@ export const ProfileContent = () => {
   const displayName = useSelector(selectUserDisplayName)
   const login = useSelector(selectUserLogin)
   const fullName = useSelector(selectUserFullName)
-  const authStatus = useSelector(selectAuthStatus)
-  const isUserLoading = authStatus === STATUS.LOADING
+  const { isLoading: isUserLoading } = useAuth()
 
   const handleLogout = async () => {
     setIsLogoutSubmitting(true)

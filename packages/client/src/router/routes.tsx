@@ -6,8 +6,9 @@ import { initLeaderboardPage, LeaderboardPage } from '../pages/LeaderboardPage'
 import { initForumPage, ForumPage } from '../pages/ForumPage'
 import { ForumTopicPage, initForumTopicPage } from '../pages/ForumTopicPage'
 import type { AppRoute } from './types'
+import { withAuth } from '../hocs/withAuth'
+import { withGuest } from '../hocs/withGuest'
 import { ErrorBoundaryFallback } from '../components/error-boundary'
-import { RequireAuth } from './RequireAuth'
 import { SignIn, initSignInPage } from '../pages/SignIn'
 import { SignUp, initSignUpPage } from '../pages/SignUp'
 import { ROUTES } from './constants'
@@ -29,45 +30,54 @@ const publicRoutes: AppRoute[] = [
   },
 ]
 
+const GuestSignIn = withGuest(SignIn)
+const GuestSignUp = withGuest(SignUp)
+
+const AuthProfilePage = withAuth(ProfilePage)
+const AuthGamePage = withAuth(GamePage)
+const AuthLeaderboardPage = withAuth(LeaderboardPage)
+const AuthForumPage = withAuth(ForumPage)
+const AuthForumTopicPage = withAuth(ForumTopicPage)
+
 // Доступны только неавторизованным пользователям
 const guestRoutes: AppRoute[] = [
   {
     path: ROUTES.LOGIN,
-    element: <SignIn />,
+    element: <GuestSignIn />,
     fetchData: initSignInPage,
   },
   {
     path: ROUTES.REGISTRATION,
-    element: <SignUp />,
+    element: <GuestSignUp />,
     fetchData: initSignUpPage,
   },
 ]
 
-// Доступны только авторизованным пользователям
+// Доступны только авторизованным пользователям (проверка через withAuth HOC + useAuth)
 const privateRoutes: AppRoute[] = [
   {
     path: '/profile',
-    element: <ProfilePage />,
+    element: <AuthProfilePage />,
     fetchData: initProfilePage,
   },
   {
     path: '/game',
-    element: <GamePage />,
+    element: <AuthGamePage />,
     fetchData: initGamePage,
   },
   {
     path: '/leaderboard',
-    element: <LeaderboardPage />,
+    element: <AuthLeaderboardPage />,
     fetchData: initLeaderboardPage,
   },
   {
     path: '/forum',
-    element: <ForumPage />,
+    element: <AuthForumPage />,
     fetchData: initForumPage,
   },
   {
     path: '/forum/:topicId',
-    element: <ForumTopicPage />,
+    element: <AuthForumTopicPage />,
     fetchData: initForumTopicPage,
   },
 ]
@@ -91,11 +101,6 @@ const errorRoutes: AppRoute[] = [
   },
 ]
 
-const withPrivateGuard = (route: AppRoute): AppRoute => ({
-  ...route,
-  element: <RequireAuth>{route.element as JSX.Element}</RequireAuth>,
-})
-
 const withErrorElement = (route: AppRoute): AppRoute => ({
   ...route,
   errorElement: <ErrorBoundaryFallback />,
@@ -105,6 +110,6 @@ export const routes: AppRoute[] = [
   ...publicRoutes,
   ...guestRoutes,
   ...errorRoutes,
-  ...privateRoutes.map(withPrivateGuard),
+  ...privateRoutes,
   notFoundRoute,
 ].map(withErrorElement)
