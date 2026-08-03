@@ -13,13 +13,12 @@ import {
   NavList,
   Wrapper,
 } from './styles'
-import { useSelector } from '../../store'
-import { selectIsAuthenticated } from '../../slices/authSlice'
+import { useAuth } from '../../hooks/useAuth'
 
 export const Header = () => {
-  const hasAuth = useSelector(selectIsAuthenticated)
+  const { isAuthenticated } = useAuth()
 
-  const navigationRoutes = hasAuth
+  const navigationRoutes = isAuthenticated
     ? authorizedNavigationRoutes
     : unauthorizedNavigationRoutes
 

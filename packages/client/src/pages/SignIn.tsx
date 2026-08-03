@@ -1,18 +1,11 @@
 import { Helmet } from 'react-helmet'
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-import { useDispatch, useSelector } from '../store'
-import {
-  selectAuthError,
-  selectAuthStatus,
-  selectIsAuthenticated,
-  selectSessionChecked,
-} from '../slices/authSlice'
+import { useDispatch } from '../store'
 import { loginThunk } from '../thunks/authThunks'
-import { STATUS } from '../slices/constants'
-import { Loader } from '../components/Loader'
-import type { FromLocationState } from '../router/RequireAuth'
+import type { FromLocationState } from '../router/types'
 import { ROUTES } from '../router/constants'
+import { useAuth } from '../hooks/useAuth'
 import { useForm } from '../hooks/useForm'
 import {
   ErrorText,
@@ -31,10 +24,7 @@ export const SignIn = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  const error = useSelector(selectAuthError)
-  const status = useSelector(selectAuthStatus)
-  const sessionChecked = useSelector(selectSessionChecked)
-  const isAuthenticated = useSelector(selectIsAuthenticated)
+  const { error, isLoading } = useAuth()
 
   const { values, errors, isValid, handleChange, handleBlur, handleSubmit } =
     useForm({
@@ -45,15 +35,6 @@ export const SignIn = () => {
   const from =
     (location.state as FromLocationState | null)?.from?.pathname ?? '/'
 
-  if (!sessionChecked) {
-    return <Loader />
-  }
-
-  if (isAuthenticated) {
-    return <Navigate to={from} replace />
-  }
-
-  const isLoading = status === STATUS.LOADING
   const isSubmitDisabled = isLoading || !isValid
 
   const onSubmit = handleSubmit(async data => {
