@@ -1,0 +1,45 @@
+.content {
+  display: flex;
+  min-height: 70vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  text-align: center;
+}
+
+.code {
+  margin: 0 0 12px;
+  color: #383838;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.title {
+  margin: 0 0 12px;
+  color: #564844;
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+.description {
+  max-width: 520px;
+  margin: 0 0 28px;
+  color: #564844;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.homeLink {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 20px;
+  background: #383838;
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+}

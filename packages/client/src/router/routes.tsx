@@ -6,6 +6,7 @@ import { initLeaderboardPage, LeaderboardPage } from '../pages/LeaderboardPage'
 import { initForumPage, ForumPage } from '../pages/ForumPage'
 import { ForumTopicPage, initForumTopicPage } from '../pages/ForumTopicPage'
 import type { AppRoute } from './types'
+import { ErrorBoundaryFallback } from '../components/error-boundary'
 import { RequireAuth } from './RequireAuth'
 import { SignIn, initSignInPage } from '../pages/SignIn'
 import { SignUp, initSignUpPage } from '../pages/SignUp'
@@ -95,10 +96,15 @@ const withPrivateGuard = (route: AppRoute): AppRoute => ({
   element: <RequireAuth>{route.element as JSX.Element}</RequireAuth>,
 })
 
+const withErrorElement = (route: AppRoute): AppRoute => ({
+  ...route,
+  errorElement: <ErrorBoundaryFallback />,
+})
+
 export const routes: AppRoute[] = [
   ...publicRoutes,
   ...guestRoutes,
   ...errorRoutes,
   ...privateRoutes.map(withPrivateGuard),
   notFoundRoute,
-]
+].map(withErrorElement)
