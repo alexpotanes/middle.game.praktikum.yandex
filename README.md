@@ -70,6 +70,33 @@
 - `hex` — гексагональная сетка: axial-координаты, `HexGrid` с hit-test'ом клика, соседями и дистанцией (основа поля War Chest)
 - `animation` — `Animator` (спрайтовые клипы) и `Tween`/`TweenManager` (плавные перемещения)
 
+### Архитектура игры
+
+Партия 1 на 1 по WebSocket, сервер — источник истины. Три пакета:
+
+- `packages/shared` (`@warchest/shared`) — общие правила: типы состояния, редьюсер ходов, тактики юнитов, драфт, протокол сообщений. Используется и сервером (валидация и применение ходов), и клиентом (подсветка доступных действий)
+- `packages/server/ws` — `ws`-сервер на `/ws`: `MatchmakingQueue` (очередь 1v1), `MatchSession` (сессия партии: драфт → игра → финиш, обработка сдачи и дисконнекта)
+- `packages/client/src/game` — движок + `GameClient` (соединение, очередь сообщений до reconnect) + `scenes/WarChestScene` (вся игровая отрисовка на canvas)
+
+#### Как проходит партия
+
+1. «Найти игру» → `queue.join`, сервер матчит двоих и создаёт `MatchSession`
+2. Драфт: общий пул из 15 юнитов, игроки по очереди выбирают по 4 юнита (взятое недоступно другому) — сообщения `draft.state` / `draft.pick`
+3. После 8 пиков сервер собирает `MatchState` из выбранных юнитов (`createInitialMatch`) и шлёт `match.start`
+4. Ходы: клиент шлёт `match.action`, сервер прогоняет `applyAction` из shared и рассылает новое состояние `match.state`. Раунд: 3 монеты из мешка в руку → использованные в сброс → мешок пуст — сброс перемешивается
+5. Победа: все 6 маркеров контроля на локациях, уничтожение всех фишек противника, сдача или дисконнект → `match.end`
+
+#### Правила и тактики (shared)
+
+- `reducer.ts` — `applyAction`/`validateAction`: все действия (deploy, bolster, move, attack, control, recruit, pass, claimInitiative, tactic) с проверками и кодами ошибок
+- `tactics/` — класс на каждую тактику (15 юнитов): пассивные хуки (`moveRange`, `deployAnywhere`, `protectsAdjacentAllies`, `counterattacks`, `onAttackKilled`) опрашивает редьюсер, активные (`activeTargets`/`validateActive`/`applyActive`) тратят монету из руки
+- `hex.ts` — axial-геометрия (соседи, дистанция, прямые линии), `setup.ts` — сборка стартового состояния, `draft.ts` — правила драфта
+
+#### Игровой UI (клиент)
+
+- `WarChestScene` — поле, руки, резерв, мешок/сброс. Цветовая подсветка целей: жёлтое — ход, красное — атака, фиолетовое — тактика; кнопки в клетке (З — захват, А — атака, Т — тактика). Модалка «колода» с карточками юнитов
+- Экраны — React-компоненты в `src/components/game/`: `IdleScreen`, `SearchingScreen`, `DraftScreen` , `GameScreen` (HUD), `EndScreen`. Переключение по статусу в `matchSlice` (Redux)
+
 ### Как добавить зависимости?
 
 В этом проекте используется `monorepo` на основе [`lerna`](https://github.com/lerna/lerna)
