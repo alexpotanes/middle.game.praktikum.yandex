@@ -17,6 +17,7 @@ import {
   createUrl,
 } from './entry-server.utils'
 import App from './App'
+import { ErrorBoundaryFallback } from './components/error-boundary'
 import { reducer } from './store'
 import { routes } from './router/routes'
 import './index.css'
@@ -64,14 +65,29 @@ export const render = async (req: ExpressRequest) => {
   const router = createStaticRouter(dataRoutes, context)
   const sheet = new ServerStyleSheet()
   try {
-    const html = ReactDOM.renderToString(
-      sheet.collectStyles(
-        <App store={store}>
-          <GlobalStyle />
-          <StaticRouterProvider router={router} context={context} />
-        </App>
+    // renderToString не поддерживает ErrorBoundary, поэтому при ошибке
+    // рендера отдаём страницу ошибки — на клиенте её покажет ErrorBoundary
+    let html: string
+    try {
+      html = ReactDOM.renderToString(
+        sheet.collectStyles(
+          <App store={store}>
+            <GlobalStyle />
+            <StaticRouterProvider router={router} context={context} />
+          </App>
+        )
       )
-    )
+    } catch (e) {
+      console.error('Ошибка SSR-рендера', e)
+      html = ReactDOM.renderToString(
+        sheet.collectStyles(
+          <App store={store}>
+            <GlobalStyle />
+            <ErrorBoundaryFallback />
+          </App>
+        )
+      )
+    }
     const styleTags = sheet.getStyleTags()
 
     const helmet = Helmet.renderStatic()

@@ -8,6 +8,7 @@ import { ForumTopicPage, initForumTopicPage } from '../pages/ForumTopicPage'
 import type { AppRoute } from './types'
 import { withAuth } from '../hocs/withAuth'
 import { withGuest } from '../hocs/withGuest'
+import { ErrorBoundaryFallback } from '../components/error-boundary'
 import { SignIn, initSignInPage } from '../pages/SignIn'
 import { SignUp, initSignUpPage } from '../pages/SignUp'
 import { ROUTES } from './constants'
@@ -100,10 +101,15 @@ const errorRoutes: AppRoute[] = [
   },
 ]
 
+const withErrorElement = (route: AppRoute): AppRoute => ({
+  ...route,
+  errorElement: <ErrorBoundaryFallback />,
+})
+
 export const routes: AppRoute[] = [
   ...publicRoutes,
   ...guestRoutes,
   ...errorRoutes,
   ...privateRoutes,
   notFoundRoute,
-]
+].map(withErrorElement)
