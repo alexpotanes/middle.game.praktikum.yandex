@@ -1,23 +1,25 @@
 import { Helmet } from 'react-helmet'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 import { Layout } from '../components/Layout'
+import { ForumTopic } from '../components/forum-topic'
+import { getForumTopic } from '../mock/forum'
 import { usePage } from '../hooks/usePage'
 
 export const ForumTopicPage = () => {
-  const { topicId } = useParams()
-
+  const { topicId = '' } = useParams()
   usePage({ initPage: initForumTopicPage })
+
+  const topic = getForumTopic(topicId)
 
   return (
     <Layout>
       <Helmet>
         <meta charSet="utf-8" />
-        <title>Топик форума</title>
+        <title>{topic ? topic.title : 'Топик не найден'}</title>
         <meta name="description" content="Страница топика форума" />
       </Helmet>
-      <h1>Топик форума</h1>
-      <p>Топик: {topicId}</p>
+      <ForumTopic topicId={topicId} />
     </Layout>
   )
 }

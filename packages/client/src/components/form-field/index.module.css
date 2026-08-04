@@ -4,6 +4,10 @@
   gap: 8px;
 }
 
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
 .label {
   color: #564844;
   font-size: 14px;

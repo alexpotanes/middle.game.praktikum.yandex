@@ -44,10 +44,6 @@ export const privateNavigationRoutes: NavigationRoute[] = [
     path: '/forum',
     navTitle: 'Форум',
   },
-  {
-    path: '/forum/example-topic',
-    navTitle: 'Топик форума',
-  },
 ]
 
 export const authorizedNavigationRoutes: NavigationRoute[] = [
