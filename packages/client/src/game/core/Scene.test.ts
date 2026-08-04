@@ -2,8 +2,10 @@ import { GameObject } from './GameObject'
 import { Scene } from './Scene'
 import type { InputManager } from '../input/InputManager'
 import type { Rect } from '../math/Rect'
-import type { Renderer } from '../render/Renderer'
+import { Renderer } from '../render/Renderer'
 
+// Scene объявлен abstract, хотя абстрактных методов у него нет, поэтому
+// для инстанцирования в тестах нужен минимальный подкласс.
 class TestScene extends Scene {}
 
 class FakeGameObject extends GameObject {
@@ -15,6 +17,11 @@ class FakeGameObject extends GameObject {
   }
 }
 
+const createFakeRenderer = (): Renderer => {
+  const ctx: Partial<CanvasRenderingContext2D> = {}
+  return new Renderer(ctx as CanvasRenderingContext2D, 100, 100)
+}
+
 describe('Scene', () => {
   it('adds objects and returns the same instance', () => {
     const scene = new TestScene()
@@ -23,24 +30,47 @@ describe('Scene', () => {
     expect(scene.add(object)).toBe(object)
   })
 
-  it('keeps objects sorted by zIndex after adding', () => {
+  it('keeps objects sorted by zIndex, including insertion between existing objects', () => {
     const scene = new TestScene()
-    const back = new FakeGameObject()
-    back.zIndex = 5
-    const front = new FakeGameObject()
-    front.zIndex = 1
+    const first = new FakeGameObject()
+    first.zIndex = 1
+    const second = new FakeGameObject()
+    second.zIndex = 5
+    const third = new FakeGameObject()
+    third.zIndex = 3
 
-    scene.add(back)
-    scene.add(front)
+    scene.add(first)
+    scene.add(second)
+    scene.add(third)
 
-    // front (zIndex 1) should render before back (zIndex 5).
     const renderOrder: FakeGameObject[] = []
-    front.render.mockImplementation(() => renderOrder.push(front))
-    back.render.mockImplementation(() => renderOrder.push(back))
+    for (const object of [first, second, third]) {
+      object.render.mockImplementation(() => renderOrder.push(object))
+    }
 
-    scene.render({} as Renderer)
+    scene.render(createFakeRenderer())
 
-    expect(renderOrder).toEqual([front, back])
+    expect(renderOrder).toEqual([first, third, second])
+  })
+
+  it('preserves insertion order for objects with equal zIndex', () => {
+    const scene = new TestScene()
+    const a = new FakeGameObject()
+    const b = new FakeGameObject()
+    const c = new FakeGameObject()
+
+    scene.add(a)
+    scene.add(b)
+    scene.add(c)
+
+    const renderOrder: FakeGameObject[] = []
+    for (const object of [a, b, c]) {
+      object.render.mockImplementation(() => renderOrder.push(object))
+    }
+
+    scene.render(createFakeRenderer())
+
+    expect(renderOrder).toEqual([a, b, c])
   })
 
   it('removes an object from the scene', () => {
@@ -60,7 +90,7 @@ describe('Scene', () => {
     scene.add(object)
 
     scene.clearObjects()
-    scene.render({} as Renderer)
+    scene.render(createFakeRenderer())
 
     expect(object.render).not.toHaveBeenCalled()
   })
@@ -76,6 +106,7 @@ describe('Scene', () => {
     const input = {} as InputManager
     scene.update(0.5, input)
 
+    expect(active.update).toHaveBeenCalledTimes(1)
     expect(active.update).toHaveBeenCalledWith(0.5, input)
     expect(inactive.update).not.toHaveBeenCalled()
   })
@@ -88,9 +119,10 @@ describe('Scene', () => {
     scene.add(visible)
     scene.add(hidden)
 
-    const renderer = {} as Renderer
+    const renderer = createFakeRenderer()
     scene.render(renderer)
 
+    expect(visible.render).toHaveBeenCalledTimes(1)
     expect(visible.render).toHaveBeenCalledWith(renderer)
     expect(hidden.render).not.toHaveBeenCalled()
   })

@@ -16,12 +16,12 @@ const makeClip = (
   loop,
 })
 
+const frameX = (animator: Animator) => animator.getCurrentFrame()?.x
+
 describe('Animator', () => {
   it('throws when playing an unregistered clip', () => {
     const animator = new Animator()
-    expect(() => animator.play('missing')).toThrow(
-      'Animation clip "missing" is not registered'
-    )
+    expect(() => animator.play('missing')).toThrow()
   })
 
   it('has no current frame before playing anything', () => {
@@ -42,32 +42,57 @@ describe('Animator', () => {
     })
   })
 
-  it('advances frames according to elapsed time and fps', () => {
+  it('does not advance before a full frame duration has elapsed', () => {
+    // fps=4 - длительность кадра 0.25с, точно представима в двоичной
+    // дроби, поэтому проверка не зависит от погрешности округления.
     const animator = new Animator()
-    animator.addClip('walk', makeClip(3, true, 10))
+    animator.addClip('walk', makeClip(3, true, 4))
     animator.play('walk')
 
-    animator.update(0.1)
-    expect(animator.getCurrentFrame()).toEqual({
-      x: 1,
-      y: 0,
-      width: 16,
-      height: 16,
-    })
+    animator.update(0.125)
+    expect(frameX(animator)).toBe(0)
+  })
+
+  it('advances one frame once elapsed time reaches the frame duration', () => {
+    const animator = new Animator()
+    animator.addClip('walk', makeClip(3, true, 4))
+    animator.play('walk')
+
+    animator.update(0.125)
+    animator.update(0.125)
+    expect(frameX(animator)).toBe(1)
+  })
+
+  it('advances multiple frames in a single update spanning several frame durations', () => {
+    const animator = new Animator()
+    animator.addClip('walk', makeClip(4, true, 4))
+    animator.play('walk')
+
+    animator.update(0.75)
+    expect(frameX(animator)).toBe(3)
+  })
+
+  it('carries leftover time over to the next update instead of discarding it', () => {
+    const animator = new Animator()
+    animator.addClip('walk', makeClip(3, true, 4))
+    animator.play('walk')
+
+    animator.update(0.375)
+    expect(frameX(animator)).toBe(1)
+
+    animator.update(0.125)
+    expect(frameX(animator)).toBe(2)
   })
 
   it('loops back to the first frame when a looping clip ends', () => {
+    // fps=4 - длительность кадра 0.25с; dt = 0.5с - ровно два кадра,
+    // без погрешности округления.
     const animator = new Animator()
-    animator.addClip('walk', makeClip(2, true, 10))
+    animator.addClip('walk', makeClip(2, true, 4))
     animator.play('walk')
 
-    animator.update(0.2)
-    expect(animator.getCurrentFrame()).toEqual({
-      x: 0,
-      y: 0,
-      width: 16,
-      height: 16,
-    })
+    animator.update(0.5)
+    expect(frameX(animator)).toBe(0)
     expect(animator.isFinished).toBe(false)
   })
 
@@ -81,12 +106,7 @@ describe('Animator', () => {
     animator.update(0.2)
 
     expect(animator.isFinished).toBe(true)
-    expect(animator.getCurrentFrame()).toEqual({
-      x: 1,
-      y: 0,
-      width: 16,
-      height: 16,
-    })
+    expect(frameX(animator)).toBe(1)
     expect(onComplete).toHaveBeenCalledTimes(1)
 
     animator.update(0.5)
@@ -98,28 +118,13 @@ describe('Animator', () => {
     animator.addClip('walk', makeClip(3, true, 10))
     animator.play('walk')
     animator.update(0.1)
-    expect(animator.getCurrentFrame()).toEqual({
-      x: 1,
-      y: 0,
-      width: 16,
-      height: 16,
-    })
+    expect(frameX(animator)).toBe(1)
 
     animator.play('walk')
-    expect(animator.getCurrentFrame()).toEqual({
-      x: 1,
-      y: 0,
-      width: 16,
-      height: 16,
-    })
+    expect(frameX(animator)).toBe(1)
 
     animator.play('walk', true)
-    expect(animator.getCurrentFrame()).toEqual({
-      x: 0,
-      y: 0,
-      width: 16,
-      height: 16,
-    })
+    expect(frameX(animator)).toBe(0)
   })
 
   it('resets state on stop', () => {

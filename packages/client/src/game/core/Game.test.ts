@@ -2,8 +2,8 @@ import { Game } from './Game'
 import { Scene } from './Scene'
 import { InputManager } from '../input/InputManager'
 
-const createMockContext = () =>
-  ({
+const createMockContext = () => {
+  const context: Partial<CanvasRenderingContext2D> = {
     scale: jest.fn(),
     fillRect: jest.fn(),
     clearRect: jest.fn(),
@@ -23,7 +23,9 @@ const createMockContext = () =>
     font: '',
     textAlign: 'left',
     textBaseline: 'alphabetic',
-  }) as unknown as CanvasRenderingContext2D
+  }
+  return context as CanvasRenderingContext2D
+}
 
 class TestScene extends Scene {
   onEnter = jest.fn()
@@ -51,25 +53,29 @@ describe('Game', () => {
   })
 
   it('sizes the canvas using the given options and device pixel ratio', () => {
+    const originalDpr = window.devicePixelRatio
     Object.defineProperty(window, 'devicePixelRatio', {
       value: 2,
       configurable: true,
     })
-    const canvas = createCanvas()
 
-    const game = new Game(canvas, { width: 400, height: 300 })
+    try {
+      const canvas = createCanvas()
 
-    expect(canvas.width).toBe(800)
-    expect(canvas.height).toBe(600)
-    expect(canvas.style.width).toBe('400px')
-    expect(canvas.style.height).toBe('300px')
-    expect(game.renderer.width).toBe(400)
-    expect(game.renderer.height).toBe(300)
+      const game = new Game(canvas, { width: 400, height: 300 })
 
-    Object.defineProperty(window, 'devicePixelRatio', {
-      value: 1,
-      configurable: true,
-    })
+      expect(canvas.width).toBe(800)
+      expect(canvas.height).toBe(600)
+      expect(canvas.style.width).toBe('400px')
+      expect(canvas.style.height).toBe('300px')
+      expect(game.renderer.width).toBe(400)
+      expect(game.renderer.height).toBe(300)
+    } finally {
+      Object.defineProperty(window, 'devicePixelRatio', {
+        value: originalDpr,
+        configurable: true,
+      })
+    }
   })
 
   it('falls back to default dimensions when none are provided', () => {
@@ -81,12 +87,12 @@ describe('Game', () => {
   })
 
   it('attaches its input manager on construction', () => {
-    const attachSpy = jest.spyOn(InputManager.prototype, 'attach')
     const canvas = createCanvas()
+    const game = new Game(canvas)
 
-    new Game(canvas)
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyA' }))
 
-    expect(attachSpy).toHaveBeenCalledTimes(1)
+    expect(game.input.isKeyDown('KeyA')).toBe(true)
   })
 
   it('switches scenes, exiting the previous one and entering the next', () => {
@@ -104,14 +110,22 @@ describe('Game', () => {
   })
 
   it('destroy stops the loop, detaches input, and exits the active scene', () => {
+    jest.spyOn(window, 'requestAnimationFrame').mockReturnValue(1)
+    const cancelSpy = jest
+      .spyOn(window, 'cancelAnimationFrame')
+      .mockImplementation(() => {
+        /* noop */
+      })
     const detachSpy = jest.spyOn(InputManager.prototype, 'detach')
     const canvas = createCanvas()
     const game = new Game(canvas)
     const scene = new TestScene()
     game.setScene(scene)
 
+    game.start()
     game.destroy()
 
+    expect(cancelSpy).toHaveBeenCalledWith(1)
     expect(detachSpy).toHaveBeenCalledTimes(1)
     expect(scene.onExit).toHaveBeenCalledTimes(1)
   })

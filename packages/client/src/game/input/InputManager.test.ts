@@ -76,6 +76,18 @@ describe('InputManager', () => {
       expect(event.preventDefault).not.toHaveBeenCalled()
     })
 
+    it('does not prevent default on keyup, even for captured keys', () => {
+      const event = dispatchKey('keyup', 'ArrowUp')
+      expect(event.preventDefault).not.toHaveBeenCalled()
+    })
+
+    it('tracks keys by code regardless of the key value', () => {
+      const event = new KeyboardEvent('keydown', { code: 'KeyA', key: 'q' })
+      window.dispatchEvent(event)
+
+      expect(input.isKeyDown('KeyA')).toBe(true)
+    })
+
     it('clears just-pressed and just-released state on endFrame', () => {
       dispatchKey('keydown', 'KeyA')
       dispatchKey('keyup', 'KeyA')
@@ -94,6 +106,26 @@ describe('InputManager', () => {
       )
 
       expect(input.getMouse().position).toEqual({ x: 100, y: 50 })
+    })
+
+    it('accounts for canvas offset and scale when converting coordinates', () => {
+      jest.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
+        left: 10,
+        top: 20,
+        right: 410,
+        bottom: 220,
+        width: 400,
+        height: 200,
+        x: 10,
+        y: 20,
+        toJSON: () => ({}),
+      })
+
+      canvas.dispatchEvent(
+        new MouseEvent('mousemove', { clientX: 110, clientY: 70 })
+      )
+
+      expect(input.getMouse().position).toEqual({ x: 50, y: 25 })
     })
 
     it('marks the mouse as down and just-pressed on left mousedown', () => {

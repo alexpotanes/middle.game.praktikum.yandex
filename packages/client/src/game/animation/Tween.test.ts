@@ -13,6 +13,18 @@ describe('Easings', () => {
     expect(Easings.easeOutCubic(0)).toBe(0)
     expect(Easings.easeOutCubic(1)).toBe(1)
   })
+
+  it('easeInOutQuad follows the accelerate-then-decelerate quadratic curve', () => {
+    expect(Easings.easeInOutQuad(0.25)).toBe(0.125)
+    expect(Easings.easeInOutQuad(0.5)).toBe(0.5)
+    expect(Easings.easeInOutQuad(0.75)).toBe(0.875)
+  })
+
+  it('easeOutCubic follows the decelerating cubic curve', () => {
+    expect(Easings.easeOutCubic(0.25)).toBe(0.578125)
+    expect(Easings.easeOutCubic(0.5)).toBe(0.875)
+    expect(Easings.easeOutCubic(0.75)).toBe(0.984375)
+  })
 })
 
 describe('Tween', () => {
@@ -41,12 +53,24 @@ describe('Tween', () => {
     })
 
     tween.update(5)
+    expect(onUpdate).toHaveBeenCalledTimes(1)
     expect(onUpdate).toHaveBeenLastCalledWith(10)
     expect(onComplete).toHaveBeenCalledTimes(1)
 
     tween.update(1)
     expect(onUpdate).toHaveBeenCalledTimes(1)
     expect(onComplete).toHaveBeenCalledTimes(1)
+  })
+
+  it('clamps to the target value even when the delta overshoots the duration by orders of magnitude', () => {
+    const onUpdate = jest.fn()
+    const tween = new Tween({ from: 0, to: 10, duration: 1, onUpdate })
+
+    tween.update(1000)
+
+    expect(onUpdate).toHaveBeenCalledTimes(1)
+    expect(onUpdate).toHaveBeenLastCalledWith(10)
+    expect(tween.isFinished).toBe(true)
   })
 
   it('applies a custom easing function', () => {
@@ -56,7 +80,9 @@ describe('Tween', () => {
 
     tween.update(2)
 
+    expect(easing).toHaveBeenCalledTimes(1)
     expect(easing).toHaveBeenCalledWith(0.5)
+    expect(onUpdate).toHaveBeenCalledTimes(1)
     expect(onUpdate).toHaveBeenCalledWith(25)
   })
 })
