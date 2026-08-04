@@ -4,26 +4,20 @@ import { Link } from 'react-router-dom'
 import { Button } from '../button'
 import { Form } from '../form'
 import formFieldStyles from '../form-field/index.module.css'
-import {
-  createForumComment,
-  formatForumDate,
-  getForumTopic,
-} from '../../mock/forum'
-import { selectUserDisplayName, selectUserLogin } from '../../slices/userSlice'
+import { formatForumDate } from '../../mock/forum'
+import { selectForumAuthorName } from '../../slices/userSlice'
 import { useSelector } from '../../store'
 import styles from './index.module.css'
+import { useForumTopic } from './useForumTopic'
 
 type ForumTopicProps = {
   topicId: string
 }
 
 export const ForumTopic = ({ topicId }: ForumTopicProps) => {
-  const displayName = useSelector(selectUserDisplayName)
-  const login = useSelector(selectUserLogin)
-  const author = displayName || login || 'Аноним'
+  const author = useSelector(selectForumAuthorName)
 
-  const topic = getForumTopic(topicId)
-  const [comments, setComments] = useState(topic?.comments ?? [])
+  const { topic, addComment } = useForumTopic(topicId)
   const [message, setMessage] = useState('')
   const [error, setError] = useState<string | undefined>()
 
@@ -50,10 +44,9 @@ export const ForumTopic = ({ topicId }: ForumTopicProps) => {
       return
     }
 
-    const comment = createForumComment(topicId, { message: trimmed, author })
+    const comment = addComment({ message: trimmed, author })
     if (!comment) return
 
-    setComments(prev => [...prev, comment])
     setMessage('')
     setError(undefined)
   }
@@ -75,13 +68,13 @@ export const ForumTopic = ({ topicId }: ForumTopicProps) => {
 
       <section className={styles.comments}>
         <h2 className={styles.commentsTitle}>
-          Комментарии ({comments.length})
+          Комментарии ({topic.comments.length})
         </h2>
-        {comments.length === 0 ? (
+        {topic.comments.length === 0 ? (
           <p className={styles.empty}>Комментариев пока нет. Будьте первым!</p>
         ) : (
           <ul className={styles.commentList}>
-            {comments.map(comment => (
+            {topic.comments.map(comment => (
               <li key={comment.id} className={styles.comment}>
                 <div className={styles.commentMeta}>
                   <span className={styles.commentAuthor}>{comment.author}</span>
@@ -100,7 +93,8 @@ export const ForumTopic = ({ topicId }: ForumTopicProps) => {
         title="Добавить комментарий"
         onSubmit={handleSubmit}
         actions={<Button type="submit">Отправить</Button>}>
-        <div className={formFieldStyles.field} style={{ gridColumn: '1 / -1' }}>
+        <div
+          className={`${formFieldStyles.field} ${formFieldStyles.fieldWide}`}>
           <label className={formFieldStyles.label} htmlFor="comment-message">
             Комментарий
           </label>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 
 import { formatForumDate, type ForumTopic } from '../../mock/forum'
+import { getForumTopicPath } from '../../router/constants'
 import styles from './index.module.css'
 
 type ForumTopicListProps = {
@@ -20,7 +21,7 @@ export const ForumTopicList = ({ topics }: ForumTopicListProps) => {
     <ul className={styles.list}>
       {topics.map(topic => (
         <li key={topic.id}>
-          <Link className={styles.card} to={`/forum/${topic.id}`}>
+          <Link className={styles.card} to={getForumTopicPath(topic.id)}>
             <div className={styles.cardHeader}>
               <h2 className={styles.title}>{topic.title}</h2>
               <span className={styles.commentsCount}>
