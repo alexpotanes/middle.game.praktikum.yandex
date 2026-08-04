@@ -79,6 +79,34 @@ export const HeroButton = styled(Button)`
   }
 `
 
+export const AboutCard = styled.div`
+  position: relative;
+  margin: 24px 0 0;
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(86, 72, 68, 0.12);
+  border-left: 3px solid ${colors.gold};
+`
+
+export const AboutLabel = styled.span`
+  display: block;
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: ${colors.gold};
+`
+
+export const AboutText = styled.p`
+  margin: 0;
+  max-width: 42rem;
+  font-size: 15px;
+  line-height: 1.6;
+  color: ${colors.text};
+`
+
 export const TipsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

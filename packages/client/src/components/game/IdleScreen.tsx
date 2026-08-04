@@ -2,6 +2,9 @@ import { Flourish } from '../Flourish'
 import { Actions } from '../../pages/GamePage.styles'
 import screenshotBoard from '../../assets/screenshot-board.png'
 import {
+  AboutCard,
+  AboutLabel,
+  AboutText,
   Eyebrow,
   Hero,
   HeroButton,
@@ -74,6 +77,15 @@ export const IdleScreen = ({ onFind }: { onFind: () => void }) => (
         </Actions>
       </HeroContent>
     </Hero>
+
+    <AboutCard>
+      <AboutLabel>Об игре</AboutLabel>
+      <AboutText>
+        War Chest — это тактическая абстрактная игра с механикой bag-building
+        (построение мешка), где игроки выступают в роли средневековых
+        командиров, борющихся за контроль над тактическими точками на поле боя.
+      </AboutText>
+    </AboutCard>
 
     <Flourish />
 
