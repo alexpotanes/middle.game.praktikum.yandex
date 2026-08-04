@@ -1,5 +1,4 @@
 import { Helmet } from 'react-helmet'
-
 import { ErrorPageLayout } from '../components/error-layout'
 import { usePage } from '../hooks/usePage'
 

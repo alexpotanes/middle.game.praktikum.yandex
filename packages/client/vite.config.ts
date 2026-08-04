@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import dotenv from 'dotenv'
 import path from 'path'
+import { serviceWorkerManifestPlugin } from './plugins/serviceWorkerManifest'
 dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
 const clientPort = Number(process.env.CLIENT_PORT) || 3000
@@ -10,6 +11,11 @@ const clientPort = Number(process.env.CLIENT_PORT) || 3000
 export default defineConfig({
   server: {
     port: clientPort,
+  },
+  resolve: {
+    alias: {
+      '@warchest/shared': path.resolve(__dirname, '../shared/src/index.ts'),
+    },
   },
   define: {
     __EXTERNAL_SERVER_URL__: JSON.stringify(process.env.EXTERNAL_SERVER_URL),
@@ -31,5 +37,10 @@ export default defineConfig({
       'styled-components',
     ],
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    serviceWorkerManifestPlugin({
+      manifestPath: path.resolve(__dirname, 'dist/client/precache-manifest.js'),
+    }),
+  ],
 })
