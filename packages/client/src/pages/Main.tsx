@@ -207,10 +207,10 @@ export const MainPage = () => {
               </FeatureText>
             </FeatureCard>
             <FeatureCard>
-              <FeatureTitle>Игра на двоих и четверых</FeatureTitle>
+              <FeatureTitle>Дуэль один на один</FeatureTitle>
               <FeatureText>
-                Собирайте команду или сражайтесь один на один - правила War
-                Chest поддерживают оба формата.
+                Случайный подбор соперника и короткая партия - побеждает тот,
+                кто первым разместит все маркеры контроля.
               </FeatureText>
             </FeatureCard>
           </FeatureGrid>

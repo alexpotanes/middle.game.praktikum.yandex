@@ -6,9 +6,11 @@ import { router } from './router'
 import { store } from './store'
 import { GlobalStyle } from './styles/GlobalStyle'
 import { fetchCurrentUserThunk } from './thunks/authThunks'
+import { startServiceWorker } from './utils/serviceWorker'
 import './index.css'
 
 store.dispatch(fetchCurrentUserThunk())
+startServiceWorker()
 
 ReactDOM.hydrateRoot(
   document.getElementById('root') as HTMLElement,

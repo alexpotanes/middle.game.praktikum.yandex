@@ -45,3 +45,13 @@ export const privateNavigationRoutes: NavigationRoute[] = [
     navTitle: 'Форум',
   },
 ]
+
+export const authorizedNavigationRoutes: NavigationRoute[] = [
+  ...publicNavigationRoutes,
+  ...privateNavigationRoutes,
+]
+
+export const unauthorizedNavigationRoutes: NavigationRoute[] = [
+  ...publicNavigationRoutes,
+  ...guestNavigationRoutes,
+]
