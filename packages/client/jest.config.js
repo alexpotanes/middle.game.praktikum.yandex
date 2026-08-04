@@ -6,6 +6,9 @@ export default {
   testEnvironment: 'jsdom',
   testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  moduleNameMapper: {
+    '^@warchest/shared$': '<rootDir>/../shared/src/index.ts',
+  },
   globals: {
     __SERVER_PORT__: process.env.SERVER_PORT,
     __EXTERNAL_SERVER_URL__: 'http://localhost:3000',
