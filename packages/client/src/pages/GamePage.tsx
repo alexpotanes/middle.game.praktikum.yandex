@@ -1,106 +1,171 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Helmet } from 'react-helmet'
-import { useNavigate } from 'react-router-dom'
 
 import { Layout } from '../components/Layout'
+import { DraftScreen } from '../components/game/DraftScreen'
+import { EndScreen } from '../components/game/EndScreen'
+import { GameScreen } from '../components/game/GameScreen'
+import { IdleScreen } from '../components/game/IdleScreen'
+import { SearchingScreen } from '../components/game/SearchingScreen'
 import { usePage } from '../hooks/usePage'
 import { useDispatch, useSelector } from '../store'
-import { Game, PlayScene } from '../game'
-import { Button } from '../components/button'
-import { StartOverlay } from '../components/Game/StartOverlay'
-import { GameOverOverlay } from '../components/Game/GameOverOverlay'
+import { selectUserLogin } from '../slices/userSlice'
 import {
-  startGame,
-  endGame,
-  resetGame,
-  selectGameScreen,
-  selectGameScore,
-} from '../slices/gameSlice'
-import {
-  Stage,
-  CanvasFrame,
-  PlayingControls,
-  TimerBadge,
-} from './GamePage.styles'
+  draftStarted,
+  matchEnded,
+  matchStarted,
+  resetMatch,
+  setError,
+  setSearching,
+  stateUpdated,
+} from '../slices/matchSlice'
+import { SERVER_HOST } from '../constants'
+import { Game } from '../game'
+import { GameClient } from '../game/net/GameClient'
+import { WarChestScene } from '../game/scenes/WarChestScene'
+import { GameWrapper, Title } from './GamePage.styles'
 
-const GAME_WIDTH = 720
-const GAME_HEIGHT = 480
+const WS_URL = `${SERVER_HOST.replace(/^http/, 'ws')}/ws`
 
 export const GamePage = () => {
   usePage({ initPage: initGamePage })
-
   const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const screen = useSelector(selectGameScreen)
-  const score = useSelector(selectGameScore)
+  const login = useSelector(selectUserLogin)
+  const {
+    status,
+    you,
+    draft,
+    state: matchState,
+    endResult,
+    error,
+  } = useSelector(state => state.match)
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const gameRef = useRef<Game | null>(null)
-  const [secondsLeft, setSecondsLeft] = useState<number | null>(null)
-
-  const handleGameOver = useCallback(
-    (finalScore: number) => {
-      gameRef.current?.stop()
-      dispatch(endGame(finalScore))
-    },
-    [dispatch]
-  )
-
-  const beginRound = useCallback(() => {
-    dispatch(startGame())
-    gameRef.current?.setScene(
-      new PlayScene({ onGameOver: handleGameOver, onTick: setSecondsLeft })
-    )
-    gameRef.current?.start()
-  }, [dispatch, handleGameOver])
-
-  const handleExit = useCallback(() => {
-    gameRef.current?.stop()
-    dispatch(resetGame())
-    navigate('/')
-  }, [dispatch, navigate])
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const clientRef = useRef<GameClient | null>(null)
+  const sceneRef = useRef<WarChestScene | null>(null)
 
   useEffect(() => {
-    if (!canvasRef.current) {
+    const client = new GameClient({
+      onQueueWaiting: () => dispatch(setSearching()),
+      onDraftState: (youIndex, state) =>
+        dispatch(draftStarted({ you: youIndex, state })),
+      onMatchStart: (matchId, youIndex, state) =>
+        dispatch(matchStarted({ matchId, you: youIndex, state })),
+      onState: state => dispatch(stateUpdated(state)),
+      onError: (_code, message) => dispatch(setError(message)),
+      onEnd: (winner, reason) => dispatch(matchEnded({ winner, reason })),
+      onDisconnect: () => undefined,
+    })
+    client.connect(WS_URL)
+    clientRef.current = client
+    return () => {
+      client.disconnect()
+      clientRef.current = null
+      dispatch(resetMatch())
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (status !== 'playing' || !canvas || you === null) {
       return
     }
-    gameRef.current = new Game(canvasRef.current, {
-      width: GAME_WIDTH,
-      height: GAME_HEIGHT,
-      background: '#1b1b1b',
+    const game = new Game(canvas, {
+      width: 800,
+      height: 600,
+      background: '#fcf5e5',
     })
-
+    const scene = new WarChestScene(you, {
+      sendAction: action => clientRef.current?.sendAction(action),
+    })
+    game.setScene(scene)
+    game.start()
+    sceneRef.current = scene
     return () => {
-      gameRef.current?.destroy()
-      gameRef.current = null
+      game.destroy()
+      sceneRef.current = null
     }
-  }, [])
+  }, [status, you])
+
+  useEffect(() => {
+    if (matchState) {
+      sceneRef.current?.setMatchState(matchState)
+    }
+  }, [matchState])
+
+  const findGame = () => {
+    clientRef.current?.joinQueue(login ?? 'player')
+  }
+
+  const cancelSearch = () => {
+    clientRef.current?.leaveQueue()
+    dispatch(resetMatch())
+  }
+
+  const resign = () => {
+    clientRef.current?.resign()
+  }
+
+  const playAgain = () => {
+    dispatch(resetMatch())
+  }
+
+  const renderContent = () => {
+    switch (status) {
+      case 'idle':
+        return <IdleScreen onFind={findGame} />
+      case 'searching':
+        return <SearchingScreen onCancel={cancelSearch} />
+      case 'draft':
+        if (!draft || you === null) {
+          return null
+        }
+        return (
+          <DraftScreen
+            draft={draft}
+            you={you}
+            error={error}
+            onPick={unit => clientRef.current?.pickDraftUnit(unit)}
+          />
+        )
+      case 'ended':
+        if (!endResult) {
+          return null
+        }
+        return (
+          <EndScreen
+            won={endResult.winner === you}
+            reason={endResult.reason}
+            onPlayAgain={playAgain}
+          />
+        )
+      case 'playing':
+        if (!matchState || you === null) {
+          return null
+        }
+        return (
+          <GameScreen
+            matchState={matchState}
+            you={you}
+            error={error}
+            canvasRef={canvasRef}
+            onResign={resign}
+          />
+        )
+    }
+  }
 
   return (
     <Layout>
       <Helmet>
         <meta charSet="utf-8" />
-        <title>Игры</title>
-        <meta name="description" content="Страница игр" />
+        <title>Игра</title>
+        <meta name="description" content="Страница игры" />
       </Helmet>
-      <h1>Игры</h1>
-      <Stage>
-        <CanvasFrame ref={canvasRef} />
-        {screen === 'start' && <StartOverlay onStart={beginRound} />}
-        {screen === 'playing' && (
-          <PlayingControls>
-            {secondsLeft !== null && <TimerBadge>{secondsLeft} с</TimerBadge>}
-            <Button onClick={handleExit}>Выйти</Button>
-          </PlayingControls>
-        )}
-        {screen === 'gameover' && (
-          <GameOverOverlay
-            score={score}
-            onPlayAgain={beginRound}
-            onExit={handleExit}
-          />
-        )}
-      </Stage>
+      <GameWrapper>
+        <Title>War Chest</Title>
+        {renderContent()}
+      </GameWrapper>
     </Layout>
   )
 }

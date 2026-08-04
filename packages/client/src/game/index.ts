@@ -42,6 +42,3 @@ export { Animator } from './animation/Animator'
 export type { AnimationClip, SpriteFrame } from './animation/Animator'
 export { Tween, TweenManager, Easings } from './animation/Tween'
 export type { EasingFn, TweenOptions } from './animation/Tween'
-
-export { PlayScene } from './scenes/PlayScene'
-export type { PlaySceneOptions } from './scenes/PlayScene'

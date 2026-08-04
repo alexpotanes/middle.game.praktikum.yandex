@@ -10,6 +10,7 @@
     "test": "jest ./ --passWithNoTests"
   },
   "dependencies": {
+    "@warchest/shared": "*",
     "@reduxjs/toolkit": "^1.9.5",
     "@types/react-helmet": "^6.1.7",
     "cookie-parser": "^1.4.6",

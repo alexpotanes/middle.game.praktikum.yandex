@@ -11,7 +11,7 @@ import friendsReducer from './slices/friendsSlice'
 import ssrReducer from './slices/ssrSlice'
 import userReducer from './slices/userSlice'
 import authReducer from './slices/authSlice'
-import gameReducer from './slices/gameSlice'
+import matchReducer from './slices/matchSlice'
 
 // Глобально декларируем в window наш ключик
 // и задаем ему тип такой же как у стейта в сторе
@@ -26,7 +26,7 @@ export const reducer = combineReducers({
   ssr: ssrReducer,
   user: userReducer,
   auth: authReducer,
-  game: gameReducer,
+  match: matchReducer,
 })
 
 export const store = configureStore({

@@ -11,6 +11,11 @@ export default defineConfig({
   server: {
     port: clientPort,
   },
+  resolve: {
+    alias: {
+      '@warchest/shared': path.resolve(__dirname, '../shared/src/index.ts'),
+    },
+  },
   define: {
     __EXTERNAL_SERVER_URL__: JSON.stringify(process.env.EXTERNAL_SERVER_URL),
     __INTERNAL_SERVER_URL__: JSON.stringify(process.env.INTERNAL_SERVER_URL),

@@ -3,10 +3,12 @@ import cors from 'cors'
 dotenv.config({ path: '../../.env' })
 
 import express from 'express'
+import http from 'http'
 import { createClientAndConnect } from './db'
 import { authRouter } from './routes/auth'
 import { resourcesRouter } from './routes/resources'
 import { userRouter } from './routes/user'
+import { createWsServer } from './ws/wsServer'
 
 const app = express()
 app.use(cors({ origin: true, credentials: true }))
@@ -35,6 +37,9 @@ app.get('/', (_, res) => {
   res.json('👋 Howdy from the server :)')
 })
 
-app.listen(port, () => {
+const server = http.createServer(app)
+createWsServer(server)
+
+server.listen(port, () => {
   console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
 })
