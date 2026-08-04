@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom'
+
 import { Button } from '../button'
 import { Actions, StatusText } from '../../pages/GamePage.styles'
 
@@ -20,14 +22,21 @@ interface EndScreenProps {
   onPlayAgain: () => void
 }
 
-export const EndScreen = ({ won, reason, onPlayAgain }: EndScreenProps) => (
-  <>
-    <StatusText>
-      {won ? 'Победа!' : 'Поражение.'}{' '}
-      {REASON_LABELS[reason]?.[won ? 'won' : 'lost']}.
-    </StatusText>
-    <Actions>
-      <Button onClick={onPlayAgain}>Сыграть ещё</Button>
-    </Actions>
-  </>
-)
+export const EndScreen = ({ won, reason, onPlayAgain }: EndScreenProps) => {
+  const navigate = useNavigate()
+
+  return (
+    <>
+      <StatusText>
+        {won ? 'Победа!' : 'Поражение.'}{' '}
+        {REASON_LABELS[reason]?.[won ? 'won' : 'lost']}.
+      </StatusText>
+      <Actions>
+        <Button onClick={onPlayAgain}>Сыграть ещё</Button>
+        <Button type="button" onClick={() => navigate('/')}>
+          Вернуться в главное меню
+        </Button>
+      </Actions>
+    </>
+  )
+}
