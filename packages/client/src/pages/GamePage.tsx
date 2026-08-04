@@ -136,6 +136,8 @@ export const GamePage = () => {
           <EndScreen
             won={endResult.winner === you}
             reason={endResult.reason}
+            matchState={matchState}
+            you={you}
             onPlayAgain={playAgain}
           />
         )
