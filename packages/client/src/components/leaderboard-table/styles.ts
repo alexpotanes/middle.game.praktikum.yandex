@@ -60,14 +60,14 @@ export const RankBadge = styled.div<{ rank: number }>`
   font-weight: 700;
   font-size: 14px;
   background: ${props => {
-      if (props.rank === 1) return 'linear-gradient(135deg, #ffd700, #ffed4e)'
-      if (props.rank === 2) return 'linear-gradient(135deg, #c0c0c0, #e8e8e8)'
-      if (props.rank === 3) return 'linear-gradient(135deg, #cd7f32, #e8a87c)'
-      return colors.bg
-    }};
+    if (props.rank === 1) return 'linear-gradient(135deg, #ffd700, #ffed4e)'
+    if (props.rank === 2) return 'linear-gradient(135deg, #c0c0c0, #e8e8e8)'
+    if (props.rank === 3) return 'linear-gradient(135deg, #cd7f32, #e8a87c)'
+    return colors.bg
+  }};
   color: ${props => (props.rank <= 3 ? '#1b1b1b' : colors.text)};
   box-shadow: ${props =>
-      props.rank <= 3 ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'};
+    props.rank <= 3 ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'};
 `
 
 export const PlayerInfo = styled.div`
