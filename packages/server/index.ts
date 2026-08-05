@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import cors from 'cors'
+
 dotenv.config({ path: '../../.env' })
 
 import express from 'express'
@@ -8,6 +9,7 @@ import { createClientAndConnect } from './db'
 import { authRouter } from './routes/auth'
 import { resourcesRouter } from './routes/resources'
 import { userRouter } from './routes/user'
+import { leaderboardRouter } from './routes/leaderboard'
 import { createWsServer } from './ws/wsServer'
 
 const app = express()
@@ -20,6 +22,7 @@ createClientAndConnect()
 app.use('/auth', authRouter)
 app.use('/user', userRouter)
 app.use('/resources', resourcesRouter)
+app.use('/leaderboard', leaderboardRouter)
 
 app.get('/friends', (_, res) => {
   res.json([
