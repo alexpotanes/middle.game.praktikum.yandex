@@ -1,3 +1,5 @@
+import { NotFoundError } from '../utils/errors'
+
 export type LeaderboardEntry = {
   id: number
   rank: number
@@ -110,6 +112,12 @@ export const getTeamLeaderboard = async (
   teamName: string
 ): Promise<LeaderboardEntry[]> => {
   await new Promise(resolve => setTimeout(resolve, 100))
-  console.log(teamName)
-  return MOCK_LEADERBOARD.slice(0, 5)
+
+  const teamData = MOCK_LEADERBOARD.slice(0, 5)
+
+  if (teamData.length === 0) {
+    throw new NotFoundError(`Team "${teamName}" not found`)
+  }
+
+  return teamData
 }

@@ -39,3 +39,24 @@ export const Description = styled.p`
   color: ${colors.text};
   max-width: 720px;
 `
+export const RefreshButton = styled.button`
+  margin-bottom: 16px;
+  padding: 8px 16px;
+  background: ${colors.header};
+  color: ${colors.onHeader};
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`

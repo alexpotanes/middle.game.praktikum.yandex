@@ -11,7 +11,6 @@ import {
   selectLeaderboardStatus,
 } from '../slices/leaderboardSlice'
 import { fetchLeaderboardThunk } from '../thunks/leaderboardThunks'
-import { STATUS } from '../slices/constants'
 import {
   Content,
   Description,
@@ -19,6 +18,7 @@ import {
   Page,
   Section,
   Title,
+  RefreshButton,
 } from './LeaderboardPage.styles'
 
 export const LeaderboardPage = () => {
@@ -29,10 +29,14 @@ export const LeaderboardPage = () => {
   usePage({ initPage: initLeaderboardPage })
 
   useEffect(() => {
-    if (status === STATUS.IDLE) {
+    if (status === 'idle') {
       dispatch(fetchLeaderboardThunk())
     }
   }, [dispatch, status])
+
+  const handleRefresh = () => {
+    dispatch(fetchLeaderboardThunk())
+  }
 
   return (
     <Page>
@@ -63,9 +67,17 @@ export const LeaderboardPage = () => {
             title="Лучшие игроки"
             subtitle="Рейтинг обновляется после каждой сыгранной партии"
           />
+
+          {/* ← КНОПКА ОБНОВЛЕНИЯ */}
+          <RefreshButton
+            onClick={handleRefresh}
+            disabled={status === 'loading'}>
+            {status === 'loading' ? 'Обновление...' : 'Обновить'}
+          </RefreshButton>
+
           <LeaderboardTable
             entries={entries}
-            isLoading={status === STATUS.LOADING}
+            isLoading={status === 'loading'}
           />
         </Section>
       </Content>

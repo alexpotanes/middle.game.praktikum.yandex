@@ -1,21 +1,20 @@
 import type { Request, Response } from 'express'
 import * as leaderboardService from '../services/leaderboardService'
+import { validateTeamName } from '../utils/validators'
+import { asyncHandler } from '../middleware/errorHandler'
 
-export const getLeaderboard = async (_req: Request, res: Response) => {
-  try {
+export const getLeaderboard = asyncHandler(
+  async (_req: Request, res: Response) => {
     const leaderboard = await leaderboardService.getLeaderboard()
     res.json(leaderboard)
-  } catch (error) {
-    res.status(500).json({ reason: 'Failed to fetch leaderboard' })
   }
-}
+)
 
-export const getTeamLeaderboard = async (req: Request, res: Response) => {
-  try {
-    const { teamName } = req.params
+export const getTeamLeaderboard = asyncHandler(
+  async (req: Request, res: Response) => {
+    const teamName = validateTeamName(req.params.teamName)
+
     const leaderboard = await leaderboardService.getTeamLeaderboard(teamName)
     res.json(leaderboard)
-  } catch (error) {
-    res.status(500).json({ reason: 'Failed to fetch team leaderboard' })
   }
-}
+)
