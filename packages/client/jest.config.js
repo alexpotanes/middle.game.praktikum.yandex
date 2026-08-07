@@ -5,6 +5,7 @@ export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@warchest/shared$': '<rootDir>/../shared/src/index.ts',
   },
