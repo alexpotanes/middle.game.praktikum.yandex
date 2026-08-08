@@ -14,7 +14,7 @@ import {
 } from '../../slices/userSlice'
 import { useDispatch, useSelector } from '../../store'
 import { logoutThunk } from '../../thunks/authThunks'
-import styles from './index.module.css'
+import { Content, FormsGrid, Page } from './styles'
 
 export const ProfileContent = () => {
   const dispatch = useDispatch()
@@ -34,8 +34,8 @@ export const ProfileContent = () => {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.content}>
+    <Page>
+      <Content>
         <ProfileHero
           avatar={avatar}
           displayName={displayName}
@@ -46,11 +46,11 @@ export const ProfileContent = () => {
           onLogout={handleLogout}
         />
 
-        <div className={styles.formsGrid}>
+        <FormsGrid>
           <ProfileDetailsForm user={user} />
           <PasswordForm />
-        </div>
-      </div>
-    </div>
+        </FormsGrid>
+      </Content>
+    </Page>
   )
 }

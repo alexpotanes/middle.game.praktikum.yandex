@@ -1,6 +1,13 @@
 import { AvatarForm } from '../avatar-form'
-import { Button } from '../button'
-import styles from './index.module.css'
+import {
+  Eyebrow,
+  Hero,
+  HeroAside,
+  HeroInfo,
+  LogoutButton,
+  Subtitle,
+  Title,
+} from './styles'
 
 type ProfileHeroProps = {
   avatar: string | null
@@ -24,22 +31,21 @@ export const ProfileHero = ({
   const subtitle = isLoading ? 'Данные пользователя загружаются' : fullName
 
   return (
-    <section className={styles.hero}>
-      <div className={styles.heroInfo}>
-        <p className={styles.eyebrow}>Личный кабинет</p>
-        <h1 className={styles.title}>{displayName || login || 'Профиль'}</h1>
-        {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
-        <Button
-          className={styles.logoutButton}
+    <Hero>
+      <HeroInfo>
+        <Eyebrow>Личный кабинет</Eyebrow>
+        <Title>{displayName || login || 'Профиль'}</Title>
+        {subtitle && <Subtitle>{subtitle}</Subtitle>}
+        <LogoutButton
           type="button"
           onClick={onLogout}
           disabled={isLogoutSubmitting}>
           {isLogoutSubmitting ? 'Выходим...' : 'Выйти'}
-        </Button>
-      </div>
-      <div className={styles.heroAside}>
+        </LogoutButton>
+      </HeroInfo>
+      <HeroAside>
         <AvatarForm avatar={avatar} />
-      </div>
-    </section>
+      </HeroAside>
+    </Hero>
   )
 }

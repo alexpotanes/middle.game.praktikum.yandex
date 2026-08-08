@@ -1,6 +1,6 @@
 import { type InputHTMLAttributes } from 'react'
 
-import styles from './index.module.css'
+import { ErrorText, Field, Input, Label } from './styles'
 
 type FormFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   id: string
@@ -15,24 +15,21 @@ export const FormField = ({
   className,
   ...inputProps
 }: FormFieldProps) => (
-  <div className={styles.field}>
-    <label className={styles.label} htmlFor={id}>
-      {label}
-    </label>
-    <input
-      className={`${styles.input}${error ? ` ${styles.inputError}` : ''}${
-        className ? ` ${className}` : ''
-      }`}
+  <Field>
+    <Label htmlFor={id}>{label}</Label>
+    <Input
       id={id}
       name={id}
+      className={className}
+      $error={!!error}
       aria-invalid={!!error}
       aria-describedby={error ? `${id}-error` : undefined}
       {...inputProps}
     />
     {error && (
-      <span id={`${id}-error`} className={styles.error} role="alert">
+      <ErrorText id={`${id}-error`} role="alert">
         {error}
-      </span>
+      </ErrorText>
     )}
-  </div>
+  </Field>
 )

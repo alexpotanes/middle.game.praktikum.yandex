@@ -1,8 +1,15 @@
-import { Link } from 'react-router-dom'
-
 import { formatForumDate, type ForumTopic } from '../../mock/forum'
 import { getForumTopicPath } from '../../router/constants'
-import styles from './index.module.css'
+import {
+  Card,
+  CardHeader,
+  CommentsCount,
+  Empty,
+  Excerpt,
+  List,
+  Meta,
+  Title,
+} from './styles'
 
 type ForumTopicListProps = {
   topics: ForumTopic[]
@@ -11,31 +18,29 @@ type ForumTopicListProps = {
 export const ForumTopicList = ({ topics }: ForumTopicListProps) => {
   if (!topics.length) {
     return (
-      <p className={styles.empty}>
+      <Empty>
         Пока нет ни одного топика. Будьте первым, кто начнёт обсуждение!
-      </p>
+      </Empty>
     )
   }
 
   return (
-    <ul className={styles.list}>
+    <List>
       {topics.map(topic => (
         <li key={topic.id}>
-          <Link className={styles.card} to={getForumTopicPath(topic.id)}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.title}>{topic.title}</h2>
-              <span className={styles.commentsCount}>
-                💬 {topic.comments.length}
-              </span>
-            </div>
-            <p className={styles.excerpt}>{topic.message}</p>
-            <div className={styles.meta}>
+          <Card to={getForumTopicPath(topic.id)}>
+            <CardHeader>
+              <Title>{topic.title}</Title>
+              <CommentsCount>💬 {topic.comments.length}</CommentsCount>
+            </CardHeader>
+            <Excerpt>{topic.message}</Excerpt>
+            <Meta>
               <span>{topic.author}</span>
               <span>{formatForumDate(topic.createdAt)}</span>
-            </div>
-          </Link>
+            </Meta>
+          </Card>
         </li>
       ))}
-    </ul>
+    </List>
   )
 }

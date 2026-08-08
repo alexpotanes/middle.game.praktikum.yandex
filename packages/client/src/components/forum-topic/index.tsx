@@ -1,13 +1,28 @@
 import { ChangeEvent, FormEvent, useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { Button } from '../button'
 import { Form } from '../form'
-import formFieldStyles from '../form-field/index.module.css'
+import { ErrorText, Field, Input, Label } from '../form-field/styles'
 import { formatForumDate } from '../../mock/forum'
 import { selectForumAuthorName } from '../../slices/userSlice'
 import { useSelector } from '../../store'
-import styles from './index.module.css'
+import {
+  BackLink,
+  Comment,
+  CommentAuthor,
+  CommentList,
+  CommentMessage,
+  CommentMeta,
+  Comments,
+  CommentsTitle,
+  Empty,
+  Message,
+  Meta,
+  NotFound,
+  Page,
+  Title,
+  Topic,
+} from './styles'
 import { useForumTopic } from './useForumTopic'
 
 type ForumTopicProps = {
@@ -23,12 +38,10 @@ export const ForumTopic = ({ topicId }: ForumTopicProps) => {
 
   if (!topic) {
     return (
-      <div className={styles.notFound}>
+      <NotFound>
         <p>Такого топика не существует.</p>
-        <Link className={styles.backLink} to="/forum">
-          ← Назад к форуму
-        </Link>
-      </div>
+        <BackLink to="/forum">← Назад к форуму</BackLink>
+      </NotFound>
     )
   }
 
@@ -52,70 +65,56 @@ export const ForumTopic = ({ topicId }: ForumTopicProps) => {
   }
 
   return (
-    <div className={styles.page}>
-      <Link className={styles.backLink} to="/forum">
-        ← Назад к форуму
-      </Link>
+    <Page>
+      <BackLink to="/forum">← Назад к форуму</BackLink>
 
-      <article className={styles.topic}>
-        <h1 className={styles.title}>{topic.title}</h1>
-        <div className={styles.meta}>
+      <Topic>
+        <Title>{topic.title}</Title>
+        <Meta>
           <span>{topic.author}</span>
           <span>{formatForumDate(topic.createdAt)}</span>
-        </div>
-        <p className={styles.message}>{topic.message}</p>
-      </article>
+        </Meta>
+        <Message>{topic.message}</Message>
+      </Topic>
 
-      <section className={styles.comments}>
-        <h2 className={styles.commentsTitle}>
-          Комментарии ({topic.comments.length})
-        </h2>
+      <Comments>
+        <CommentsTitle>Комментарии ({topic.comments.length})</CommentsTitle>
         {topic.comments.length === 0 ? (
-          <p className={styles.empty}>Комментариев пока нет. Будьте первым!</p>
+          <Empty>Комментариев пока нет. Будьте первым!</Empty>
         ) : (
-          <ul className={styles.commentList}>
+          <CommentList>
             {topic.comments.map(comment => (
-              <li key={comment.id} className={styles.comment}>
-                <div className={styles.commentMeta}>
-                  <span className={styles.commentAuthor}>{comment.author}</span>
-                  <span className={styles.commentDate}>
-                    {formatForumDate(comment.createdAt)}
-                  </span>
-                </div>
-                <p className={styles.commentMessage}>{comment.message}</p>
-              </li>
+              <Comment key={comment.id}>
+                <CommentMeta>
+                  <CommentAuthor>{comment.author}</CommentAuthor>
+                  <span>{formatForumDate(comment.createdAt)}</span>
+                </CommentMeta>
+                <CommentMessage>{comment.message}</CommentMessage>
+              </Comment>
             ))}
-          </ul>
+          </CommentList>
         )}
-      </section>
+      </Comments>
 
       <Form
         title="Добавить комментарий"
         onSubmit={handleSubmit}
         actions={<Button type="submit">Отправить</Button>}>
-        <div
-          className={`${formFieldStyles.field} ${formFieldStyles.fieldWide}`}>
-          <label className={formFieldStyles.label} htmlFor="comment-message">
-            Комментарий
-          </label>
-          <textarea
+        <Field $wide>
+          <Label htmlFor="comment-message">Комментарий</Label>
+          <Input
+            as="textarea"
             id="comment-message"
             rows={4}
-            className={`${formFieldStyles.input}${
-              error ? ` ${formFieldStyles.inputError}` : ''
-            }`}
+            $error={!!error}
             value={message}
             onChange={handleMessageChange}
             placeholder="Ваш комментарий"
             aria-invalid={!!error}
           />
-          {error && (
-            <span className={formFieldStyles.error} role="alert">
-              {error}
-            </span>
-          )}
-        </div>
+          {error && <ErrorText role="alert">{error}</ErrorText>}
+        </Field>
       </Form>
-    </div>
+    </Page>
   )
 }
