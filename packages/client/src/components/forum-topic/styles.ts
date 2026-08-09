@@ -1,99 +1,104 @@
-.page {
+import { Link } from 'react-router-dom'
+import { styled } from 'styled-components'
+
+import { colors, shadows } from '../../styles/theme'
+
+export const Page = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-}
+`
 
-.backLink {
+export const BackLink = styled(Link)`
   align-self: flex-start;
-  color: #564844;
+  color: ${colors.header};
   font-size: 14px;
   text-decoration: none;
-}
 
-.backLink:hover {
-  text-decoration: underline;
-}
+  &:hover {
+    text-decoration: underline;
+  }
+`
 
-.topic {
+export const Topic = styled.article`
   padding: 24px;
   border: 1px solid rgba(86, 72, 68, 0.16);
   border-radius: 8px;
   background: #fff;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
-}
+  box-shadow: ${shadows.card};
+`
 
-.title {
+export const Title = styled.h1`
   margin: 0;
-  color: #564844;
+  color: ${colors.header};
   font-size: clamp(24px, 3.5vw, 30px);
-}
+`
 
-.meta {
+export const Meta = styled.div`
   display: flex;
   gap: 16px;
   margin-top: 8px;
   color: rgba(27, 27, 27, 0.6);
   font-size: 13px;
-}
+`
 
-.message {
+export const Message = styled.p`
   margin: 16px 0 0;
-  color: #1b1b1b;
+  color: ${colors.text};
   font-size: 16px;
   line-height: 1.6;
   white-space: pre-wrap;
-}
+`
 
-.comments {
+export const Comments = styled.section`
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
+`
 
-.commentsTitle {
+export const CommentsTitle = styled.h2`
   margin: 0;
-  color: #564844;
+  color: ${colors.header};
   font-size: 20px;
-}
+`
 
-.commentList {
+export const CommentList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
-}
+`
 
-.comment {
+export const Comment = styled.li`
   padding: 16px 20px;
   border: 1px solid rgba(86, 72, 68, 0.16);
   border-radius: 8px;
   background: #fff;
-}
+`
 
-.commentMeta {
+export const CommentMeta = styled.div`
   display: flex;
   gap: 12px;
   color: rgba(27, 27, 27, 0.6);
   font-size: 12px;
-}
+`
 
-.commentAuthor {
-  color: #564844;
+export const CommentAuthor = styled.span`
+  color: ${colors.header};
   font-weight: 700;
-}
+`
 
-.commentMessage {
+export const CommentMessage = styled.p`
   margin: 6px 0 0;
-  color: #1b1b1b;
+  color: ${colors.text};
   font-size: 15px;
   line-height: 1.5;
   white-space: pre-wrap;
-}
+`
 
-.empty {
+export const Empty = styled.p`
   margin: 0;
   padding: 20px;
   border: 1px dashed rgba(86, 72, 68, 0.3);
@@ -101,13 +106,13 @@
   color: rgba(27, 27, 27, 0.7);
   font-size: 15px;
   text-align: center;
-}
+`
 
-.notFound {
+export const NotFound = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
   padding: 48px 24px;
   text-align: center;
-}
+`

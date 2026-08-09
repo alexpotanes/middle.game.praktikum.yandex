@@ -1,6 +1,13 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { styled } from 'styled-components'
 
-import styles from './index.module.css'
+import {
+  Code,
+  Content,
+  Description,
+  Title,
+  homeLinkLook,
+} from '../../styles/ErrorScreen'
 
 type ErrorBoundaryProps = {
   children: ReactNode
@@ -10,17 +17,19 @@ type ErrorBoundaryState = {
   hasError: boolean
 }
 
+const HomeLink = styled.a`
+  ${homeLinkLook}
+`
+
 export const ErrorBoundaryFallback = () => (
-  <div className={styles.content}>
-    <p className={styles.code}>500</p>
-    <h1 className={styles.title}>Что-то пошло не так</h1>
-    <p className={styles.description}>
+  <Content>
+    <Code>500</Code>
+    <Title>Что-то пошло не так</Title>
+    <Description>
       Произошла непредвиденная ошибка. Попробуйте обновить страницу.
-    </p>
-    <a className={styles.homeLink} href="/">
-      На главную
-    </a>
-  </div>
+    </Description>
+    <HomeLink href="/">На главную</HomeLink>
+  </Content>
 )
 
 export class ErrorBoundary extends Component<

@@ -20,7 +20,6 @@ import App from './App'
 import { ErrorBoundaryFallback } from './components/error-boundary'
 import { reducer } from './store'
 import { routes } from './router/routes'
-import './index.css'
 import { setPageHasBeenInitializedOnServer } from './slices/ssrSlice'
 import { GlobalStyle } from './styles/GlobalStyle'
 

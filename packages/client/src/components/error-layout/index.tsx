@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom'
+import { styled } from 'styled-components'
 
-import styles from './index.module.css'
+import {
+  Code,
+  Content,
+  Description,
+  Title,
+  homeLinkLook,
+} from '../../styles/ErrorScreen'
 
 type ErrorPageLayoutProps = {
   code: string
@@ -8,17 +15,19 @@ type ErrorPageLayoutProps = {
   description: string
 }
 
+const HomeLink = styled(Link)`
+  ${homeLinkLook}
+`
+
 export const ErrorPageLayout = ({
   code,
   title,
   description,
 }: ErrorPageLayoutProps) => (
-  <div className={styles.content}>
-    <p className={styles.code}>{code}</p>
-    <h1 className={styles.title}>{title}</h1>
-    <p className={styles.description}>{description}</p>
-    <Link className={styles.homeLink} to="/">
-      На главную
-    </Link>
-  </div>
+  <Content>
+    <Code>{code}</Code>
+    <Title>{title}</Title>
+    <Description>{description}</Description>
+    <HomeLink to="/">На главную</HomeLink>
+  </Content>
 )

@@ -1,6 +1,14 @@
 import { FormEventHandler, ReactNode } from 'react'
 
-import styles from './index.module.css'
+import {
+  Actions,
+  Fields,
+  Footer,
+  FormNoticeWrap,
+  Panel,
+  PanelTitle,
+  StyledForm,
+} from './styles'
 
 type FormProps = {
   actions: ReactNode
@@ -17,15 +25,15 @@ export const Form = ({
   onSubmit,
   title,
 }: FormProps) => (
-  <section className={styles.panel}>
-    <h2 className={styles.panelTitle}>{title}</h2>
+  <Panel>
+    <PanelTitle>{title}</PanelTitle>
 
-    <form className={styles.form} onSubmit={onSubmit} noValidate>
-      <div className={styles.fields}>{children}</div>
-      <div className={styles.footer}>
-        {notice && <div className={styles.formNotice}>{notice}</div>}
-        <div className={styles.actions}>{actions}</div>
-      </div>
-    </form>
-  </section>
+    <StyledForm onSubmit={onSubmit} noValidate>
+      <Fields>{children}</Fields>
+      <Footer>
+        {notice && <FormNoticeWrap>{notice}</FormNoticeWrap>}
+        <Actions>{actions}</Actions>
+      </Footer>
+    </StyledForm>
+  </Panel>
 )

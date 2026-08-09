@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { Button } from '../button'
 import { Form } from '../form'
-import formFieldStyles from '../form-field/index.module.css'
+import { ErrorText, Field, Input, Label } from '../form-field/styles'
 import { createForumTopic } from '../../mock/forum'
 import { getForumTopicPath } from '../../router/constants'
 import { selectForumAuthorName } from '../../slices/userSlice'
@@ -58,49 +58,34 @@ export const ForumCreateTopicForm = () => {
       title="Новый топик"
       onSubmit={handleSubmit}
       actions={<Button type="submit">Создать топик</Button>}>
-      <div className={formFieldStyles.field}>
-        <label className={formFieldStyles.label} htmlFor="title">
-          Заголовок
-        </label>
-        <input
+      <Field>
+        <Label htmlFor="title">Заголовок</Label>
+        <Input
           id="title"
           name="title"
-          className={`${formFieldStyles.input}${
-            errors.title ? ` ${formFieldStyles.inputError}` : ''
-          }`}
+          $error={!!errors.title}
           value={values.title}
           onChange={handleChange}
           placeholder="О чём хотите поговорить?"
           aria-invalid={!!errors.title}
         />
-        {errors.title && (
-          <span className={formFieldStyles.error} role="alert">
-            {errors.title}
-          </span>
-        )}
-      </div>
-      <div className={`${formFieldStyles.field} ${formFieldStyles.fieldWide}`}>
-        <label className={formFieldStyles.label} htmlFor="message">
-          Сообщение
-        </label>
-        <textarea
+        {errors.title && <ErrorText role="alert">{errors.title}</ErrorText>}
+      </Field>
+      <Field $wide>
+        <Label htmlFor="message">Сообщение</Label>
+        <Input
+          as="textarea"
           id="message"
           name="message"
           rows={6}
-          className={`${formFieldStyles.input}${
-            errors.message ? ` ${formFieldStyles.inputError}` : ''
-          }`}
+          $error={!!errors.message}
           value={values.message}
           onChange={handleChange}
           placeholder="Опишите тему подробнее"
           aria-invalid={!!errors.message}
         />
-        {errors.message && (
-          <span className={formFieldStyles.error} role="alert">
-            {errors.message}
-          </span>
-        )}
-      </div>
+        {errors.message && <ErrorText role="alert">{errors.message}</ErrorText>}
+      </Field>
     </Form>
   )
 }

@@ -7,6 +7,7 @@ export const colors = {
   gold: '#c9a24c',
   goldLight: '#e8c877',
   crimson: '#7c2626',
+  success: '#2f6b45',
 }
 
 export const shadows = {

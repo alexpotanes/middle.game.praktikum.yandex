@@ -3,7 +3,7 @@ import { ChangeEvent, FormEvent, useId, useState } from 'react'
 import { useDispatch } from '../../store'
 import { updateAvatarThunk } from '../../thunks/userThunks'
 import { Notice } from '../notice'
-import styles from './index.module.css'
+import { Avatar, AvatarButton, FormWrap, Overlay, Placeholder } from './styles'
 
 type AvatarFormProps = {
   avatar: string | null
@@ -52,8 +52,8 @@ export const AvatarForm = ({ avatar }: AvatarFormProps) => {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <label className={styles.avatarButton} htmlFor={inputId}>
+    <FormWrap onSubmit={handleSubmit}>
+      <AvatarButton htmlFor={inputId}>
         <input
           id={inputId}
           type="file"
@@ -62,25 +62,19 @@ export const AvatarForm = ({ avatar }: AvatarFormProps) => {
           disabled={isSubmitting}
         />
         {avatar ? (
-          <img
-            className={styles.avatar}
-            src={avatar}
-            alt="Аватар пользователя"
-          />
+          <Avatar src={avatar} alt="Аватар пользователя" />
         ) : (
-          <span className={styles.placeholder}>{placeholder}</span>
+          <Placeholder>{placeholder}</Placeholder>
         )}
         {avatar && (
-          <span className={styles.overlay}>
-            {isSubmitting ? 'Загрузка...' : 'Обновить'}
-          </span>
+          <Overlay>{isSubmitting ? 'Загрузка...' : 'Обновить'}</Overlay>
         )}
-      </label>
+      </AvatarButton>
       {notice && (
         <Notice tone={notice.isSuccess ? 'success' : 'error'}>
           {notice.message}
         </Notice>
       )}
-    </form>
+    </FormWrap>
   )
 }

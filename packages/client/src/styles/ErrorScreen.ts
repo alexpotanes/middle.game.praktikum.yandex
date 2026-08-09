@@ -1,4 +1,8 @@
-.content {
+import { css, styled } from 'styled-components'
+
+import { colors } from './theme'
+
+export const Content = styled.div`
   display: flex;
   min-height: 70vh;
   flex-direction: column;
@@ -6,32 +10,32 @@
   justify-content: center;
   padding: 32px 20px;
   text-align: center;
-}
+`
 
-.code {
+export const Code = styled.p`
   margin: 0 0 12px;
   color: #383838;
   font-size: 72px;
   font-weight: 700;
   line-height: 1;
-}
+`
 
-.title {
+export const Title = styled.h1`
   margin: 0 0 12px;
-  color: #564844;
+  color: ${colors.header};
   font-size: 32px;
   line-height: 1.2;
-}
+`
 
-.description {
+export const Description = styled.p`
   max-width: 520px;
   margin: 0 0 28px;
-  color: #564844;
+  color: ${colors.header};
   font-size: 18px;
   line-height: 1.5;
-}
+`
 
-.homeLink {
+export const homeLinkLook = css`
   display: inline-flex;
   min-height: 44px;
   align-items: center;
@@ -42,4 +46,4 @@
   color: #ffffff;
   font-weight: 600;
   text-decoration: none;
-}
+`
