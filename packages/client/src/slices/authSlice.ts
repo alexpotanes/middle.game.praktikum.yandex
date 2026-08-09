@@ -64,7 +64,17 @@ export const authSlice = createSlice({
       })
       .addCase(fetchCurrentUserThunk.pending, setLoading)
       .addCase(fetchCurrentUserThunk.fulfilled, setAuthenticated)
-      .addCase(fetchCurrentUserThunk.rejected, clearAuthenticated)
+      .addCase(fetchCurrentUserThunk.rejected, (state, action) => {
+        if (action.meta.aborted) {
+          return
+        }
+        if (state.isAuthenticated) {
+          state.status = STATUS.SUCCEEDED
+          state.sessionChecked = true
+          return
+        }
+        clearAuthenticated(state)
+      })
       .addCase(logoutThunk.fulfilled, state => {
         state.status = STATUS.IDLE
         state.isAuthenticated = false

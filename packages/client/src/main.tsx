@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import App from './App'
 import { router } from './router'
-import { store } from './store'
+import { createAppStore } from './store'
 import { GlobalStyle } from './styles/GlobalStyle'
-import { fetchCurrentUserThunk } from './thunks/authThunks'
 import { startServiceWorker } from './utils/serviceWorker'
 
-store.dispatch(fetchCurrentUserThunk())
+const store = createAppStore(window.APP_INITIAL_STATE)
+
 startServiceWorker()
 
 ReactDOM.hydrateRoot(

@@ -1,18 +1,35 @@
-import { type ReactNode } from 'react'
+import { type ReactNode, useEffect } from 'react'
 import { Provider } from 'react-redux'
-import type { Store } from 'redux'
 
 import { ErrorBoundary } from './components/error-boundary'
-import { store as clientStore, type RootState } from './store'
+import { useDispatch, type AppStore } from './store'
+import { fetchCurrentUserThunk } from './thunks/authThunks'
 
 type AppProps = {
   children: ReactNode
-  store?: Store<RootState>
+  store: AppStore
 }
 
-const App = ({ children, store = clientStore }: AppProps) => (
+const AuthBootstrap = () => {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    const task = dispatch(fetchCurrentUserThunk())
+
+    return () => {
+      task.abort()
+    }
+  }, [dispatch])
+
+  return null
+}
+
+const App = ({ children, store }: AppProps) => (
   <Provider store={store}>
-    <ErrorBoundary>{children}</ErrorBoundary>
+    <ErrorBoundary>
+      <AuthBootstrap />
+      {children}
+    </ErrorBoundary>
   </Provider>
 )
 

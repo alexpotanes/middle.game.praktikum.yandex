@@ -4,9 +4,15 @@ import { ApiError } from './types'
 const isFormDataBody = (body: RequestInit['body']) =>
   typeof FormData !== 'undefined' && body instanceof FormData
 
+const isApiError = (value: unknown): value is ApiError =>
+  typeof value === 'object' &&
+  value !== null &&
+  typeof (value as Record<string, unknown>).reason === 'string'
+
 export const request = async <T>(
   path: string,
-  init: RequestInit = {}
+  init: RequestInit = {},
+  isValid?: (data: unknown) => data is T
 ): Promise<T> => {
   const headers = {
     ...(isFormDataBody(init.body)
@@ -33,8 +39,15 @@ export const request = async <T>(
   }
 
   if (!res.ok) {
-    const reason = (data as ApiError)?.reason ?? 'Что-то пошло не так'
-    throw { reason } as ApiError
+    const reason = isApiError(data) ? data.reason : 'Что-то пошло не так'
+    throw { reason }
+  }
+
+  if (isValid) {
+    if (!isValid(data)) {
+      throw { reason: 'Некорректный ответ сервера' }
+    }
+    return data
   }
 
   return data as T
