@@ -9,7 +9,7 @@ import serialize from 'serialize-javascript'
 import cookieParser from 'cookie-parser'
 import type { ViteDevServer } from 'vite' with { 'resolution-mode': 'import' }
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || process.env.CLIENT_PORT || 3000
 const clientPath = path.join(__dirname, '..')
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -71,7 +71,7 @@ async function createServer() {
         // Получаем путь до сбилдженого модуля клиента, чтобы не тащить средства сборки клиента на сервер
         const pathToServer = path.join(
           clientPath,
-          'dist/server/entry-server.js'
+          'dist/server/entry-server.mjs'
         )
 
         // Импортируем этот модуль и вызываем с инишл стейтом
