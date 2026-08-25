@@ -9,7 +9,6 @@ import {
   StaticRouterProvider,
 } from 'react-router-dom/server'
 import { matchRoutes } from 'react-router-dom'
-import { configureStore } from '@reduxjs/toolkit'
 
 import {
   createContext,
@@ -18,7 +17,7 @@ import {
 } from './entry-server.utils'
 import App from './App'
 import { ErrorBoundaryFallback } from './components/error-boundary'
-import { reducer } from './store'
+import { createAppStore } from './store'
 import { routes } from './router/routes'
 import { setPageHasBeenInitializedOnServer } from './slices/ssrSlice'
 import { GlobalStyle } from './styles/GlobalStyle'
@@ -32,9 +31,7 @@ export const render = async (req: ExpressRequest) => {
     throw context
   }
 
-  const store = configureStore({
-    reducer,
-  })
+  const store = createAppStore()
 
   const url = createUrl(req)
 

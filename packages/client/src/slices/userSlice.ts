@@ -41,7 +41,15 @@ export const userSlice = createSlice({
       .addCase(registerThunk.fulfilled, setUser)
       .addCase(registerThunk.rejected, clearUser)
       .addCase(fetchCurrentUserThunk.fulfilled, setUser)
-      .addCase(fetchCurrentUserThunk.rejected, clearUser)
+      .addCase(fetchCurrentUserThunk.rejected, (state, action) => {
+        if (action.meta.aborted) {
+          return
+        }
+        if (state.data) {
+          return
+        }
+        clearUser(state)
+      })
       .addCase(logoutThunk.fulfilled, clearUser)
       .addCase(updateProfileThunk.fulfilled, setUser)
       .addCase(updateAvatarThunk.fulfilled, setUser)
