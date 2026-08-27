@@ -6,6 +6,7 @@ import { RootState } from '../store'
 import {
   fetchCurrentUserThunk,
   loginThunk,
+  loginWithYandexThunk,
   logoutThunk,
   registerThunk,
 } from '../thunks/authThunks'
@@ -40,6 +41,8 @@ export const userSlice = createSlice({
       .addCase(loginThunk.rejected, clearUser)
       .addCase(registerThunk.fulfilled, setUser)
       .addCase(registerThunk.rejected, clearUser)
+      .addCase(loginWithYandexThunk.fulfilled, setUser)
+      .addCase(loginWithYandexThunk.rejected, clearUser)
       .addCase(fetchCurrentUserThunk.fulfilled, setUser)
       .addCase(fetchCurrentUserThunk.rejected, (state, action) => {
         if (action.meta.aborted) {

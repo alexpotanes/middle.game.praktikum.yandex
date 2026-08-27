@@ -2,12 +2,14 @@ import { Helmet } from 'react-helmet'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { useDispatch } from '../store'
-import { loginThunk } from '../thunks/authThunks'
+import { loginThunk, startYandexOAuthThunk } from '../thunks/authThunks'
 import type { FromLocationState } from '../router/types'
 import { ROUTES } from '../router/constants'
 import { useAuth } from '../hooks/useAuth'
 import { useForm } from '../hooks/useForm'
+import { YandexIcon } from '../shared/icons'
 import {
+  Divider,
   ErrorText,
   Eyebrow,
   FieldError,
@@ -15,6 +17,7 @@ import {
   FormCard,
   Hint,
   Input,
+  OAuthButton,
   SubmitButton,
   Title,
   Wrapper,
@@ -43,6 +46,10 @@ export const SignIn = () => {
       navigate(from, { replace: true })
     }
   })
+
+  const onYandexLoginClick = () => {
+    dispatch(startYandexOAuthThunk())
+  }
 
   return (
     <Wrapper>
@@ -83,6 +90,14 @@ export const SignIn = () => {
         <SubmitButton type="submit" disabled={isSubmitDisabled}>
           {isLoading ? 'Входим…' : 'Войти'}
         </SubmitButton>
+        <Divider>или</Divider>
+        <OAuthButton
+          type="button"
+          disabled={isLoading}
+          onClick={onYandexLoginClick}>
+          <YandexIcon />
+          Войти через Яндекс
+        </OAuthButton>
         <Hint>
           Нет аккаунта? <Link to={ROUTES.REGISTRATION}>Регистрация</Link>
         </Hint>

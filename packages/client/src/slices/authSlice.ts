@@ -4,8 +4,10 @@ import { STATUS, Status } from './constants'
 import {
   fetchCurrentUserThunk,
   loginThunk,
+  loginWithYandexThunk,
   logoutThunk,
   registerThunk,
+  startYandexOAuthThunk,
 } from '../thunks/authThunks'
 
 export interface AuthState {
@@ -61,6 +63,17 @@ export const authSlice = createSlice({
       .addCase(registerThunk.rejected, (state, action) => {
         clearAuthenticated(state)
         state.error = action.payload ?? 'Не удалось зарегистрироваться'
+      })
+      .addCase(startYandexOAuthThunk.pending, setLoading)
+      .addCase(startYandexOAuthThunk.rejected, (state, action) => {
+        clearAuthenticated(state)
+        state.error = action.payload ?? 'Не удалось войти через Яндекс'
+      })
+      .addCase(loginWithYandexThunk.pending, setLoading)
+      .addCase(loginWithYandexThunk.fulfilled, setAuthenticated)
+      .addCase(loginWithYandexThunk.rejected, (state, action) => {
+        clearAuthenticated(state)
+        state.error = action.payload ?? 'Не удалось войти через Яндекс'
       })
       .addCase(fetchCurrentUserThunk.pending, setLoading)
       .addCase(fetchCurrentUserThunk.fulfilled, setAuthenticated)

@@ -115,6 +115,54 @@ export const ErrorText = styled.p`
   text-align: center;
 `
 
+export const Divider = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+  color: rgba(27, 27, 27, 0.45);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(86, 72, 68, 0.15);
+  }
+`
+
+export const OAuthButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 24px;
+  border: 1px solid rgba(86, 72, 68, 0.25);
+  border-radius: 8px;
+  background: #fff;
+  color: ${colors.text};
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: ${colors.gold};
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+`
+
 export const Hint = styled.p`
   margin: 4px 0 0;
   font-size: 13px;

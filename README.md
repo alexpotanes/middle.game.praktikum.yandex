@@ -45,6 +45,17 @@
 
 Оба HOC применяются в одном месте — `router/routes.tsx`, где приватные роуты обёрнуты в `withAuth`, а гостевые в `withGuest`. Сами страницы про авторизацию ничего не знают.
 
+### OAuth через Яндекс
+
+Кнопка «Войти через Яндекс» есть на `/signin` и `/signup`. Логика на клиенте - в `utils/oauth.ts`, `api/oauthApi.ts` и двух thunk'ах в `thunks/authThunks.ts`:
+
+- `startYandexOAuthThunk` - по клику запрашивает `service_id` (`GET /oauth/yandex/service-id`) и делает `document.location.href` на `oauth.yandex.ru/authorize`
+- `loginWithYandexThunk` - при возврате с `code` в query отправляет его на `POST /oauth/yandex`, затем подтягивает пользователя через `authApi.getUser()`
+
+Как и остальные `/auth/*` запросы, оба OAuth-запроса идут не напрямую на `ya-praktikum.tech`, а через наш собственный сервер (`packages/server`), который проксирует их 1-в-1 на API Практикума и пробрасывает/переписывает куки - см. `server/routes/oauth.ts`, `server/controllers/oauthController.ts`, `server/services/oauthService.ts` (по образцу уже существующих `auth`-роутов).
+
+`redirect_uri` во всех запросах - это `window.location.origin` (без пути и без слеша в конце), он же передаётся при первом запросе `service_id`. `App.tsx` при монтировании проверяет `code` в query параметрах текущего адреса (`AuthBootstrap`), если он есть - логинится и убирает `code` из URL через `history.replaceState`.
+
 ### Валидация форм
 
 Правила полей собраны в `utils/validation.ts`: объект `validators`, где на каждое поле приходится функция `(value) => string | undefined`. Возвращённая строка — текст ошибки, `undefined` — поле валидно. Покрыты `first_name`, `second_name`, `login`, `email`, `password`, `phone`, `oldPassword`, `newPassword`.

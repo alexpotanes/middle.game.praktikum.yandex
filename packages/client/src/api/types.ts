@@ -40,3 +40,12 @@ export interface ChangePasswordRequest {
 export interface ApiError {
   reason: string
 }
+
+export interface YandexServiceIdResponse {
+  service_id: string
+}
+
+export interface YandexOAuthRequest {
+  code: string
+  redirect_uri: string
+}
