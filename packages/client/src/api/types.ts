@@ -43,6 +43,7 @@ export interface ApiError {
 
 export interface YandexServiceIdResponse {
   service_id: string
+  auth_url: string
 }
 
 export interface YandexOAuthRequest {

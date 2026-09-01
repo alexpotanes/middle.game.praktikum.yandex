@@ -24,9 +24,11 @@ const AuthBootstrap = () => {
     const code = extractYandexOAuthCode(window.location.search)
 
     if (code) {
-      dispatch(loginWithYandexThunk({ code })).finally(
-        removeYandexOAuthCodeFromUrl
-      )
+      dispatch(loginWithYandexThunk({ code })).then(result => {
+        if (loginWithYandexThunk.fulfilled.match(result)) {
+          removeYandexOAuthCodeFromUrl()
+        }
+      })
       return
     }
 

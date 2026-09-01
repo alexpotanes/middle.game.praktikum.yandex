@@ -49,12 +49,17 @@
 
 Кнопка «Войти через Яндекс» есть на `/signin` и `/signup`. Логика на клиенте - в `utils/oauth.ts`, `api/oauthApi.ts` и двух thunk'ах в `thunks/authThunks.ts`:
 
-- `startYandexOAuthThunk` - по клику запрашивает `service_id` (`GET /oauth/yandex/service-id`) и делает `document.location.href` на `oauth.yandex.ru/authorize`
+- `startYandexOAuthThunk` - по клику запрашивает `service_id` и готовый `auth_url` (`GET /oauth/yandex/service-id`) и делает `document.location.href` на полученный `auth_url`
 - `loginWithYandexThunk` - при возврате с `code` в query отправляет его на `POST /oauth/yandex`, затем подтягивает пользователя через `authApi.getUser()`
 
-Как и остальные `/auth/*` запросы, оба OAuth-запроса идут не напрямую на `ya-praktikum.tech`, а через наш собственный сервер (`packages/server`), который проксирует их 1-в-1 на API Практикума и пробрасывает/переписывает куки - см. `server/routes/oauth.ts`, `server/controllers/oauthController.ts`, `server/services/oauthService.ts` (по образцу уже существующих `auth`-роутов).
+Как и остальные `/auth/*` запросы, оба OAuth-запроса идут не напрямую на `ya-praktikum.tech`, а через наш собственный сервер (`packages/server`), который проксирует их на API Практикума и пробрасывает/переписывает куки - см. `server/routes/oauth.ts`, `server/controllers/oauthController.ts`, `server/services/oauthService.ts` (по образцу уже существующих `auth`-роутов). В отличие от простого 1-в-1 проксирования, сервер здесь берёт на себя часть OAuth-логики:
 
-`redirect_uri` во всех запросах - это `window.location.origin` (без пути и без слеша в конце), он же передаётся при первом запросе `service_id`. `App.tsx` при монтировании проверяет `code` в query параметрах текущего адреса (`AuthBootstrap`), если он есть - логинится и убирает `code` из URL через `history.replaceState`.
+- адрес провайдера (`oauth.yandex.ru/authorize`) и сборка `auth_url` целиком на сервере (`oauthService.ts`) - клиент про конкретного провайдера ничего не знает, поэтому смена провайдера/окружения не требует правок клиента и пересборки
+- `redirect_uri`, который присылает клиент, - это часть security-контракта OAuth, поэтому сервер не доверяет ему безусловно: `utils/validators.ts` сверяет origin с allow-list'ом из `OAUTH_ALLOWED_REDIRECT_ORIGINS` (через запятую; по умолчанию - `http://localhost:${CLIENT_PORT}`)
+- тело `POST /oauth/yandex` валидируется на уровне контроллера (наличие `code`, валидный и разрешённый `redirect_uri`) до похода во внешний API - ошибка валидации возвращается клиенту как понятная 400-ка через общий `errorHandler`, а не проксируется наружу
+- весь `/oauth` защищён `express-rate-limit` (`middleware/rateLimiter.ts`), чтобы прокси не использовали для неограниченного числа запросов к API Практикума
+
+`redirect_uri` во всех запросах - это `window.location.origin` (без пути и без слеша в конце), он же передаётся при первом запросе `service_id`. `App.tsx` при монтировании проверяет `code` в query параметрах текущего адреса (`AuthBootstrap`), если он есть - логинится; `code` убирается из URL только при успешном логине (через `router.navigate(..., { replace: true })` из `utils/oauth.ts`, а не напрямую через `window.history`, чтобы не расходиться с состоянием роутера) - если обмен `code` завершится ошибкой, он остаётся в адресной строке, и обновление страницы повторит попытку.
 
 ### Валидация форм
 

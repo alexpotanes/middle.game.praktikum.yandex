@@ -7,7 +7,7 @@ import {
   SignUpRequest,
   UserResponse,
 } from '../api/types'
-import { getYandexAuthUrl, getYandexRedirectUri } from '../utils/oauth'
+import { getYandexRedirectUri } from '../utils/oauth'
 
 export const loginThunk = createAsyncThunk<
   UserResponse,
@@ -51,8 +51,8 @@ export const startYandexOAuthThunk = createAsyncThunk<
 >('auth/startYandexOAuth', async (_, { rejectWithValue }) => {
   try {
     const redirectUri = getYandexRedirectUri()
-    const { service_id } = await oauthApi.getYandexServiceId(redirectUri)
-    document.location.href = getYandexAuthUrl(service_id, redirectUri)
+    const { auth_url } = await oauthApi.getYandexServiceId(redirectUri)
+    document.location.href = auth_url
   } catch (e) {
     return rejectWithValue((e as ApiError).reason)
   }
