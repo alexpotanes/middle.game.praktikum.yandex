@@ -7,11 +7,13 @@ import express from 'express'
 import http from 'http'
 import { createClientAndConnect } from './db'
 import { authRouter } from './routes/auth'
+import { oauthRouter } from './routes/oauth'
 import { resourcesRouter } from './routes/resources'
 import { userRouter } from './routes/user'
 import { leaderboardRouter } from './routes/leaderboard'
 import { createWsServer } from './ws/wsServer'
 import { errorHandler } from './middleware/errorHandler'
+import { oauthRateLimiter } from './middleware/rateLimiter'
 
 const app = express()
 app.use(cors({ origin: true, credentials: true }))
@@ -21,6 +23,7 @@ const port = Number(process.env.SERVER_PORT) || 3001
 createClientAndConnect()
 
 app.use('/auth', authRouter)
+app.use('/oauth', oauthRateLimiter, oauthRouter)
 app.use('/user', userRouter)
 app.use('/resources', resourcesRouter)
 app.use('/leaderboard', leaderboardRouter)

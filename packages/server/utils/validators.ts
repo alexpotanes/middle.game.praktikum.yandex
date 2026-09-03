@@ -43,3 +43,65 @@ export const validatePaginationParams = (params: {
 
   return { limit, offset }
 }
+
+const getAllowedYandexRedirectOrigins = (): string[] => {
+  const configured = (process.env.OAUTH_ALLOWED_REDIRECT_ORIGINS ?? '')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean)
+
+  if (configured.length > 0) {
+    return configured
+  }
+
+  return [`http://localhost:${process.env.CLIENT_PORT || 3000}`]
+}
+
+const validateYandexRedirectUri = (value: unknown): string => {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw new ValidationError(
+      'redirect_uri is required and must be a non-empty string'
+    )
+  }
+
+  const redirectUri = value.trim()
+  let origin: string
+
+  try {
+    origin = new URL(redirectUri).origin
+  } catch {
+    throw new ValidationError('redirect_uri must be a valid absolute URL')
+  }
+
+  if (!getAllowedYandexRedirectOrigins().includes(origin)) {
+    throw new ValidationError(
+      `redirect_uri origin "${origin}" is not in the OAuth allow-list`
+    )
+  }
+
+  return redirectUri
+}
+
+export const validateYandexServiceIdQuery = (query: unknown): string =>
+  validateYandexRedirectUri(
+    (query as Record<string, unknown> | null)?.redirect_uri
+  )
+
+export const validateYandexOAuthBody = (
+  body: unknown
+): { code: string; redirect_uri: string } => {
+  if (typeof body !== 'object' || body === null) {
+    throw new ValidationError('Request body must be a JSON object')
+  }
+
+  const { code, redirect_uri } = body as Record<string, unknown>
+
+  if (typeof code !== 'string' || code.trim().length === 0) {
+    throw new ValidationError('code is required and must be a non-empty string')
+  }
+
+  return {
+    code: code.trim(),
+    redirect_uri: validateYandexRedirectUri(redirect_uri),
+  }
+}

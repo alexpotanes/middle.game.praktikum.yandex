@@ -3435,7 +3435,7 @@ debug@2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.3, debug@^4.3.4:
+debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.3, debug@^4.3.4, debug@^4.4.3:
   version "4.4.3"
   resolved "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz"
   integrity sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==
@@ -3989,6 +3989,14 @@ exponential-backoff@^3.1.1:
   version "3.1.3"
   resolved "https://registry.npmjs.org/exponential-backoff/-/exponential-backoff-3.1.3.tgz"
   integrity sha512-ZgEeZXj30q+I0EN+CbSSpIyPaJ5HVQD18Z1m+u1FXbAeT94mr1zw50q4q6jiiC447Nl/YTcIYSAftiGqetwXCA==
+
+express-rate-limit@^8.7.0:
+  version "8.7.0"
+  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-8.7.0.tgz#87739a3535e7db3ca87b4a77b1ec5cc2c0a711e4"
+  integrity sha512-hOwV7WOxXfjRpAM1DSJWZDXx3GhplwD8IfwuwvogD8i1Qnkgosw/H45s4ZnFAUHDAhPjlY9hLBvJhKmGMyY26g==
+  dependencies:
+    debug "^4.4.3"
+    ip-address "^10.2.0"
 
 express@^4.18.1, express@^4.18.2:
   version "4.22.2"
@@ -4752,6 +4760,11 @@ ip-address@^10.1.1:
   version "10.2.0"
   resolved "https://registry.npmjs.org/ip-address/-/ip-address-10.2.0.tgz"
   integrity sha512-/+S6j4E9AHvW9SWMSEY9Xfy66O5PWvVEJ08O0y5JGyEKQpojb0K0GKpz/v5HJ/G0vi3D2sjGK78119oXZeE0qA==
+
+ip-address@^10.2.0:
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/ip-address/-/ip-address-10.7.0.tgz#9713429f16787ede8f642f6255b41fb515c825d9"
+  integrity sha512-BGFsyJd5mpXp3rK6jIdADLNgpJUK1jnjzvYF8lK+VyDab9JAmqN0YOKDdP17HlgKb2+ehPgDc8EtnRLbGCAMhA==
 
 ipaddr.js@1.9.1:
   version "1.9.1"
