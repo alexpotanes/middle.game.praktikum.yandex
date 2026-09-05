@@ -2,8 +2,9 @@
   "name": "client-server-template-with-vite",
   "private": true,
   "scripts": {
-    "bootstrap": "yarn && node init.js && lerna clean && yarn && lerna bootstrap",
+    "bootstrap": "yarn && node init.js && lerna clean && yarn && lerna bootstrap && yarn build:shared",
     "build": "lerna run build",
+    "build:shared": "lerna run build --scope=@warchest/shared",
     "build:client": "lerna run build --scope=client --include-dependencies",
     "build:server": "lerna run build --scope=server --include-dependencies",
     "setup": "lefthook install",
