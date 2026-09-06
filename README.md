@@ -173,9 +173,11 @@
 
 `docker compose up` - запустит три сервиса
 
-1. nginx, раздающий клиентскую статику (client)
+1. node.js, обслуживающий SSR и клиентскую статику (client)
 2. node, ваш сервер (server)
 3. postgres, вашу базу данных (postgres)
 
 Если вам понадобится только один сервис, просто уточните какой в команде
-`docker compose up {sevice_name}`, например `docker compose up server`
+`docker compose up {service_name}`, например `docker compose up server` (база запустится вместе с ним).
+
+Проверить состояние сервисов можно командой `docker compose ps`. Данные PostgreSQL сохраняются в `./tmp/pgdata`.
