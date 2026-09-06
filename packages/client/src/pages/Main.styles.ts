@@ -109,7 +109,7 @@ export const NavCard = styled(Link)`
   gap: 10px;
   padding: 24px;
   border-radius: 12px;
-  background: #fff;
+  background: ${colors.surface};
   border: 1px solid rgba(86, 72, 68, 0.15);
   color: ${colors.heading};
   text-decoration: none;
@@ -119,7 +119,7 @@ export const NavCard = styled(Link)`
     transform 0.15s ease;
 
   &:hover {
-    border-color: ${colors.header};
+    border-color: ${colors.heading};
     transform: translateY(-3px);
   }
 `
@@ -154,7 +154,7 @@ export const ScreenshotFigure = styled.figure`
   margin: 0;
   overflow: hidden;
   border-radius: 12px;
-  background: #fff;
+  background: ${colors.surface};
   border: 1px solid rgba(86, 72, 68, 0.15);
   box-shadow: ${shadows.card};
 `
@@ -177,7 +177,7 @@ export const FeatureGrid = styled.div`
 export const FeatureCard = styled.div`
   padding: 24px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.55);
+  background: ${colors.surfaceMuted};
   border: 1px solid rgba(86, 72, 68, 0.12);
 `
 

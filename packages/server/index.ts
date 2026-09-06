@@ -5,7 +5,7 @@ dotenv.config({ path: '../../.env' })
 
 import express from 'express'
 import http from 'http'
-import { createClientAndConnect } from './db'
+import { sequelize } from './db'
 import { authRouter } from './routes/auth'
 import { oauthRouter } from './routes/oauth'
 import { resourcesRouter } from './routes/resources'
@@ -14,17 +14,18 @@ import { leaderboardRouter } from './routes/leaderboard'
 import { createWsServer } from './ws/wsServer'
 import { errorHandler } from './middleware/errorHandler'
 import { oauthRateLimiter } from './middleware/rateLimiter'
+import { themesRouter, userThemeRouter } from './routes/themes'
 
 const app = express()
 app.use(cors({ origin: true, credentials: true }))
 app.use(express.json())
 const port = Number(process.env.SERVER_PORT) || 3001
 
-createClientAndConnect()
-
 app.use('/auth', authRouter)
 app.use('/oauth', oauthRateLimiter, oauthRouter)
 app.use('/user', userRouter)
+app.use('/themes', themesRouter)
+app.use('/user/theme', userThemeRouter)
 app.use('/resources', resourcesRouter)
 app.use('/leaderboard', leaderboardRouter)
 
@@ -58,6 +59,15 @@ app.use(errorHandler)
 const server = http.createServer(app)
 createWsServer(server)
 
-server.listen(port, () => {
-  console.log(`  ➜ Server is listening on port: ${port}`)
-})
+sequelize
+  .authenticate()
+  .then(() => {
+    server.listen(port, () => {
+      console.log(`  ➜ Server is listening on port: ${port}`)
+    })
+  })
+  .catch(async error => {
+    console.error('Не удалось подключиться к PostgreSQL', error)
+    await sequelize.close()
+    process.exit(1)
+  })

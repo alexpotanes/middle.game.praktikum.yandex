@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect } from 'react'
 import { Provider } from 'react-redux'
+import { ThemeProvider } from './styles/ThemeProvider'
 
 import { ErrorBoundary } from './components/error-boundary'
 import { useDispatch, type AppStore } from './store'
@@ -46,7 +47,7 @@ const App = ({ children, store }: AppProps) => (
   <Provider store={store}>
     <ErrorBoundary>
       <AuthBootstrap />
-      {children}
+      <ThemeProvider>{children}</ThemeProvider>
     </ErrorBoundary>
   </Provider>
 )

@@ -24,7 +24,10 @@ COPY --from=builder /app/packages/server/package.json /app/packages/server/packa
 COPY --from=builder /app/packages/shared/package.json /app/packages/shared/package.json
 RUN yarn install --production=true --frozen-lockfile --ignore-scripts
 COPY --from=builder /app/packages/server/dist/ /app/packages/server/dist/
+COPY --from=builder /app/packages/server/config/ /app/packages/server/config/
+COPY --from=builder /app/packages/server/migrations/ /app/packages/server/migrations/
 COPY --from=builder /app/packages/shared/dist/ /app/packages/shared/dist/
 
 EXPOSE $SERVER_PORT
-CMD [ "node", "/app/packages/server/dist/index.js" ]
+WORKDIR /app/packages/server
+CMD [ "yarn", "preview" ]

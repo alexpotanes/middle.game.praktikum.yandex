@@ -4,8 +4,10 @@
   "description": "",
   "scripts": {
     "build": "tsc --p ./tsconfig.prod.json",
-    "preview": "node ./dist/index.js",
-    "dev": "cross-env NODE_ENV=development nodemon index.ts",
+    "preview": "yarn db:migrate && node ./dist/index.js",
+    "dev": "yarn db:migrate && cross-env NODE_ENV=development nodemon index.ts",
+    "db:migrate": "sequelize-cli db:migrate --config config/database.js",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo --config config/database.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "jest ."
@@ -20,6 +22,8 @@
     "express-rate-limit": "^8.7.0",
     "pg": "^8.8.0",
     "prettier": "^3.9.5",
+    "sequelize": "^6.37.8",
+    "sequelize-cli": "^6.6.5",
     "ws": "^8.18.0"
   },
   "devDependencies": {
