@@ -1,10 +1,7 @@
 import { Router } from 'express'
 import * as leaderboardController from '../controllers/leaderboardController'
 
-export const leaderboardRouter = Router()
+export const leaderboardRoutes = Router()
 
-leaderboardRouter.get('/', leaderboardController.getLeaderboard)
-leaderboardRouter.get(
-  '/team/:teamName',
-  leaderboardController.getTeamLeaderboard
-)
+leaderboardRoutes.post('/', leaderboardController.submitResult)
+leaderboardRoutes.post('/:teamName', leaderboardController.getLeaderboard)

@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom'
-
+import { useDispatch, useSelector } from '../../store'
+import { selectUser } from '../../slices/userSlice'
+import { submitGameResultThunk } from '../../thunks/leaderboardThunks'
+import { useEffect } from 'react'
 import { CONTROL_MARKERS_PER_PLAYER, otherPlayer } from '@warchest/shared'
 import type { MatchState, PlayerIndex } from '@warchest/shared'
 
@@ -52,10 +55,36 @@ export const EndScreen = ({
   you,
   onPlayAgain,
 }: EndScreenProps) => {
+  const dispatch = useDispatch()
+  const user = useSelector(selectUser)
   const navigate = useNavigate()
   const me = you !== null ? matchState?.players[you] : undefined
   const opponent =
     you !== null ? matchState?.players[otherPlayer(you)] : undefined
+
+  const calculateRating = (player: any, won: boolean): number => {
+    const baseRating = won ? 100 : 50
+    const markersBonus = markersPlaced(player.controlMarkersLeft) * 10
+    return baseRating + markersBonus
+  }
+
+  useEffect(() => {
+    if (me && user) {
+      const wins = won ? 1 : 0
+      const losses = won ? 0 : 1
+      const rating = calculateRating(me, won)
+
+      dispatch(
+        submitGameResultThunk(
+          user.login || user.display_name || 'Игрок',
+          user.avatar || null,
+          wins,
+          losses,
+          rating
+        )
+      )
+    }
+  }, [])
 
   return (
     <ResultHero $won={won}>

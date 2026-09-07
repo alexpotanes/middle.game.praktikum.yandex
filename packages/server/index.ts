@@ -10,7 +10,7 @@ import { authRouter } from './routes/auth'
 import { oauthRouter } from './routes/oauth'
 import { resourcesRouter } from './routes/resources'
 import { userRouter } from './routes/user'
-import { leaderboardRouter } from './routes/leaderboard'
+import { leaderboardRoutes } from './routes/leaderboard'
 import { createWsServer } from './ws/wsServer'
 import { errorHandler } from './middleware/errorHandler'
 import { oauthRateLimiter } from './middleware/rateLimiter'
@@ -26,7 +26,7 @@ app.use('/auth', authRouter)
 app.use('/oauth', oauthRateLimiter, oauthRouter)
 app.use('/user', userRouter)
 app.use('/resources', resourcesRouter)
-app.use('/leaderboard', leaderboardRouter)
+app.use('/api/leaderboard', leaderboardRoutes)
 
 app.get('/friends', (_, res) => {
   res.json([

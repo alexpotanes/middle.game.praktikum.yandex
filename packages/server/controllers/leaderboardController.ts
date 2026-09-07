@@ -1,20 +1,38 @@
-import type { Request, Response } from 'express'
+import { Request, Response } from 'express'
 import * as leaderboardService from '../services/leaderboardService'
-import { validateTeamName } from '../utils/validators'
-import { asyncHandler } from '../middleware/errorHandler'
+import { UpstreamResult } from '../services/praktikumApi'
 
-export const getLeaderboard = asyncHandler(
-  async (_req: Request, res: Response) => {
-    const leaderboard = await leaderboardService.getLeaderboard()
-    res.json(leaderboard)
+const relay = (res: Response, result: UpstreamResult) => {
+  if (result.setCookie.length) {
+    res.setHeader('set-cookie', result.setCookie)
   }
-)
+  res.status(result.status).json(result.data)
+}
 
-export const getTeamLeaderboard = asyncHandler(
-  async (req: Request, res: Response) => {
-    const teamName = validateTeamName(req.params.teamName)
-
-    const leaderboard = await leaderboardService.getTeamLeaderboard(teamName)
-    res.json(leaderboard)
+export const submitResult = async (req: Request, res: Response) => {
+  try {
+    const cookie = req.headers.cookie
+    const result = await leaderboardService.submitLeaderboardResult(
+      cookie,
+      req.body
+    )
+    relay(res, result)
+  } catch (error) {
+    res.status(502).json({ reason: 'Ошибка обращения к API Практикума' })
   }
-)
+}
+
+export const getLeaderboard = async (req: Request, res: Response) => {
+  try {
+    const cookie = req.headers.cookie
+    const { teamName } = req.params
+    const result = await leaderboardService.getLeaderboard(
+      cookie,
+      teamName,
+      req.body
+    )
+    relay(res, result)
+  } catch (error) {
+    res.status(502).json({ reason: 'Ошибка обращения к API Практикума' })
+  }
+}
