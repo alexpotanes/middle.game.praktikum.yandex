@@ -139,7 +139,7 @@ yarn db:migrate
 
 Целостность дерева комментариев (`topicId`/`parentId`) закреплена не только в контроллере, но и составным `FOREIGN KEY (topicId, parentId) REFERENCES comments (topicId, id)` в миграции `create-comments` - у ответа `topicId` физически не может отличаться от `topicId` родителя, даже если запись попадёт в таблицу не через `createReply` (сиды, импорт, другой эндпоинт).
 
-Модели проверяются unit-тестами на sqlite in-memory (`sequelize.sync()`, обычный `yarn test`) - они быстрые, но не видят реальную Postgres-схему и её constraint'ы. Отдельно есть смоук-тест реальных миграций на настоящем Postgres - `yarn test:integration` (см. `packages/server/__tests__/forumMigrations.integration.test.ts` и `test-migrations` в CI): он накатывает `migrations/` через `sequelize-cli` и проверяет каскадные удаления и составной FK выше. Не запускайте его на БД с реальными данными - тест откатывает/накатывает все миграции и чистит таблицы форума между кейсами.
+Модели проверяются unit-тестами на sqlite in-memory (`sequelize.sync()`, обычный `yarn test`) - они быстрые, но не видят реальную Postgres-схему и её constraint'ы. Отдельно есть смоук-тест реальных миграций на настоящем Postgres - `yarn test:integration` (см. `packages/server/__tests__/forumMigrations.integration.test.ts`, запускается вручную, в CI не подключён): он накатывает `migrations/` через `sequelize-cli` и проверяет каскадные удаления и составной FK выше. Не запускайте его на БД с реальными данными - тест откатывает/накатывает все миграции и чистит таблицы форума между кейсами.
 
 ### Как добавить зависимости?
 
