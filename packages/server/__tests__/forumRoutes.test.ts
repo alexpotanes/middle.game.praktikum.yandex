@@ -41,6 +41,43 @@ describe('forum routes', () => {
     expect(res.status).toBe(403)
   })
 
+  it('отдаёт 403, если API Практикума вернуло 401', async () => {
+    mockedGetUser.mockResolvedValue({ status: 401, data: null, setCookie: [] })
+
+    const res = await request(app).get('/forum/topics')
+
+    expect(res.status).toBe(403)
+  })
+
+  it('не подменяет 5xx от API Практикума на 403 (сессия могла быть валидной)', async () => {
+    mockedGetUser.mockResolvedValue({
+      status: 500,
+      data: { error: 'internal' },
+      setCookie: [],
+    })
+
+    const res = await request(app).get('/forum/topics')
+
+    expect(res.status).toBe(502)
+    expect(res.status).not.toBe(403)
+  })
+
+  it('пробрасывает 429 от API Практикума как 429, а не как 403', async () => {
+    mockedGetUser.mockResolvedValue({ status: 429, data: null, setCookie: [] })
+
+    const res = await request(app).get('/forum/topics')
+
+    expect(res.status).toBe(429)
+  })
+
+  it('возвращает 502, если getUser падает с ошибкой сети', async () => {
+    mockedGetUser.mockRejectedValue(new Error('network error'))
+
+    const res = await request(app).get('/forum/topics')
+
+    expect(res.status).toBe(502)
+  })
+
   it('позволяет авторизованному пользователю создать топик', async () => {
     authorize({ id: 1, login: 'stepa' })
 

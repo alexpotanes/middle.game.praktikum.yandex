@@ -13,7 +13,9 @@
     "dev": "lerna run dev",
     "db:migrate": "lerna run db:migrate --scope=server",
     "db:migrate:undo": "lerna run db:migrate:undo --scope=server",
+    "db:migrate:undo:all": "lerna run db:migrate:undo:all --scope=server",
     "test": "lerna run test",
+    "test:integration": "lerna run test:integration --scope=server",
     "lint": "lerna run lint",
     "format": "lerna run format",
     "preview": "lerna run preview"

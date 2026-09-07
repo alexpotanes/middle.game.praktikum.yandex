@@ -10,8 +10,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "jest .",
+    "test:integration": "cross-env NODE_ENV=development jest --config jest.integration.config.js --runInBand",
     "db:migrate": "sequelize-cli db:migrate",
-    "db:migrate:undo": "sequelize-cli db:migrate:undo"
+    "db:migrate:undo": "sequelize-cli db:migrate:undo",
+    "db:migrate:undo:all": "sequelize-cli db:migrate:undo:all"
   },
   "dependencies": {
     "@warchest/shared": "*",
@@ -27,6 +29,7 @@
     "reflect-metadata": "^0.2.2",
     "sanitize-html": "2.13.1",
     "sequelize": "^6.37.8",
+    "sequelize-cli": "^6.6.5",
     "sequelize-typescript": "^2.1.6",
     "ws": "^8.18.0"
   },
@@ -47,7 +50,6 @@
     "jest": "^28",
     "nodemon": "^2.0.19",
     "prettier": "^3.9.5",
-    "sequelize-cli": "^6.6.5",
     "sqlite3": "^6.0.1",
     "supertest": "^7.2.2",
     "ts-jest": "^28.0.8",

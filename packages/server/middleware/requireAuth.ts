@@ -17,12 +17,29 @@ export const requireAuth = async (
   try {
     const result = await authService.getUser(req.headers.cookie)
 
-    if (result.status !== 200 || !isPracticumUser(result.data)) {
+    if (result.status === 200 && isPracticumUser(result.data)) {
+      req.user = result.data
+      next()
+      return
+    }
+
+    if (result.status === 401 || result.status === 403) {
       throw new ForbiddenError('Необходима авторизация')
     }
 
-    req.user = result.data
-    next()
+    if (result.status === 429) {
+      throw new AppError(
+        429,
+        'API Практикума ограничило количество запросов, попробуйте позже',
+        'UPSTREAM_RATE_LIMIT'
+      )
+    }
+
+    throw new AppError(
+      502,
+      'Ошибка обращения к API Практикума',
+      'UPSTREAM_ERROR'
+    )
   } catch (error) {
     if (error instanceof AppError) {
       next(error)
