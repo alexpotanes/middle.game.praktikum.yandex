@@ -5,12 +5,13 @@ dotenv.config({ path: '../../.env' })
 
 import express from 'express'
 import http from 'http'
-import { createClientAndConnect } from './db'
+import { sequelize } from './db/sequelize'
 import { authRouter } from './routes/auth'
 import { oauthRouter } from './routes/oauth'
 import { resourcesRouter } from './routes/resources'
 import { userRouter } from './routes/user'
 import { leaderboardRouter } from './routes/leaderboard'
+import { forumRouter } from './routes/forum'
 import { createWsServer } from './ws/wsServer'
 import { errorHandler } from './middleware/errorHandler'
 import { oauthRateLimiter } from './middleware/rateLimiter'
@@ -20,13 +21,17 @@ app.use(cors({ origin: true, credentials: true }))
 app.use(express.json())
 const port = Number(process.env.SERVER_PORT) || 3001
 
-createClientAndConnect()
+sequelize
+  .authenticate()
+  .then(() => console.log('  ➜ 🎸 Connected to the database'))
+  .catch(e => console.error('  ➜ ❌ Database connection failed', e))
 
 app.use('/auth', authRouter)
 app.use('/oauth', oauthRateLimiter, oauthRouter)
 app.use('/user', userRouter)
 app.use('/resources', resourcesRouter)
 app.use('/leaderboard', leaderboardRouter)
+app.use('/forum', forumRouter)
 
 app.get('/friends', (_, res) => {
   res.json([
