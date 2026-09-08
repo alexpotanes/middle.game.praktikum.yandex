@@ -50,3 +50,49 @@ export interface YandexOAuthRequest {
   code: string
   redirect_uri: string
 }
+
+export interface ForumTopic {
+  id: number
+  title: string
+  message: string
+  authorId: number
+  authorLogin: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ForumComment {
+  id: number
+  topicId: number
+  parentId: number | null
+  authorId: number
+  authorLogin: string
+  message: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ForumCommentNode extends ForumComment {
+  replies: ForumCommentNode[]
+}
+
+export interface ForumTopicsResponse {
+  topics: ForumTopic[]
+  total: number
+  limit: number
+  offset: number
+}
+
+export interface ForumTopicDetailsResponse {
+  topic: ForumTopic
+  comments: ForumCommentNode[]
+}
+
+export interface CreateForumTopicRequest {
+  title: string
+  message: string
+}
+
+export interface CreateForumCommentRequest {
+  message: string
+}

@@ -9,6 +9,20 @@ const isApiError = (value: unknown): value is ApiError =>
   value !== null &&
   typeof (value as Record<string, unknown>).reason === 'string'
 
+const getAppErrorMessage = (value: unknown): string | undefined => {
+  if (typeof value !== 'object' || value === null) {
+    return undefined
+  }
+
+  const error = (value as Record<string, unknown>).error
+  if (typeof error !== 'object' || error === null) {
+    return undefined
+  }
+
+  const message = (error as Record<string, unknown>).message
+  return typeof message === 'string' ? message : undefined
+}
+
 export const request = async <T>(
   path: string,
   init: RequestInit = {},
@@ -39,7 +53,9 @@ export const request = async <T>(
   }
 
   if (!res.ok) {
-    const reason = isApiError(data) ? data.reason : 'Что-то пошло не так'
+    const reason = isApiError(data)
+      ? data.reason
+      : (getAppErrorMessage(data) ?? 'Что-то пошло не так')
     throw { reason }
   }
 

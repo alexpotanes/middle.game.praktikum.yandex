@@ -42,6 +42,7 @@ const AuthGamePage = withAuth(GamePage)
 const AuthLeaderboardPage = withAuth(LeaderboardPage)
 const AuthForumPage = withAuth(ForumPage)
 const AuthForumTopicPage = withAuth(ForumTopicPage)
+const AuthForumCreateTopicPage = withAuth(ForumCreateTopicPage)
 
 // Доступны только неавторизованным пользователям
 const guestRoutes: AppRoute[] = [
@@ -81,7 +82,7 @@ const privateRoutes: AppRoute[] = [
   },
   {
     path: '/forum/new',
-    element: <ForumCreateTopicPage />,
+    element: <AuthForumCreateTopicPage />,
     fetchData: initForumCreateTopicPage,
   },
   {

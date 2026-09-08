@@ -3,9 +3,19 @@ import { ChangeEvent, FormEvent, useState } from 'react'
 import { Button } from '../button'
 import { Form } from '../form'
 import { ErrorText, Field, Input, Label } from '../form-field/styles'
-import { formatForumDate } from '../../mock/forum'
-import { selectForumAuthorName } from '../../slices/userSlice'
-import { useSelector } from '../../store'
+import { formatForumDate } from '../../utils/forumDate'
+import type { ForumCommentNode } from '../../api/types'
+import { useDispatch, useSelector } from '../../store'
+import {
+  selectCreateForumCommentError,
+  selectCreateForumCommentStatus,
+  selectCurrentForumTopic,
+  selectForumComments,
+  selectForumTopicError,
+  selectForumTopicStatus,
+} from '../../slices/forumSlice'
+import { createForumCommentThunk } from '../../thunks/forumThunks'
+import { STATUS } from '../../slices/constants'
 import {
   BackLink,
   Comment,
@@ -20,49 +30,82 @@ import {
   Meta,
   NotFound,
   Page,
+  Replies,
   Title,
   Topic,
 } from './styles'
-import { useForumTopic } from './useForumTopic'
 
 type ForumTopicProps = {
-  topicId: string
+  topicId: number
+  isValidTopicId: boolean
 }
 
-export const ForumTopic = ({ topicId }: ForumTopicProps) => {
-  const author = useSelector(selectForumAuthorName)
+const CommentNode = ({ comment }: { comment: ForumCommentNode }) => (
+  <Comment>
+    <CommentMeta>
+      <CommentAuthor>{comment.authorLogin}</CommentAuthor>
+      <span>{formatForumDate(comment.createdAt)}</span>
+    </CommentMeta>
+    <CommentMessage>{comment.message}</CommentMessage>
+    {comment.replies.length > 0 && (
+      <Replies>
+        {comment.replies.map(reply => (
+          <li key={reply.id}>
+            <CommentNode comment={reply} />
+          </li>
+        ))}
+      </Replies>
+    )}
+  </Comment>
+)
 
-  const { topic, addComment } = useForumTopic(topicId)
+export const ForumTopic = ({ topicId, isValidTopicId }: ForumTopicProps) => {
+  const dispatch = useDispatch()
+  const topic = useSelector(selectCurrentForumTopic)
+  const comments = useSelector(selectForumComments)
+  const topicStatus = useSelector(selectForumTopicStatus)
+  const topicError = useSelector(selectForumTopicError)
+  const createCommentStatus = useSelector(selectCreateForumCommentStatus)
+  const createCommentError = useSelector(selectCreateForumCommentError)
+
   const [message, setMessage] = useState('')
-  const [error, setError] = useState<string | undefined>()
+  const [validationError, setValidationError] = useState<string | undefined>()
 
-  if (!topic) {
+  if (!isValidTopicId || (topicStatus === STATUS.FAILED && !topic)) {
     return (
       <NotFound>
-        <p>Такого топика не существует.</p>
+        <p>{topicError ?? 'Такого топика не существует.'}</p>
         <BackLink to="/forum">← Назад к форуму</BackLink>
       </NotFound>
     )
+  }
+
+  if (!topic) {
+    return <Empty>Загрузка топика...</Empty>
   }
 
   const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value)
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const trimmed = message.trim()
     if (!trimmed) {
-      setError('Введите текст комментария')
+      setValidationError('Введите текст комментария')
       return
     }
 
-    const comment = addComment({ message: trimmed, author })
-    if (!comment) return
-
-    setMessage('')
-    setError(undefined)
+    const result = await dispatch(
+      createForumCommentThunk({ topicId, message: trimmed })
+    )
+    if (createForumCommentThunk.fulfilled.match(result)) {
+      setMessage('')
+      setValidationError(undefined)
+    }
   }
+
+  const isSubmitting = createCommentStatus === STATUS.LOADING
 
   return (
     <Page>
@@ -71,26 +114,22 @@ export const ForumTopic = ({ topicId }: ForumTopicProps) => {
       <Topic>
         <Title>{topic.title}</Title>
         <Meta>
-          <span>{topic.author}</span>
+          <span>{topic.authorLogin}</span>
           <span>{formatForumDate(topic.createdAt)}</span>
         </Meta>
         <Message>{topic.message}</Message>
       </Topic>
 
       <Comments>
-        <CommentsTitle>Комментарии ({topic.comments.length})</CommentsTitle>
-        {topic.comments.length === 0 ? (
+        <CommentsTitle>Комментарии ({comments.length})</CommentsTitle>
+        {comments.length === 0 ? (
           <Empty>Комментариев пока нет. Будьте первым!</Empty>
         ) : (
           <CommentList>
-            {topic.comments.map(comment => (
-              <Comment key={comment.id}>
-                <CommentMeta>
-                  <CommentAuthor>{comment.author}</CommentAuthor>
-                  <span>{formatForumDate(comment.createdAt)}</span>
-                </CommentMeta>
-                <CommentMessage>{comment.message}</CommentMessage>
-              </Comment>
+            {comments.map(comment => (
+              <li key={comment.id}>
+                <CommentNode comment={comment} />
+              </li>
             ))}
           </CommentList>
         )}
@@ -99,20 +138,30 @@ export const ForumTopic = ({ topicId }: ForumTopicProps) => {
       <Form
         title="Добавить комментарий"
         onSubmit={handleSubmit}
-        actions={<Button type="submit">Отправить</Button>}>
+        actions={
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Отправка...' : 'Отправить'}
+          </Button>
+        }>
         <Field $wide>
           <Label htmlFor="comment-message">Комментарий</Label>
           <Input
             as="textarea"
             id="comment-message"
             rows={4}
-            $error={!!error}
+            $error={!!validationError}
             value={message}
             onChange={handleMessageChange}
             placeholder="Ваш комментарий"
-            aria-invalid={!!error}
+            aria-invalid={!!validationError}
+            disabled={isSubmitting}
           />
-          {error && <ErrorText role="alert">{error}</ErrorText>}
+          {validationError && (
+            <ErrorText role="alert">{validationError}</ErrorText>
+          )}
+          {createCommentError && (
+            <ErrorText role="alert">{createCommentError}</ErrorText>
+          )}
         </Field>
       </Form>
     </Page>

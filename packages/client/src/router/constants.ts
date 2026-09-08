@@ -3,4 +3,5 @@ export const ROUTES = {
   REGISTRATION: '/signup',
 } as const
 
-export const getForumTopicPath = (topicId: string) => `/forum/${topicId}`
+export const getForumTopicPath = (topicId: string | number) =>
+  `/forum/${topicId}`

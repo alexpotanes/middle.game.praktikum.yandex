@@ -13,6 +13,7 @@ import userReducer from './slices/userSlice'
 import authReducer from './slices/authSlice'
 import matchReducer from './slices/matchSlice'
 import leaderboardReducer from './slices/leaderboardSlice'
+import forumReducer from './slices/forumSlice'
 
 declare global {
   interface Window {
@@ -27,6 +28,7 @@ export const reducer = combineReducers({
   auth: authReducer,
   match: matchReducer,
   leaderboard: leaderboardReducer,
+  forum: forumReducer,
 })
 
 export type RootState = ReturnType<typeof reducer>
