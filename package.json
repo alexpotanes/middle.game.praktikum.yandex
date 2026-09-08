@@ -18,7 +18,8 @@
     "test:integration": "lerna run test:integration --scope=server",
     "lint": "lerna run lint",
     "format": "lerna run format",
-    "preview": "lerna run preview"
+    "preview": "lerna run preview",
+    "memory:check": "node scripts/memory-check.mjs"
   },
   "license": "MIT",
   "workspaces": [
