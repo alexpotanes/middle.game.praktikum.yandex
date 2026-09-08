@@ -6,7 +6,7 @@ import {
   Model,
   NonAttribute,
 } from 'sequelize'
-import { sequelize } from '../db'
+import { sequelize } from '../db/sequelize'
 
 export class LocalUser extends Model<
   InferAttributes<LocalUser>,

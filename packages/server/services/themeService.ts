@@ -1,4 +1,4 @@
-import { sequelize } from '../db'
+import { sequelize } from '../db/sequelize'
 import { LocalUser, SiteTheme, UserTheme } from '../models/themes'
 import { NotFoundError } from '../utils/errors'
 

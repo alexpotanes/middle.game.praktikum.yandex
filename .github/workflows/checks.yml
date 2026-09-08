@@ -38,6 +38,8 @@ jobs:
         run: yarn install
       - name: Bootstrap packages
         run: yarn lerna bootstrap
+      - name: Build shared package
+        run: yarn build:shared
       - name: Run tests
         run: yarn test
   type-check:
@@ -53,5 +55,7 @@ jobs:
         run: yarn install
       - name: Bootstrap packages
         run: yarn lerna bootstrap
+      - name: Build shared package
+        run: yarn build:shared
       - name: Type check
         run: yarn lerna run type-check

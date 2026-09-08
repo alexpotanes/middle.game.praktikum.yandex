@@ -4,13 +4,16 @@
   "description": "",
   "scripts": {
     "build": "tsc --p ./tsconfig.prod.json",
+    "type-check": "tsc --noEmit",
     "preview": "yarn db:migrate && node ./dist/index.js",
     "dev": "yarn db:migrate && cross-env NODE_ENV=development nodemon index.ts",
-    "db:migrate": "sequelize-cli db:migrate --config config/database.js",
-    "db:migrate:undo": "sequelize-cli db:migrate:undo --config config/database.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "jest ."
+    "test": "jest .",
+    "test:integration": "cross-env NODE_ENV=development jest --config jest.integration.config.js --runInBand",
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo",
+    "db:migrate:undo:all": "sequelize-cli db:migrate:undo:all"
   },
   "dependencies": {
     "@warchest/shared": "*",
@@ -21,9 +24,13 @@
     "express": "^4.18.1",
     "express-rate-limit": "^8.7.0",
     "pg": "^8.8.0",
+    "pg-hstore": "^2.3.4",
     "prettier": "^3.9.5",
+    "reflect-metadata": "^0.2.2",
+    "sanitize-html": "2.13.1",
     "sequelize": "^6.37.8",
     "sequelize-cli": "^6.6.5",
+    "sequelize-typescript": "^2.1.6",
     "ws": "^8.18.0"
   },
   "devDependencies": {
@@ -32,6 +39,9 @@
     "@types/jest": "^28.1.8",
     "@types/node": "^18.19.0",
     "@types/pg": "^8.6.5",
+    "@types/sanitize-html": "^2.16.1",
+    "@types/supertest": "^7.2.1",
+    "@types/validator": "^13.15.10",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
@@ -40,6 +50,8 @@
     "jest": "^28",
     "nodemon": "^2.0.19",
     "prettier": "^3.9.5",
+    "sqlite3": "^6.0.1",
+    "supertest": "^7.2.2",
     "ts-jest": "^28.0.8",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.0"

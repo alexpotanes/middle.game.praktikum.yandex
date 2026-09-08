@@ -2,18 +2,24 @@
   "name": "client-server-template-with-vite",
   "private": true,
   "scripts": {
-    "bootstrap": "yarn && node init.js && lerna clean && yarn && lerna bootstrap",
+    "bootstrap": "yarn && node init.js && lerna clean && yarn && lerna bootstrap && yarn build:shared",
     "build": "lerna run build",
+    "build:shared": "lerna run build --scope=@warchest/shared",
     "build:client": "lerna run build --scope=client --include-dependencies",
     "build:server": "lerna run build --scope=server --include-dependencies",
     "setup": "lefthook install",
     "dev:client": "lerna run dev  --scope=client",
     "dev:server": "lerna run dev --scope=server",
     "dev": "lerna run dev",
+    "db:migrate": "lerna run db:migrate --scope=server",
+    "db:migrate:undo": "lerna run db:migrate:undo --scope=server",
+    "db:migrate:undo:all": "lerna run db:migrate:undo:all --scope=server",
     "test": "lerna run test",
+    "test:integration": "lerna run test:integration --scope=server",
     "lint": "lerna run lint",
     "format": "lerna run format",
-    "preview": "lerna run preview"
+    "preview": "lerna run preview",
+    "memory:check": "node scripts/memory-check.mjs"
   },
   "license": "MIT",
   "workspaces": [

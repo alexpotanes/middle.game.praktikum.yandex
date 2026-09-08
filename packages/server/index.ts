@@ -5,14 +5,17 @@ dotenv.config({ path: '../../.env' })
 
 import express from 'express'
 import http from 'http'
-import { sequelize } from './db'
+import { sequelize } from './db/sequelize'
 import { authRouter } from './routes/auth'
 import { oauthRouter } from './routes/oauth'
 import { resourcesRouter } from './routes/resources'
 import { userRouter } from './routes/user'
 import { leaderboardRouter } from './routes/leaderboard'
+import { forumRouter } from './routes/forum'
 import { createWsServer } from './ws/wsServer'
 import { errorHandler } from './middleware/errorHandler'
+import { requireAuth } from './middleware/auth'
+import { verifyPraktikumSession } from './services/sessionVerifier'
 import { oauthRateLimiter } from './middleware/rateLimiter'
 import { themesRouter, userThemeRouter } from './routes/themes'
 
@@ -21,15 +24,23 @@ app.use(cors({ origin: true, credentials: true }))
 app.use(express.json())
 const port = Number(process.env.SERVER_PORT) || 3001
 
+const auth = requireAuth(verifyPraktikumSession)
+
+sequelize
+  .authenticate()
+  .then(() => console.log('  ➜ 🎸 Connected to the database'))
+  .catch(e => console.error('  ➜ ❌ Database connection failed', e))
+
 app.use('/auth', authRouter)
 app.use('/oauth', oauthRateLimiter, oauthRouter)
-app.use('/user', userRouter)
+app.use('/user', auth, userRouter)
 app.use('/themes', themesRouter)
 app.use('/user/theme', userThemeRouter)
-app.use('/resources', resourcesRouter)
-app.use('/leaderboard', leaderboardRouter)
+app.use('/resources', auth, resourcesRouter)
+app.use('/leaderboard', auth, leaderboardRouter)
+app.use('/forum', auth, forumRouter)
 
-app.get('/friends', (_, res) => {
+app.get('/friends', auth, (_, res) => {
   res.json([
     { name: 'Саша', secondName: 'Панов' },
     { name: 'Лёша', secondName: 'Садовников' },
@@ -37,7 +48,7 @@ app.get('/friends', (_, res) => {
   ])
 })
 
-app.get('/user', (_, res) => {
+app.get('/user', auth, (_, res) => {
   res.json({ name: 'Степа', secondName: 'Степанов' })
 })
 
