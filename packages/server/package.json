@@ -5,8 +5,8 @@
   "scripts": {
     "build": "tsc --p ./tsconfig.prod.json",
     "type-check": "tsc --noEmit",
-    "preview": "node ./dist/index.js",
-    "dev": "cross-env NODE_ENV=development nodemon index.ts",
+    "preview": "yarn db:migrate && node ./dist/index.js",
+    "dev": "yarn db:migrate && cross-env NODE_ENV=development nodemon index.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "jest .",

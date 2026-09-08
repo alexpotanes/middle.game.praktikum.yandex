@@ -7,6 +7,15 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
+  if (
+    err instanceof SyntaxError &&
+    'type' in err &&
+    err.type === 'entity.parse.failed'
+  ) {
+    return res.status(400).json({
+      error: { code: 'BAD_REQUEST', message: 'Некорректный JSON' },
+    })
+  }
   console.error('Error:', {
     name: err.name,
     message: err.message,

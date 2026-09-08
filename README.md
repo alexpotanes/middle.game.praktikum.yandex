@@ -283,3 +283,8 @@ $ node scripts/memory-check.mjs --login=test-testov6 --password=Qwerty123456
 `docker compose up {service_name}`, например `docker compose up server` (база запустится вместе с ним).
 
 Проверить состояние сервисов можно командой `docker compose ps`. Данные PostgreSQL сохраняются в `./tmp/pgdata`.
+
+### Переключение темы
+
+API тем, схема PostgreSQL, миграции и проверка переключателя описаны в
+[docs/themes.md](docs/themes.md).
