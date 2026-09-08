@@ -2,8 +2,12 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from '../../store'
 import { selectUser } from '../../slices/userSlice'
 import { submitGameResultThunk } from '../../thunks/leaderboardThunks'
-import { useEffect } from 'react'
-import { CONTROL_MARKERS_PER_PLAYER, otherPlayer } from '@warchest/shared'
+import { useEffect, useRef } from 'react'
+import {
+  CONTROL_MARKERS_PER_PLAYER,
+  otherPlayer,
+  PlayerState,
+} from '@warchest/shared'
 import type { MatchState, PlayerIndex } from '@warchest/shared'
 
 import { GameIcon } from '../../shared/icons'
@@ -42,6 +46,7 @@ interface EndScreenProps {
   reason: string
   matchState: MatchState | null
   you: PlayerIndex | null
+  gameId: string
   onPlayAgain: () => void
 }
 
@@ -53,8 +58,10 @@ export const EndScreen = ({
   reason,
   matchState,
   you,
+  gameId,
   onPlayAgain,
 }: EndScreenProps) => {
+  const submittedGameRef = useRef<string | null>(null)
   const dispatch = useDispatch()
   const user = useSelector(selectUser)
   const navigate = useNavigate()
@@ -62,13 +69,17 @@ export const EndScreen = ({
   const opponent =
     you !== null ? matchState?.players[otherPlayer(you)] : undefined
 
-  const calculateRating = (player: any, won: boolean): number => {
+  const calculateRating = (player: PlayerState, won: boolean): number => {
     const baseRating = won ? 100 : 50
     const markersBonus = markersPlaced(player.controlMarkersLeft) * 10
     return baseRating + markersBonus
   }
 
   useEffect(() => {
+    if (submittedGameRef.current === gameId) {
+      return
+    }
+
     if (me && user) {
       const wins = won ? 1 : 0
       const losses = won ? 0 : 1
@@ -83,8 +94,10 @@ export const EndScreen = ({
           rating
         )
       )
+
+      submittedGameRef.current = gameId
     }
-  }, [])
+  }, [me, user, won, dispatch])
 
   return (
     <ResultHero $won={won}>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet'
 
 import { Layout } from '../components/Layout'
@@ -27,6 +27,9 @@ import { GameWrapper, Title } from './GamePage.styles'
 
 const WS_URL = `${SERVER_HOST.replace(/^http/, 'ws')}/ws`
 
+let nextId = 1
+const generateId = (prefix: string) => `${prefix}-${nextId++}`
+
 export const GamePage = () => {
   usePage({ initPage: initGamePage })
   const dispatch = useDispatch()
@@ -40,6 +43,7 @@ export const GamePage = () => {
     error,
   } = useSelector(state => state.match)
 
+  const [gameId, setGameId] = useState<string>(generateId(login ?? 'user'))
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const clientRef = useRef<GameClient | null>(null)
   const sceneRef = useRef<WarChestScene | null>(null)
@@ -107,6 +111,7 @@ export const GamePage = () => {
   }
 
   const playAgain = () => {
+    setGameId(generateId(login ?? 'user'))
     dispatch(resetMatch())
   }
 
@@ -138,6 +143,7 @@ export const GamePage = () => {
             reason={endResult.reason}
             matchState={matchState}
             you={you}
+            gameId={gameId}
             onPlayAgain={playAgain}
           />
         )

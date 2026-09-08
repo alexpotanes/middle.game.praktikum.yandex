@@ -83,6 +83,7 @@ const renderEndScreen = (
                 reason="control"
                 matchState={fakeMatchState}
                 you={0}
+                gameId="1"
                 onPlayAgain={jest.fn()}
                 {...props}
               />
