@@ -21,8 +21,8 @@ export const AvatarButton = styled.label`
   height: 112px;
   border-radius: 50%;
   border: 2px solid ${colors.gold};
-  background: #f7f2e6;
-  color: ${colors.header};
+  background: ${colors.surface};
+  color: ${colors.heading};
   cursor: pointer;
   overflow: hidden;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);

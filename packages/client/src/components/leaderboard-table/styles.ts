@@ -33,7 +33,7 @@ export const HeaderCell = styled.th<{ align?: CellAlign }>`
   text-transform: uppercase;
   color: ${colors.heading};
   border-bottom: 2px solid rgba(86, 72, 68, 0.1);
-  background: rgba(245, 242, 239, 0.5);
+  background: ${colors.surfaceMuted};
 `
 
 export const Cell = styled.td<{ align?: CellAlign }>`

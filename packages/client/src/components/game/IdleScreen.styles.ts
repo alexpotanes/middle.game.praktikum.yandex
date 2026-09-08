@@ -84,7 +84,7 @@ export const AboutCard = styled.div`
   margin: 24px 0 0;
   padding: 20px 24px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.55);
+  background: ${colors.surfaceMuted};
   border: 1px solid rgba(86, 72, 68, 0.12);
   border-left: 3px solid ${colors.gold};
 `
@@ -117,7 +117,7 @@ export const TipsGrid = styled.div`
 export const TipCard = styled.div`
   padding: 20px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.55);
+  background: ${colors.surfaceMuted};
   border: 1px solid rgba(86, 72, 68, 0.12);
 `
 

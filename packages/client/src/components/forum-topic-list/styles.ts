@@ -17,7 +17,7 @@ export const Card = styled(Link)`
   padding: 20px 24px;
   border: 1px solid rgba(86, 72, 68, 0.16);
   border-radius: 8px;
-  background: #fff;
+  background: ${colors.surface};
   box-shadow: ${shadows.card};
   color: inherit;
   text-decoration: none;
@@ -40,7 +40,7 @@ export const CardHeader = styled.div`
 
 export const Title = styled.h2`
   margin: 0;
-  color: ${colors.header};
+  color: ${colors.heading};
   font-size: 20px;
   line-height: 1.3;
 `
@@ -59,7 +59,7 @@ export const Meta = styled.div`
   display: flex;
   gap: 16px;
   margin-top: 12px;
-  color: rgba(27, 27, 27, 0.6);
+  color: ${colors.muted};
   font-size: 13px;
 `
 
@@ -68,7 +68,7 @@ export const Empty = styled.p`
   padding: 24px;
   border: 1px dashed rgba(86, 72, 68, 0.3);
   border-radius: 8px;
-  color: rgba(27, 27, 27, 0.7);
+  color: ${colors.muted};
   font-size: 15px;
   text-align: center;
 `

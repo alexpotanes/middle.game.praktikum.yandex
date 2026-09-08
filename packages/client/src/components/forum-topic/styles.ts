@@ -11,7 +11,7 @@ export const Page = styled.div`
 
 export const BackLink = styled(Link)`
   align-self: flex-start;
-  color: ${colors.header};
+  color: ${colors.heading};
   font-size: 14px;
   text-decoration: none;
 
@@ -24,13 +24,13 @@ export const Topic = styled.article`
   padding: 24px;
   border: 1px solid rgba(86, 72, 68, 0.16);
   border-radius: 8px;
-  background: #fff;
+  background: ${colors.surface};
   box-shadow: ${shadows.card};
 `
 
 export const Title = styled.h1`
   margin: 0;
-  color: ${colors.header};
+  color: ${colors.heading};
   font-size: clamp(24px, 3.5vw, 30px);
 `
 
@@ -38,7 +38,7 @@ export const Meta = styled.div`
   display: flex;
   gap: 16px;
   margin-top: 8px;
-  color: rgba(27, 27, 27, 0.6);
+  color: ${colors.muted};
   font-size: 13px;
 `
 
@@ -58,7 +58,7 @@ export const Comments = styled.section`
 
 export const CommentsTitle = styled.h2`
   margin: 0;
-  color: ${colors.header};
+  color: ${colors.heading};
   font-size: 20px;
 `
 
@@ -75,18 +75,18 @@ export const Comment = styled.li`
   padding: 16px 20px;
   border: 1px solid rgba(86, 72, 68, 0.16);
   border-radius: 8px;
-  background: #fff;
+  background: ${colors.surface};
 `
 
 export const CommentMeta = styled.div`
   display: flex;
   gap: 12px;
-  color: rgba(27, 27, 27, 0.6);
+  color: ${colors.muted};
   font-size: 12px;
 `
 
 export const CommentAuthor = styled.span`
-  color: ${colors.header};
+  color: ${colors.heading};
   font-weight: 700;
 `
 
@@ -114,7 +114,7 @@ export const Empty = styled.p`
   padding: 20px;
   border: 1px dashed rgba(86, 72, 68, 0.3);
   border-radius: 8px;
-  color: rgba(27, 27, 27, 0.7);
+  color: ${colors.muted};
   font-size: 15px;
   text-align: center;
 `

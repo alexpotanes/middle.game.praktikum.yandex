@@ -14,26 +14,28 @@ import { leaderboardRouter } from './routes/leaderboard'
 import { forumRouter } from './routes/forum'
 import { createWsServer } from './ws/wsServer'
 import { errorHandler } from './middleware/errorHandler'
+import { requireAuth } from './middleware/auth'
+import { verifyPraktikumSession } from './services/sessionVerifier'
 import { oauthRateLimiter } from './middleware/rateLimiter'
+import { themesRouter, userThemeRouter } from './routes/themes'
 
 const app = express()
 app.use(cors({ origin: true, credentials: true }))
 app.use(express.json())
 const port = Number(process.env.SERVER_PORT) || 3001
 
-sequelize
-  .authenticate()
-  .then(() => console.log('  ➜ 🎸 Connected to the database'))
-  .catch(e => console.error('  ➜ ❌ Database connection failed', e))
+const auth = requireAuth(verifyPraktikumSession)
 
 app.use('/auth', authRouter)
 app.use('/oauth', oauthRateLimiter, oauthRouter)
-app.use('/user', userRouter)
-app.use('/resources', resourcesRouter)
-app.use('/leaderboard', leaderboardRouter)
-app.use('/forum', forumRouter)
+app.use('/themes', themesRouter)
+app.use('/user/theme', userThemeRouter)
+app.use('/user', auth, userRouter)
+app.use('/resources', auth, resourcesRouter)
+app.use('/leaderboard', auth, leaderboardRouter)
+app.use('/forum', auth, forumRouter)
 
-app.get('/friends', (_, res) => {
+app.get('/friends', auth, (_, res) => {
   res.json([
     { name: 'Саша', secondName: 'Панов' },
     { name: 'Лёша', secondName: 'Садовников' },
@@ -41,7 +43,7 @@ app.get('/friends', (_, res) => {
   ])
 })
 
-app.get('/user', (_, res) => {
+app.get('/user', auth, (_, res) => {
   res.json({ name: 'Степа', secondName: 'Степанов' })
 })
 
@@ -63,6 +65,15 @@ app.use(errorHandler)
 const server = http.createServer(app)
 createWsServer(server)
 
-server.listen(port, () => {
-  console.log(`  ➜ Server is listening on port: ${port}`)
-})
+sequelize
+  .authenticate()
+  .then(() => {
+    server.listen(port, () => {
+      console.log(`  ➜ Server is listening on port: ${port}`)
+    })
+  })
+  .catch(async error => {
+    console.error('Не удалось подключиться к PostgreSQL', error)
+    await sequelize.close()
+    process.exit(1)
+  })
