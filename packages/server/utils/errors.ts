@@ -49,3 +49,9 @@ export class InternalServerError extends AppError {
     super(500, message, 'INTERNAL_SERVER_ERROR')
   }
 }
+
+export class BadGatewayError extends AppError {
+  constructor(message = 'Bad gateway') {
+    super(502, message, 'BAD_GATEWAY')
+  }
+}

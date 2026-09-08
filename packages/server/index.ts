@@ -14,12 +14,16 @@ import { leaderboardRouter } from './routes/leaderboard'
 import { forumRouter } from './routes/forum'
 import { createWsServer } from './ws/wsServer'
 import { errorHandler } from './middleware/errorHandler'
+import { requireAuth } from './middleware/auth'
+import { verifyPraktikumSession } from './services/sessionVerifier'
 import { oauthRateLimiter } from './middleware/rateLimiter'
 
 const app = express()
 app.use(cors({ origin: true, credentials: true }))
 app.use(express.json())
 const port = Number(process.env.SERVER_PORT) || 3001
+
+const auth = requireAuth(verifyPraktikumSession)
 
 sequelize
   .authenticate()
@@ -28,12 +32,12 @@ sequelize
 
 app.use('/auth', authRouter)
 app.use('/oauth', oauthRateLimiter, oauthRouter)
-app.use('/user', userRouter)
-app.use('/resources', resourcesRouter)
-app.use('/leaderboard', leaderboardRouter)
-app.use('/forum', forumRouter)
+app.use('/user', auth, userRouter)
+app.use('/resources', auth, resourcesRouter)
+app.use('/leaderboard', auth, leaderboardRouter)
+app.use('/forum', auth, forumRouter)
 
-app.get('/friends', (_, res) => {
+app.get('/friends', auth, (_, res) => {
   res.json([
     { name: 'Саша', secondName: 'Панов' },
     { name: 'Лёша', secondName: 'Садовников' },
@@ -41,7 +45,7 @@ app.get('/friends', (_, res) => {
   ])
 })
 
-app.get('/user', (_, res) => {
+app.get('/user', auth, (_, res) => {
   res.json({ name: 'Степа', secondName: 'Степанов' })
 })
 
