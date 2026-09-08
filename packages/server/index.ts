@@ -26,16 +26,11 @@ const port = Number(process.env.SERVER_PORT) || 3001
 
 const auth = requireAuth(verifyPraktikumSession)
 
-sequelize
-  .authenticate()
-  .then(() => console.log('  ➜ 🎸 Connected to the database'))
-  .catch(e => console.error('  ➜ ❌ Database connection failed', e))
-
 app.use('/auth', authRouter)
 app.use('/oauth', oauthRateLimiter, oauthRouter)
-app.use('/user', auth, userRouter)
 app.use('/themes', themesRouter)
 app.use('/user/theme', userThemeRouter)
+app.use('/user', auth, userRouter)
 app.use('/resources', auth, resourcesRouter)
 app.use('/leaderboard', auth, leaderboardRouter)
 app.use('/forum', auth, forumRouter)

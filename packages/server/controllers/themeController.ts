@@ -49,7 +49,7 @@ export const setCurrent = async (req: Request, res: Response) => {
     res.cookie(GUEST_THEME_COOKIE, selected.theme, {
       httpOnly: true,
       sameSite: 'lax',
-      secure: req.secure,
+      secure: process.env.COOKIE_SECURE === 'true',
       path: '/',
       maxAge: 365 * 24 * 60 * 60 * 1000,
     })
