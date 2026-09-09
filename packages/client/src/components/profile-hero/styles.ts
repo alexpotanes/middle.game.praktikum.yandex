@@ -29,7 +29,7 @@ export const HeroAside = styled.div`
 
 export const Eyebrow = styled.p`
   margin: 0 0 10px;
-  color: ${colors.header};
+  color: ${colors.heading};
   font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -37,14 +37,14 @@ export const Eyebrow = styled.p`
 
 export const Title = styled.h1`
   margin: 0 0 10px;
-  color: ${colors.header};
+  color: ${colors.heading};
   font-size: clamp(28px, 4vw, 40px);
   line-height: 1.1;
 `
 
 export const Subtitle = styled.p`
   margin: 0;
-  color: #6f625e;
+  color: ${colors.muted};
   font-size: 16px;
   line-height: 1.5;
 `
