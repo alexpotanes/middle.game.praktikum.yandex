@@ -1,10 +1,16 @@
 ### Как запускать?
 
 1. Убедитесь что у вас установлен `node` и `docker`
-2. Выполните команду `yarn bootstrap` - это обязательный шаг, без него ничего работать не будет :)
-3. Выполните команду `yarn dev`
-4. Выполните команду `yarn dev --scope=client` чтобы запустить только клиент
-5. Выполните команду `yarn dev --scope=server` чтобы запустить только server
+2. На данный момент нужно перейти на ветку dev
+3. Выполнить команду `yarn install` для установки зависимостей
+4. Выполнить команду `yarn bootstrap`
+5. Выполнить команду `yarn workspace @warchest/shared build` для сборки shared части
+6. Выполнить команду `docker compose up` для поднятия контейнеров докера
+7. Запустить проект командой `yarn dev`
+8. Перейти http://localhost:3000/
+
+Чтобы запустить только клиент выполните команду `yarn dev --scope=client`
+Чтобы запустить только server выполните команду `yarn dev --scope=server`
 
 ### Страницы
 
@@ -47,7 +53,7 @@
 
 ### OAuth через Яндекс
 
-Кнопка «Войти через Яндекс» есть на `/signin` и `/signup`. Логика на клиенте - в `utils/oauth.ts`, `api/oauthApi.ts` и двух thunk'ах в `thunks/authThunks.ts`:
+Кнопка «Войти через Яндекс» есть на `/signin` и `/signup`. Логика на клиенте - в `utils/oauth.ts`, `api/oauth-api.ts` и двух thunk'ах в `thunks/auth-thunks.ts`:
 
 - `startYandexOAuthThunk` - по клику запрашивает `service_id` и готовый `auth_url` (`GET /oauth/yandex/service-id`) и делает `document.location.href` на полученный `auth_url`
 - `loginWithYandexThunk` - при возврате с `code` в query отправляет его на `POST /oauth/yandex`, затем подтягивает пользователя через `authApi.getUser()`
