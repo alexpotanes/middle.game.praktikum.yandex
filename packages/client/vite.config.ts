@@ -20,6 +20,7 @@ export default defineConfig({
   define: {
     __EXTERNAL_SERVER_URL__: JSON.stringify(process.env.EXTERNAL_SERVER_URL),
     __INTERNAL_SERVER_URL__: JSON.stringify(process.env.INTERNAL_SERVER_URL),
+    __TEAM_NAME__: JSON.stringify(process.env.TEAM_NAME),
   },
   build: {
     outDir: path.join(__dirname, 'dist/client'),

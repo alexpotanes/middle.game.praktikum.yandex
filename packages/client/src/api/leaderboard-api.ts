@@ -1,6 +1,6 @@
 import { SERVER_HOST } from '../constants'
 
-export const TEAM_NAME = process.env.TEAM_NAME
+export const TEAM_NAME = __TEAM_NAME__ || 'default-team'
 
 export const RATING_FIELD = 'rating'
 
