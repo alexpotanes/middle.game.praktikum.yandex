@@ -53,7 +53,7 @@
 
 ### OAuth через Яндекс
 
-Кнопка «Войти через Яндекс» есть на `/signin` и `/signup`. Логика на клиенте - в `utils/oauth.ts`, `api/oauth-api.ts` и двух thunk'ах в `thunks/auth-thunks.ts`:
+Кнопка «Войти через Яндекс» есть на `/signin` и `/signup`. Логика на клиенте - в `utils/oauth.ts`, `api/oauthApi.ts` и двух thunk'ах в `thunks/authThunks.ts`:
 
 - `startYandexOAuthThunk` - по клику запрашивает `service_id` и готовый `auth_url` (`GET /oauth/yandex/service-id`) и делает `document.location.href` на полученный `auth_url`
 - `loginWithYandexThunk` - при возврате с `code` в query отправляет его на `POST /oauth/yandex`, затем подтягивает пользователя через `authApi.getUser()`
