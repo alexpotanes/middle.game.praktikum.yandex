@@ -7,14 +7,14 @@ export const Panel = styled.section`
   flex-direction: column;
   padding: 24px;
   border-radius: 8px;
-  background: #fff;
+  background: ${colors.surface};
   border: 1px solid rgba(86, 72, 68, 0.16);
   box-shadow: ${shadows.card};
 `
 
 export const PanelTitle = styled.h2`
   margin: 0 0 20px;
-  color: ${colors.header};
+  color: ${colors.heading};
   font-size: 22px;
   line-height: 1.2;
 `

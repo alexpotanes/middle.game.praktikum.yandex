@@ -20,7 +20,7 @@ export const FormCard = styled.form`
   border-radius: 12px;
   border: 1px solid rgba(86, 72, 68, 0.15);
   border-top: 3px solid ${colors.gold};
-  background: #fff;
+  background: ${colors.surface};
   box-shadow: ${shadows.card};
 `
 
@@ -52,7 +52,7 @@ export const Input = styled.input<{ $error?: boolean }>`
   border: 1px solid
     ${({ $error }) => ($error ? colors.crimson : 'rgba(86, 72, 68, 0.25)')};
   border-radius: 8px;
-  background: #fff;
+  background: ${colors.surface};
   color: ${colors.text};
   font-family: inherit;
   font-size: 14px;
@@ -61,7 +61,7 @@ export const Input = styled.input<{ $error?: boolean }>`
     box-shadow 0.15s ease;
 
   &::placeholder {
-    color: rgba(27, 27, 27, 0.45);
+    color: ${colors.muted};
   }
 
   &:focus {
@@ -120,7 +120,7 @@ export const Divider = styled.div`
   align-items: center;
   gap: 12px;
   margin: 4px 0;
-  color: rgba(27, 27, 27, 0.45);
+  color: ${colors.muted};
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -142,7 +142,7 @@ export const OAuthButton = styled.button`
   padding: 11px 24px;
   border: 1px solid rgba(86, 72, 68, 0.25);
   border-radius: 8px;
-  background: #fff;
+  background: ${colors.surface};
   color: ${colors.text};
   font-family: inherit;
   font-size: 14px;
@@ -167,7 +167,7 @@ export const Hint = styled.p`
   margin: 4px 0 0;
   font-size: 13px;
   text-align: center;
-  color: rgba(27, 27, 27, 0.6);
+  color: ${colors.muted};
 
   a {
     color: ${colors.heading};

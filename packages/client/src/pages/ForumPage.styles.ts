@@ -28,7 +28,7 @@ export const CreateLink = styled(Link)`
 export const BackLink = styled(Link)`
   display: inline-block;
   margin-bottom: 24px;
-  color: ${colors.header};
+  color: ${colors.heading};
   font-size: 14px;
   text-decoration: none;
 

@@ -27,4 +27,16 @@ export const signup = handle(req =>
   authService.signup(req.body, req.headers.cookie)
 )
 export const logout = handle(req => authService.logout(req.headers.cookie))
-export const getUser = handle(req => authService.getUser(req.headers.cookie))
+
+export const getUser = async (req: Request, res: Response) => {
+  if (res.locals.user) {
+    res.status(200).json(res.locals.user)
+    return
+  }
+
+  try {
+    relay(res, await authService.getUser(req.headers.cookie))
+  } catch {
+    res.status(502).json({ reason: 'Ошибка обращения к API Практикума' })
+  }
+}

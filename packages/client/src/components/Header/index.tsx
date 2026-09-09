@@ -3,6 +3,7 @@ import {
   unauthorizedNavigationRoutes,
 } from './constants'
 import { FullscreenButton } from './FullscreenButton'
+import { ThemeToggle } from './ThemeToggle'
 import {
   Actions,
   Inner,
@@ -42,6 +43,7 @@ export const Header = () => {
             </NavList>
           </Nav>
           <FullscreenButton />
+          <ThemeToggle />
         </Actions>
       </Inner>
     </Wrapper>

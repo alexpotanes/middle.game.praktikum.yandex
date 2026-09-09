@@ -11,7 +11,7 @@ export const Field = styled.div<{ $wide?: boolean }>`
 `
 
 export const Label = styled.label`
-  color: ${colors.header};
+  color: ${colors.heading};
   font-size: 14px;
   font-weight: 700;
 `
@@ -23,7 +23,7 @@ export const Input = styled.input<{ $error?: boolean }>`
   padding: 10px 12px;
   border: 1px solid rgba(86, 72, 68, 0.16);
   border-radius: 8px;
-  background: #fff;
+  background: ${colors.surface};
   color: ${colors.text};
   font: inherit;
 
