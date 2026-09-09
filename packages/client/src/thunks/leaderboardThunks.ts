@@ -5,6 +5,7 @@ import {
   setLeaderboardLoading,
 } from '../slices/leaderboardSlice'
 import { getLeaderboardApi } from '../api/leaderboard'
+import { submitGameResult } from '../api/leaderboard-api'
 
 export const fetchLeaderboardThunk = () => async (dispatch: AppDispatch) => {
   try {
@@ -19,3 +20,20 @@ export const fetchLeaderboardThunk = () => async (dispatch: AppDispatch) => {
     )
   }
 }
+
+export const submitGameResultThunk =
+  (
+    playerName: string,
+    avatar: string | null,
+    wins: number,
+    losses: number,
+    rating: number
+  ) =>
+  async (dispatch: AppDispatch) => {
+    try {
+      await submitGameResult(playerName, avatar, wins, losses, rating)
+      dispatch(fetchLeaderboardThunk())
+    } catch (error) {
+      console.error('Failed to submit game result:', error)
+    }
+  }

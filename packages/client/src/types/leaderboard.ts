@@ -1,3 +1,5 @@
+import type { PraktikumLeaderboardResponse } from '../api/leaderboard-api'
+
 export type LeaderboardEntry = {
   id: number
   rank: number
@@ -34,4 +36,25 @@ export const validateLeaderboardResponse = (
   }
 
   return data as LeaderboardEntry[]
+}
+
+export const mapPraktikumToLeaderboard = (
+  data: PraktikumLeaderboardResponse
+): LeaderboardEntry[] => {
+  return data.map((item, index) => ({
+    id: index + 1,
+    rank: index + 1,
+    playerName: item.data.playerName,
+    avatar: item.data.avatar,
+    wins: Number(item.data.wins) || 0,
+    losses: Number(item.data.losses) || 0,
+    totalGames: Number(item.data.wins || 0) + Number(item.data.losses || 0),
+    winRate:
+      Number(item.data.wins || 0) + Number(item.data.losses || 0) > 0
+        ? (Number(item.data.wins || 0) /
+            (Number(item.data.wins || 0) + Number(item.data.losses || 0))) *
+          100
+        : 0,
+    rating: Number(item.data.rating) || 0,
+  }))
 }

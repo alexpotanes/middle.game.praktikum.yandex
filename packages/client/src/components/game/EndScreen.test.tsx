@@ -1,7 +1,40 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import type { ButtonHTMLAttributes } from 'react'
+import { Provider } from 'react-redux'
+import { configureStore } from '@reduxjs/toolkit'
+import userReducer from '../../slices/userSlice'
+import leaderboardReducer from '../../slices/leaderboardSlice'
 import type { MatchState } from '@warchest/shared'
+
+const createMockStore = (preloadedState = {}) => {
+  return configureStore({
+    reducer: {
+      user: userReducer,
+      leaderboard: leaderboardReducer,
+    },
+    preloadedState: {
+      user: {
+        data: {
+          id: 11,
+          first_name: 'Test',
+          second_name: 'User',
+          display_name: 'Test User',
+          login: 'testuser',
+          email: 'test@test.com',
+          phone: '+1234567890',
+          avatar: null,
+        },
+      },
+      ...preloadedState,
+    },
+  })
+}
+
+jest.mock('../../api/leaderboard-api', () => ({
+  submitGameResult: jest.fn().mockResolvedValue(undefined),
+  getTeamLeaderboard: jest.fn().mockResolvedValue([]),
+}))
 
 jest.mock('../button', () => ({
   Button: (props: ButtonHTMLAttributes<HTMLButtonElement>) => (
@@ -34,28 +67,34 @@ const fakeMatchState: MatchState = {
 }
 
 const renderEndScreen = (
-  props: Partial<Parameters<typeof EndScreen>[0]> = {}
-) =>
+  props: Partial<Parameters<typeof EndScreen>[0]> = {},
+  storeState = {}
+) => {
+  const mockStore = createMockStore(storeState)
   render(
-    <MemoryRouter initialEntries={['/game']}>
-      <Routes>
-        <Route
-          path="/game"
-          element={
-            <EndScreen
-              won
-              reason="control"
-              matchState={fakeMatchState}
-              you={0}
-              onPlayAgain={jest.fn()}
-              {...props}
-            />
-          }
-        />
-        <Route path="/" element={<div>Главная страница</div>} />
-      </Routes>
-    </MemoryRouter>
+    <Provider store={mockStore}>
+      <MemoryRouter initialEntries={['/game']}>
+        <Routes>
+          <Route
+            path="/game"
+            element={
+              <EndScreen
+                won
+                reason="control"
+                matchState={fakeMatchState}
+                you={0}
+                gameId="1"
+                onPlayAgain={jest.fn()}
+                {...props}
+              />
+            }
+          />
+          <Route path="/" element={<div>Главная страница</div>} />
+        </Routes>
+      </MemoryRouter>
+    </Provider>
   )
+}
 
 describe('EndScreen', () => {
   it('shows the win reason', () => {

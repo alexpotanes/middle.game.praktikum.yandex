@@ -10,7 +10,7 @@ import { authRouter } from './routes/auth'
 import { oauthRouter } from './routes/oauth'
 import { resourcesRouter } from './routes/resources'
 import { userRouter } from './routes/user'
-import { leaderboardRouter } from './routes/leaderboard'
+import { leaderboardRoutes } from './routes/leaderboard'
 import { forumRouter } from './routes/forum'
 import { createWsServer } from './ws/wsServer'
 import { errorHandler } from './middleware/errorHandler'
@@ -32,8 +32,8 @@ app.use('/themes', themesRouter)
 app.use('/user/theme', userThemeRouter)
 app.use('/user', auth, userRouter)
 app.use('/resources', auth, resourcesRouter)
-app.use('/leaderboard', auth, leaderboardRouter)
 app.use('/forum', auth, forumRouter)
+app.use('/api/leaderboard', leaderboardRoutes)
 
 app.get('/friends', auth, (_, res) => {
   res.json([
