@@ -33,7 +33,7 @@ app.use('/user/theme', userThemeRouter)
 app.use('/user', auth, userRouter)
 app.use('/resources', auth, resourcesRouter)
 app.use('/forum', auth, forumRouter)
-app.use('/api/leaderboard', auth, leaderboardRoutes)
+app.use('/api/leaderboard', leaderboardRoutes)
 
 app.get('/friends', auth, (_, res) => {
   res.json([
