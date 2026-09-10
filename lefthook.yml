@@ -2,9 +2,17 @@ pre-commit:
   parallel: true
   commands:
     lint:
-      glob: '*.{ts,tsx}'
-      run: yarn eslint {staged_files}
+      glob: "*.{js,ts,jsx,tsx}"
+      run: yarn lerna run lint --since HEAD --exclude-dependents
+      stage_fixed: true
     prettier:
-      glob: '*.{ts,tsx,css}'
+      glob: "*.{js,ts,jsx,tsx,css,scss,json,md}"
       run: yarn prettier -w {staged_files}
       stage_fixed: true
+    types:
+      glob: "*.{ts,tsx}"
+      run: yarn lerna run type-check --since HEAD --exclude-dependents
+pre-push:
+  commands:
+    tests:
+      run: yarn test
