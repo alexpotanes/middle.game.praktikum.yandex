@@ -1,21 +1,21 @@
-import { formatForumDate, type ForumTopic } from '../../mock/forum'
+import type { ForumTopic } from '../../api/types'
+import { formatForumDate } from '../../utils/forumDate'
 import { getForumTopicPath } from '../../router/constants'
-import {
-  Card,
-  CardHeader,
-  CommentsCount,
-  Empty,
-  Excerpt,
-  List,
-  Meta,
-  Title,
-} from './styles'
+import { Card, CardHeader, Empty, Excerpt, List, Meta, Title } from './styles'
 
 type ForumTopicListProps = {
   topics: ForumTopic[]
+  isLoading?: boolean
 }
 
-export const ForumTopicList = ({ topics }: ForumTopicListProps) => {
+export const ForumTopicList = ({
+  topics,
+  isLoading = false,
+}: ForumTopicListProps) => {
+  if (isLoading) {
+    return <Empty>Загрузка топиков...</Empty>
+  }
+
   if (!topics.length) {
     return (
       <Empty>
@@ -31,11 +31,10 @@ export const ForumTopicList = ({ topics }: ForumTopicListProps) => {
           <Card to={getForumTopicPath(topic.id)}>
             <CardHeader>
               <Title>{topic.title}</Title>
-              <CommentsCount>💬 {topic.comments.length}</CommentsCount>
             </CardHeader>
             <Excerpt>{topic.message}</Excerpt>
             <Meta>
-              <span>{topic.author}</span>
+              <span>{topic.authorLogin}</span>
               <span>{formatForumDate(topic.createdAt)}</span>
             </Meta>
           </Card>

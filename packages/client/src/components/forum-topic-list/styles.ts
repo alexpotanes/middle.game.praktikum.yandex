@@ -45,13 +45,6 @@ export const Title = styled.h2`
   line-height: 1.3;
 `
 
-export const CommentsCount = styled.span`
-  flex-shrink: 0;
-  color: ${colors.heading};
-  font-size: 14px;
-  white-space: nowrap;
-`
-
 export const Excerpt = styled.p`
   margin: 8px 0 0;
   overflow: hidden;

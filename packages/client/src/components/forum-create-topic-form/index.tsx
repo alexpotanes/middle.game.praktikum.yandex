@@ -4,10 +4,15 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '../button'
 import { Form } from '../form'
 import { ErrorText, Field, Input, Label } from '../form-field/styles'
-import { createForumTopic } from '../../mock/forum'
 import { getForumTopicPath } from '../../router/constants'
-import { selectForumAuthorName } from '../../slices/userSlice'
-import { useSelector } from '../../store'
+import { useDispatch, useSelector } from '../../store'
+import {
+  clearCreateForumTopicError,
+  selectCreateForumTopicError,
+  selectCreateForumTopicStatus,
+} from '../../slices/forumSlice'
+import { createForumTopicThunk } from '../../thunks/forumThunks'
+import { STATUS } from '../../slices/constants'
 
 type FormValues = {
   title: string
@@ -27,7 +32,9 @@ const validate = (values: FormValues): FormErrors => {
 
 export const ForumCreateTopicForm = () => {
   const navigate = useNavigate()
-  const author = useSelector(selectForumAuthorName)
+  const dispatch = useDispatch()
+  const status = useSelector(selectCreateForumTopicStatus)
+  const apiError = useSelector(selectCreateForumTopicError)
 
   const [values, setValues] = useState<FormValues>(initialValues)
   const [errors, setErrors] = useState<FormErrors>({})
@@ -37,27 +44,41 @@ export const ForumCreateTopicForm = () => {
   ) => {
     const { name, value } = e.target
     setValues(prev => ({ ...prev, [name]: value }))
+    if (apiError) {
+      dispatch(clearCreateForumTopicError())
+    }
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const nextErrors = validate(values)
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length) return
 
-    const topic = createForumTopic({
-      title: values.title.trim(),
-      message: values.message.trim(),
-      author,
-    })
-    navigate(getForumTopicPath(topic.id))
+    const result = await dispatch(
+      createForumTopicThunk({
+        title: values.title.trim(),
+        message: values.message.trim(),
+      })
+    )
+
+    if (createForumTopicThunk.fulfilled.match(result)) {
+      navigate(getForumTopicPath(result.payload.id))
+    }
   }
+
+  const isSubmitting = status === STATUS.LOADING
 
   return (
     <Form
       title="Новый топик"
       onSubmit={handleSubmit}
-      actions={<Button type="submit">Создать топик</Button>}>
+      notice={apiError && <ErrorText role="alert">{apiError}</ErrorText>}
+      actions={
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Создание...' : 'Создать топик'}
+        </Button>
+      }>
       <Field>
         <Label htmlFor="title">Заголовок</Label>
         <Input
@@ -68,6 +89,7 @@ export const ForumCreateTopicForm = () => {
           onChange={handleChange}
           placeholder="О чём хотите поговорить?"
           aria-invalid={!!errors.title}
+          disabled={isSubmitting}
         />
         {errors.title && <ErrorText role="alert">{errors.title}</ErrorText>}
       </Field>
@@ -83,6 +105,7 @@ export const ForumCreateTopicForm = () => {
           onChange={handleChange}
           placeholder="Опишите тему подробнее"
           aria-invalid={!!errors.message}
+          disabled={isSubmitting}
         />
         {errors.message && <ErrorText role="alert">{errors.message}</ErrorText>}
       </Field>

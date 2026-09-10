@@ -82,7 +82,4 @@ export const selectUserFullName = (state: RootState) => {
 
   return user ? `${user.first_name} ${user.second_name}` : null
 }
-export const selectForumAuthorName = (state: RootState) =>
-  state.user.data?.display_name || state.user.data?.login || 'Аноним'
-
 export default userSlice.reducer

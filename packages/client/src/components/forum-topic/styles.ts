@@ -98,6 +98,17 @@ export const CommentMessage = styled.p`
   white-space: pre-wrap;
 `
 
+export const Replies = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0 0;
+  padding: 12px 0 0 20px;
+  border-top: 1px dashed rgba(86, 72, 68, 0.16);
+  border-left: 2px solid rgba(86, 72, 68, 0.16);
+  list-style: none;
+`
+
 export const Empty = styled.p`
   margin: 0;
   padding: 20px;
