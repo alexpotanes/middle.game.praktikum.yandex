@@ -44,7 +44,7 @@ services:
       - game
 
   postgres:
-    image: postgres:14
+    image: postgres:16
     restart: always
     ports:
       - '${POSTGRES_PORT}:5432'
