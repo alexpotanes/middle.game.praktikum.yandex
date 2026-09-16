@@ -29,22 +29,12 @@ export const getCurrent = async (req: Request, res: Response) => {
 
 export const setCurrent = async (req: Request, res: Response) => {
   res.setHeader('Cache-Control', 'no-store')
-  const body = req.body as unknown
-  if (
-    !body ||
-    typeof body !== 'object' ||
-    Array.isArray(body) ||
-    Object.keys(body).length !== 1 ||
-    !('theme' in body) ||
-    typeof body.theme !== 'string' ||
-    !/^[a-z][a-z0-9_-]{0,31}$/.test(body.theme)
-  ) {
-    throw new ValidationError(
-      'Ожидается объект с единственным полем theme — названием темы'
-    )
+  const theme: unknown = req.body?.theme
+  if (theme !== 'light' && theme !== 'dark') {
+    throw new ValidationError('Некорректная тема')
   }
   const ownerId = await resolveThemeOwner(req.headers.cookie)
-  const selected = await themeService.setCurrentTheme(ownerId, body.theme)
+  const selected = await themeService.setCurrentTheme(ownerId, theme)
   if (ownerId === null) {
     res.cookie(GUEST_THEME_COOKIE, selected.theme, {
       httpOnly: true,
