@@ -18,8 +18,7 @@ export const getCurrentTheme = async (
     const preference = await UserTheme.findByPk(ownerId, {
       include: [{ model: SiteTheme, as: 'siteTheme', required: true }],
     })
-    if (preference?.siteTheme) return preference.siteTheme
-    return findTheme('light')
+    return preference?.siteTheme ?? findTheme('light')
   }
 
   const preference = await SiteTheme.findOne({ where: { theme: guestTheme } })

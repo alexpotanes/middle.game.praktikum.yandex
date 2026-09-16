@@ -46,20 +46,27 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setError(null)
     if (!sessionChecked) return () => controller.abort()
 
-    themeApi
-      .getCurrentTheme(controller.signal)
-      .then(result => {
-        if (!controller.signal.aborted) setTheme(result.theme)
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) {
-          setTheme('light')
-          setError('Не удалось загрузить тему')
-        }
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setBusy(false)
-      })
+    const loadTheme = async () => {
+      let loadedTheme: ThemeName = 'light'
+      let loadError: string | null = null
+
+      try {
+        const result = await themeApi.getCurrentTheme(controller.signal)
+        loadedTheme = result.theme
+      } catch {
+        loadError = 'Не удалось загрузить тему'
+      }
+
+      if (controller.signal.aborted) {
+        return
+      }
+
+      setTheme(loadedTheme)
+      setError(loadError)
+      setBusy(false)
+    }
+
+    void loadTheme()
 
     return () => {
       controller.abort()
@@ -76,20 +83,20 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setTheme(next)
     setBusy(true)
     setError(null)
+    let savedTheme = previous
+    let saveError: string | null = null
     try {
       const result = await themeApi.setCurrentTheme(next)
-      if (generation.current === currentGeneration) setTheme(result.theme)
+      savedTheme = result.theme
     } catch {
-      if (generation.current === currentGeneration) {
-        setTheme(previous)
-        setError('Не удалось сохранить тему. Попробуйте ещё раз.')
-      }
-    } finally {
-      if (generation.current === currentGeneration) {
-        saving.current = false
-        setBusy(false)
-      }
+      saveError = 'Не удалось сохранить тему. Попробуйте ещё раз.'
     }
+
+    if (generation.current !== currentGeneration) return
+    setTheme(savedTheme)
+    setError(saveError)
+    saving.current = false
+    setBusy(false)
   }
 
   return (
