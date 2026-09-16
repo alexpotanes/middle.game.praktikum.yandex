@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom/server'
-import { Provider } from 'react-redux'
 import { ServerStyleSheet } from 'styled-components'
 import { Helmet } from 'react-helmet'
 import { Request as ExpressRequest } from 'express'
@@ -10,17 +9,18 @@ import {
   StaticRouterProvider,
 } from 'react-router-dom/server'
 import { matchRoutes } from 'react-router-dom'
-import { configureStore } from '@reduxjs/toolkit'
 
 import {
   createContext,
   createFetchRequest,
-  createUrl
+  createUrl,
 } from './entry-server.utils'
-import { reducer } from './store'
-import { routes } from './routes'
-import './index.css'
+import App from './App'
+import { ErrorBoundaryFallback } from './components/error-boundary'
+import { createAppStore } from './store'
+import { routes } from './router/routes'
 import { setPageHasBeenInitializedOnServer } from './slices/ssrSlice'
+import { GlobalStyle } from './styles/GlobalStyle'
 
 export const render = async (req: ExpressRequest) => {
   const { query, dataRoutes } = createStaticHandler(routes)
@@ -31,9 +31,7 @@ export const render = async (req: ExpressRequest) => {
     throw context
   }
 
-  const store = configureStore({
-    reducer,
-  })
+  const store = createAppStore()
 
   const url = createUrl(req)
 
@@ -42,7 +40,11 @@ export const render = async (req: ExpressRequest) => {
     throw new Error('Страница не найдена!')
   }
 
-  const [{route: { fetchData }}] = foundRoutes
+  const [
+    {
+      route: { fetchData },
+    },
+  ] = foundRoutes
 
   try {
     await fetchData({
@@ -59,14 +61,32 @@ export const render = async (req: ExpressRequest) => {
   const router = createStaticRouter(dataRoutes, context)
   const sheet = new ServerStyleSheet()
   try {
-    const html = ReactDOM.renderToString(sheet.collectStyles(
-      <Provider store={store}>
-        <StaticRouterProvider router={router} context={context} />
-      </Provider>
-    ));
-    const styleTags = sheet.getStyleTags();
+    // renderToString не поддерживает ErrorBoundary, поэтому при ошибке
+    // рендера отдаём страницу ошибки — на клиенте её покажет ErrorBoundary
+    let html: string
+    try {
+      html = ReactDOM.renderToString(
+        sheet.collectStyles(
+          <App store={store}>
+            <GlobalStyle />
+            <StaticRouterProvider router={router} context={context} />
+          </App>
+        )
+      )
+    } catch (e) {
+      console.error('Ошибка SSR-рендера', e)
+      html = ReactDOM.renderToString(
+        sheet.collectStyles(
+          <App store={store}>
+            <GlobalStyle />
+            <ErrorBoundaryFallback />
+          </App>
+        )
+      )
+    }
+    const styleTags = sheet.getStyleTags()
 
-    const helmet = Helmet.renderStatic();
+    const helmet = Helmet.renderStatic()
 
     return {
       html,
