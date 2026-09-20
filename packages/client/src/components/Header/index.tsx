@@ -2,7 +2,7 @@ import {
   authorizedNavigationRoutes,
   unauthorizedNavigationRoutes,
 } from './constants'
-import { FullscreenButton } from './FullscreenButton'
+import { FullscreenButton } from '../FullscreenButton'
 import { ThemeToggle } from './ThemeToggle'
 import {
   Actions,
