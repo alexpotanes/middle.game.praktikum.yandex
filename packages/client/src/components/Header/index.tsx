@@ -3,6 +3,8 @@ import {
   unauthorizedNavigationRoutes,
 } from './constants'
 import { FullscreenButton } from '../FullscreenButton'
+import { GeolocationButton } from '../GeolocationButton'
+import { NotificationButton } from '../NotificationButton'
 import { ThemeToggle } from './ThemeToggle'
 import {
   Actions,
@@ -42,8 +44,10 @@ export const Header = () => {
               ))}
             </NavList>
           </Nav>
-          <FullscreenButton />
           <ThemeToggle />
+          <GeolocationButton />
+          <NotificationButton />
+          <FullscreenButton />
         </Actions>
       </Inner>
     </Wrapper>
