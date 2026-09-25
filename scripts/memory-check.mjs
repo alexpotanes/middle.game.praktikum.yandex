@@ -77,21 +77,33 @@ const { values: args } = parseArgs({
 })
 
 if (args.help) {
-  console.log(readFileSync(new URL(import.meta.url), 'utf8').match(/\/\*\*([\s\S]*?)\*\//)[1])
+  console.log(
+    readFileSync(new URL(import.meta.url), 'utf8').match(
+      /\/\*\*([\s\S]*?)\*\//
+    )[1]
+  )
   process.exit(0)
 }
 
 if (args['list-browsers']) {
   console.log(`Известные браузеры: ${Object.keys(BROWSERS).join(', ')}`)
-  console.log('Также можно передать абсолютный путь к бинарнику: --browser=/path/to/browser')
+  console.log(
+    'Также можно передать абсолютный путь к бинарнику: --browser=/path/to/browser'
+  )
   process.exit(0)
 }
 
-const BASE_URL = args.url || process.env.MEMORY_CHECK_URL || 'http://localhost:3000'
-const ITERATIONS = Number(args.iterations || process.env.MEMORY_CHECK_ITERATIONS) || 5
+const BASE_URL =
+  args.url || process.env.MEMORY_CHECK_URL || 'http://localhost:3000'
+const ITERATIONS =
+  Number(args.iterations || process.env.MEMORY_CHECK_ITERATIONS) || 5
 const LOGIN = args.login || process.env.MEMORY_CHECK_LOGIN
 const PASSWORD = args.password || process.env.MEMORY_CHECK_PASSWORD
-const EXTRA_METRICS = (args.metrics?.split(',').map(m => m.trim()).filter(Boolean)) ?? DEFAULT_METRICS
+const EXTRA_METRICS =
+  args.metrics
+    ?.split(',')
+    .map(m => m.trim())
+    .filter(Boolean) ?? DEFAULT_METRICS
 
 const which = binary => {
   const command = process.platform === 'win32' ? 'where' : 'which'
@@ -269,7 +281,13 @@ const setReactInputValue = (name, value) => `(() => {
 
 const login = async (cdp, sessionId) => {
   await navigateInSpa(cdp, sessionId, '/signin')
-  await waitFor(cdp, sessionId, `!!document.querySelector('input[name="login"]')`, APP_READY_TIMEOUT_MS, 'форма входа')
+  await waitFor(
+    cdp,
+    sessionId,
+    `!!document.querySelector('input[name="login"]')`,
+    APP_READY_TIMEOUT_MS,
+    'форма входа'
+  )
   await evaluate(cdp, sessionId, setReactInputValue('login', LOGIN))
   await evaluate(cdp, sessionId, setReactInputValue('password', PASSWORD))
   await delay(300)
@@ -309,7 +327,9 @@ const formatMetric = (name, value) => {
   if (value === null) {
     return 'n/a'
   }
-  return name.endsWith('Size') ? (value / 1024 / 1024).toFixed(1) : String(Math.round(value))
+  return name.endsWith('Size')
+    ? (value / 1024 / 1024).toFixed(1)
+    : String(Math.round(value))
 }
 
 const main = async () => {
@@ -317,7 +337,9 @@ const main = async () => {
   let userDataDir
   let cdp
   try {
-    const browserPath = findBrowser(args.browser || process.env.CHROME_PATH || 'chrome')
+    const browserPath = findBrowser(
+      args.browser || process.env.CHROME_PATH || 'chrome'
+    )
 
     if (args['list-metrics']) {
       const launched = await launchBrowser(browserPath)
@@ -325,10 +347,19 @@ const main = async () => {
       userDataDir = launched.userDataDir
       cdp = new CdpConnection(launched.wsUrl)
       await cdp.open()
-      const { targetId } = await cdp.send('Target.createTarget', { url: 'about:blank' })
-      const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true })
+      const { targetId } = await cdp.send('Target.createTarget', {
+        url: 'about:blank',
+      })
+      const { sessionId } = await cdp.send('Target.attachToTarget', {
+        targetId,
+        flatten: true,
+      })
       await cdp.send('Performance.enable', {}, sessionId)
-      const { metrics } = await cdp.send('Performance.getMetrics', {}, sessionId)
+      const { metrics } = await cdp.send(
+        'Performance.getMetrics',
+        {},
+        sessionId
+      )
       console.log('Метрики Performance.getMetrics:')
       for (const m of metrics) {
         console.log(`  ${m.name}`)
@@ -342,7 +373,10 @@ const main = async () => {
       )
     })
 
-    const metricNames = [HEAP_METRIC, ...EXTRA_METRICS.filter(m => m !== HEAP_METRIC)]
+    const metricNames = [
+      HEAP_METRIC,
+      ...EXTRA_METRICS.filter(m => m !== HEAP_METRIC),
+    ]
 
     const launched = await launchBrowser(browserPath)
     browser = launched.browser
@@ -363,7 +397,13 @@ const main = async () => {
     await cdp.send('Runtime.enable', {}, sessionId)
     await cdp.send('Performance.enable', {}, sessionId)
     await cdp.send('HeapProfiler.enable', {}, sessionId)
-    await waitFor(cdp, sessionId, APP_READY_SELECTOR, APP_READY_TIMEOUT_MS, 'монтирование приложения')
+    await waitFor(
+      cdp,
+      sessionId,
+      APP_READY_SELECTOR,
+      APP_READY_TIMEOUT_MS,
+      'монтирование приложения'
+    )
 
     let routes = PUBLIC_ROUTES
     if (LOGIN && PASSWORD) {
@@ -403,7 +443,10 @@ const main = async () => {
 
     console.log(`\nЗамер памяти: ${BASE_URL} (браузер: ${browserPath})`)
     console.log(`Маршруты за цикл: ${routes.join(' → ')}`)
-    const header = ['Итерация', ...activeMetrics.map(m => (m.endsWith('Size') ? `${m}, МБ` : m))]
+    const header = [
+      'Итерация',
+      ...activeMetrics.map(m => (m.endsWith('Size') ? `${m}, МБ` : m)),
+    ]
     console.log(`\n| ${header.join(' | ')} |`)
     console.log(`| ${header.map(() => '---').join(' | ')} |`)
     rows.forEach((row, i) => {
@@ -417,7 +460,8 @@ const main = async () => {
 
     const baseline = rows.length > 1 ? rows[1] : rows[0]
     const growthPercent =
-      ((last[HEAP_METRIC] - baseline[HEAP_METRIC]) / baseline[HEAP_METRIC]) * 100
+      ((last[HEAP_METRIC] - baseline[HEAP_METRIC]) / baseline[HEAP_METRIC]) *
+      100
     console.log(
       `\nРост heap 1 → ${ITERATIONS}: ${totalGrowth.toFixed(1)}%, ` +
         `без учёта прогрева (2 → ${ITERATIONS}): ${growthPercent.toFixed(1)}%`

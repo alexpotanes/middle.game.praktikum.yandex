@@ -7,8 +7,13 @@ type FullscreenControls = {
   toggleFullscreen: () => Promise<void>
 }
 
-const getFullscreenElement = (): Element | null =>
-  document.fullscreenElement ?? null
+const getFullscreenElement = (): Element | null => {
+  if (typeof document === 'undefined') {
+    return null
+  }
+
+  return document.fullscreenElement ?? null
+}
 
 export const useFullscreen = (
   targetRef?: RefObject<HTMLElement>

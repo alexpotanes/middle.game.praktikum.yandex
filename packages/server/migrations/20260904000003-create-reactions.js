@@ -35,6 +35,14 @@ module.exports = {
     })
 
     await queryInterface.addIndex('reactions', ['commentId'])
+    await queryInterface.addIndex(
+      'reactions',
+      ['commentId', 'userId', 'emoji'],
+      {
+        unique: true,
+        name: 'reactions_comment_user_emoji_unique',
+      }
+    )
   },
 
   async down(queryInterface) {

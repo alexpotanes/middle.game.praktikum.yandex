@@ -2,8 +2,13 @@ import { createSlice } from '@reduxjs/toolkit'
 
 import { RootState } from '../store'
 import { STATUS, Status } from './constants'
-import type { ForumCommentNode, ForumTopic } from '../api/types'
+import type {
+  ForumCommentNode,
+  ForumCommentReaction,
+  ForumTopic,
+} from '../api/types'
 import {
+  addForumCommentReactionThunk,
   createForumCommentThunk,
   createForumTopicThunk,
   fetchForumTopicThunk,
@@ -25,6 +30,9 @@ export interface ForumState {
 
   createCommentStatus: Status
   createCommentError: string | null
+
+  reactionPendingCommentId: number | null
+  reactionError: { commentId: number; message: string } | null
 }
 
 const initialState: ForumState = {
@@ -42,7 +50,38 @@ const initialState: ForumState = {
 
   createCommentStatus: STATUS.IDLE,
   createCommentError: null,
+
+  reactionPendingCommentId: null,
+  reactionError: null,
 }
+
+const mergeReaction = (
+  reactions: ForumCommentReaction[],
+  next: ForumCommentReaction
+): ForumCommentReaction[] => {
+  const index = reactions.findIndex(r => r.emoji === next.emoji)
+  if (index === -1) return [...reactions, next]
+  return reactions.map((r, i) => (i === index ? next : r))
+}
+
+const applyReactionToTree = (
+  comments: ForumCommentNode[],
+  commentId: number,
+  reaction: ForumCommentReaction
+): ForumCommentNode[] =>
+  comments.map(comment => {
+    if (comment.id === commentId) {
+      return {
+        ...comment,
+        reactions: mergeReaction(comment.reactions ?? [], reaction),
+      }
+    }
+    if (comment.replies.length === 0) return comment
+    return {
+      ...comment,
+      replies: applyReactionToTree(comment.replies, commentId, reaction),
+    }
+  })
 
 export const forumSlice = createSlice({
   name: 'forum',
@@ -55,6 +94,8 @@ export const forumSlice = createSlice({
       state.topicError = null
       state.createCommentStatus = STATUS.IDLE
       state.createCommentError = null
+      state.reactionPendingCommentId = null
+      state.reactionError = null
     },
     clearCreateForumTopicError(state) {
       state.createTopicError = null
@@ -95,8 +136,6 @@ export const forumSlice = createSlice({
       })
       .addCase(createForumTopicThunk.fulfilled, (state, action) => {
         state.createTopicStatus = STATUS.SUCCEEDED
-        // Топик создан - его увидит и следующий заход на /forum, но сразу
-        // подставляем в список, чтобы не гонять лишний запрос.
         state.topics = [action.payload, ...state.topics]
       })
       .addCase(createForumTopicThunk.rejected, (state, action) => {
@@ -110,15 +149,35 @@ export const forumSlice = createSlice({
       })
       .addCase(createForumCommentThunk.fulfilled, (state, action) => {
         state.createCommentStatus = STATUS.SUCCEEDED
-        // Комментарии с формы всегда верхнего уровня (parentId: null) -
-        // сервер отвечает "плоским" Comment без поля replies, поэтому
-        // достраиваем его до узла дерева здесь же.
-        state.comments = [...state.comments, { ...action.payload, replies: [] }]
+        state.comments = [
+          ...state.comments,
+          { ...action.payload, replies: [], reactions: [] },
+        ]
       })
       .addCase(createForumCommentThunk.rejected, (state, action) => {
         state.createCommentStatus = STATUS.FAILED
         state.createCommentError =
           action.payload ?? 'Не удалось отправить комментарий'
+      })
+
+      .addCase(addForumCommentReactionThunk.pending, (state, action) => {
+        state.reactionPendingCommentId = action.meta.arg.commentId
+        state.reactionError = null
+      })
+      .addCase(addForumCommentReactionThunk.fulfilled, (state, action) => {
+        state.reactionPendingCommentId = null
+        state.comments = applyReactionToTree(
+          state.comments,
+          action.payload.commentId,
+          action.payload.reaction
+        )
+      })
+      .addCase(addForumCommentReactionThunk.rejected, (state, action) => {
+        state.reactionPendingCommentId = null
+        state.reactionError = {
+          commentId: action.meta.arg.commentId,
+          message: action.payload ?? 'Не удалось поставить реакцию',
+        }
       })
   },
 })
@@ -149,5 +208,10 @@ export const selectCreateForumCommentStatus = (state: RootState) =>
   state.forum.createCommentStatus
 export const selectCreateForumCommentError = (state: RootState) =>
   state.forum.createCommentError
+
+export const selectReactionPendingCommentId = (state: RootState) =>
+  state.forum.reactionPendingCommentId
+export const selectReactionError = (state: RootState) =>
+  state.forum.reactionError
 
 export default forumSlice.reducer
