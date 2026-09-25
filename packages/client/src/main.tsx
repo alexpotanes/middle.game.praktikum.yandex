@@ -1,16 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Provider } from 'react-redux'
-import { store } from './store'
+import { RouterProvider } from 'react-router-dom'
+import App from './App'
+import { router } from './router'
+import { createAppStore } from './store'
+import { GlobalStyle } from './styles/GlobalStyle'
+import { startServiceWorker } from './utils/serviceWorker'
 
-import { routes } from './routes'
+const store = createAppStore(window.APP_INITIAL_STATE)
 
-const router = createBrowserRouter(routes)
+startServiceWorker()
 
 ReactDOM.hydrateRoot(
   document.getElementById('root') as HTMLElement,
-  <Provider store={store}>
+  <App store={store}>
+    <GlobalStyle />
     <RouterProvider router={router} />
-  </Provider>
+  </App>
 )
