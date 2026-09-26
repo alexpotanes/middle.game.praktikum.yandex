@@ -5,6 +5,8 @@ const MAX_TITLE_LENGTH = 200
 const MAX_TOPIC_MESSAGE_LENGTH = 10000
 const MAX_COMMENT_MESSAGE_LENGTH = 5000
 
+const ALLOWED_REACTIONS = ['👍', '❤️', '😂', '🎉', '🔥', '👀']
+
 const asString = (value: unknown, field: string): string => {
   if (typeof value !== 'string') {
     throw new ValidationError(
@@ -71,6 +73,27 @@ export const validateCommentInput = (body: unknown): CommentInput => {
   }
 
   return { message: cleanMessage }
+}
+
+export type ReactionInput = {
+  emoji: string
+}
+
+export const validateReactionInput = (body: unknown): ReactionInput => {
+  if (typeof body !== 'object' || body === null) {
+    throw new ValidationError('Некорректное тело запроса')
+  }
+
+  const { emoji } = body as Record<string, unknown>
+
+  if (typeof emoji !== 'string') {
+    throw new ValidationError('Поле "emoji" обязательно и должно быть строкой')
+  }
+  if (!ALLOWED_REACTIONS.includes(emoji)) {
+    throw new ValidationError('Недопустимая эмодзи-реакция')
+  }
+
+  return { emoji }
 }
 
 export const parseId = (value: string, field: string): number => {

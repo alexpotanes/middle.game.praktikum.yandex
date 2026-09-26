@@ -3,6 +3,7 @@ import * as forumApi from '../api/forumApi'
 import {
   ApiError,
   ForumComment,
+  ForumCommentReaction,
   ForumTopic,
   ForumTopicDetailsResponse,
   ForumTopicsResponse,
@@ -55,3 +56,19 @@ export const createForumCommentThunk = createAsyncThunk<
     return rejectWithValue((e as ApiError).reason)
   }
 })
+
+export const addForumCommentReactionThunk = createAsyncThunk<
+  { commentId: number; reaction: ForumCommentReaction },
+  { commentId: number; emoji: string },
+  { rejectValue: string }
+>(
+  'forum/addCommentReaction',
+  async ({ commentId, emoji }, { rejectWithValue }) => {
+    try {
+      const reaction = await forumApi.addCommentReaction(commentId, { emoji })
+      return { commentId, reaction }
+    } catch (e) {
+      return rejectWithValue((e as ApiError).reason)
+    }
+  }
+)

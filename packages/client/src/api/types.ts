@@ -61,6 +61,16 @@ export interface ForumTopic {
   updatedAt: string
 }
 
+export interface ForumCommentReaction {
+  emoji: string
+  count: number
+  reacted: boolean
+}
+
+export interface AddForumCommentReactionRequest {
+  emoji: string
+}
+
 export interface ForumComment {
   id: number
   topicId: number
@@ -70,6 +80,7 @@ export interface ForumComment {
   message: string
   createdAt: string
   updatedAt: string
+  reactions?: ForumCommentReaction[]
 }
 
 export interface ForumCommentNode extends ForumComment {

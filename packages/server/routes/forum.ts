@@ -32,6 +32,18 @@ forumRouter.post(
   requireAuth,
   forumController.createComment
 )
+forumRouter.get(
+  '/comments/:commentId/reactions',
+  forumReadRateLimiter,
+  requireAuth,
+  forumController.getCommentReactions
+)
+forumRouter.post(
+  '/comments/:commentId/reactions',
+  forumWriteRateLimiter,
+  requireAuth,
+  forumController.addCommentReaction
+)
 forumRouter.post(
   '/comments/:commentId/replies',
   forumWriteRateLimiter,

@@ -38,8 +38,6 @@ async function createServer() {
     const url = req.originalUrl
 
     try {
-      // Получаем файл client/index.html который мы правили ранее
-      // Создаём переменные
       let render: (req: ExpressRequest) => Promise<{
         html: string
         initialState: unknown
@@ -53,11 +51,8 @@ async function createServer() {
           'utf-8'
         )
 
-        // Применяем встроенные HTML-преобразования vite и плагинов
         template = await vite.transformIndexHtml(url, template)
 
-        // Загружаем модуль клиента, который писали выше,
-        // он будет рендерить HTML-код
         const serverEntry = await vite.ssrLoadModule(
           path.join(clientPath, 'src/entry-server.tsx')
         )
@@ -68,17 +63,14 @@ async function createServer() {
           'utf-8'
         )
 
-        // Получаем путь до сбилдженого модуля клиента, чтобы не тащить средства сборки клиента на сервер
         const pathToServer = path.join(
           clientPath,
           'dist/server/entry-server.mjs'
         )
 
-        // Импортируем этот модуль и вызываем с инишл стейтом
         render = (await import(pathToServer)).render
       }
 
-      // Получаем HTML-строку из JSX
       const {
         html: appHtml,
         initialState,
@@ -86,7 +78,6 @@ async function createServer() {
         styleTags,
       } = await render(req)
 
-      // Заменяем комментарий на сгенерированную HTML-строку
       const html = template
         .replace('<!--ssr-styles-->', styleTags)
         .replace(
@@ -101,7 +92,6 @@ async function createServer() {
           })}</script>`
         )
 
-      // Завершаем запрос и отдаём HTML-страницу
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
       vite?.ssrFixStacktrace(e as Error)

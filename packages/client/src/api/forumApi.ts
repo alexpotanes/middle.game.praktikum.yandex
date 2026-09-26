@@ -1,8 +1,10 @@
 import { request } from './http'
 import {
+  AddForumCommentReactionRequest,
   CreateForumCommentRequest,
   CreateForumTopicRequest,
   ForumComment,
+  ForumCommentReaction,
   ForumTopic,
   ForumTopicDetailsResponse,
   ForumTopicsResponse,
@@ -27,6 +29,18 @@ export const createComment = (
   data: CreateForumCommentRequest
 ) =>
   request<ForumComment>(`/forum/topics/${topicId}/comments`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+
+export const getCommentReactions = (commentId: number) =>
+  request<ForumCommentReaction[]>(`/forum/comments/${commentId}/reactions`)
+
+export const addCommentReaction = (
+  commentId: number,
+  data: AddForumCommentReactionRequest
+) =>
+  request<ForumCommentReaction>(`/forum/comments/${commentId}/reactions`, {
     method: 'POST',
     body: JSON.stringify(data),
   })

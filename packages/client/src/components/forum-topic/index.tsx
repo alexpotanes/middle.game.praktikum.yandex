@@ -3,6 +3,7 @@ import { ChangeEvent, FormEvent, useState } from 'react'
 import { Button } from '../button'
 import { Form } from '../form'
 import { ErrorText, Field, Input, Label } from '../form-field/styles'
+import { ForumCommentReactions } from '../forum-comment-reactions'
 import { formatForumDate } from '../../utils/forumDate'
 import type { ForumCommentNode } from '../../api/types'
 import { useDispatch, useSelector } from '../../store'
@@ -13,8 +14,13 @@ import {
   selectForumComments,
   selectForumTopicError,
   selectForumTopicStatus,
+  selectReactionError,
+  selectReactionPendingCommentId,
 } from '../../slices/forumSlice'
-import { createForumCommentThunk } from '../../thunks/forumThunks'
+import {
+  addForumCommentReactionThunk,
+  createForumCommentThunk,
+} from '../../thunks/forumThunks'
 import { STATUS } from '../../slices/constants'
 import {
   BackLink,
@@ -40,24 +46,44 @@ type ForumTopicProps = {
   isValidTopicId: boolean
 }
 
-const CommentNode = ({ comment }: { comment: ForumCommentNode }) => (
-  <Comment>
-    <CommentMeta>
-      <CommentAuthor>{comment.authorLogin}</CommentAuthor>
-      <span>{formatForumDate(comment.createdAt)}</span>
-    </CommentMeta>
-    <CommentMessage>{comment.message}</CommentMessage>
-    {comment.replies.length > 0 && (
-      <Replies>
-        {comment.replies.map(reply => (
-          <li key={reply.id}>
-            <CommentNode comment={reply} />
-          </li>
-        ))}
-      </Replies>
-    )}
-  </Comment>
-)
+const CommentNode = ({ comment }: { comment: ForumCommentNode }) => {
+  const dispatch = useDispatch()
+  const pendingCommentId = useSelector(selectReactionPendingCommentId)
+  const reactionError = useSelector(selectReactionError)
+
+  const isReactionPending = pendingCommentId === comment.id
+  const commentReactionError =
+    reactionError?.commentId === comment.id ? reactionError.message : null
+
+  const handleReact = (emoji: string) => {
+    dispatch(addForumCommentReactionThunk({ commentId: comment.id, emoji }))
+  }
+
+  return (
+    <Comment>
+      <CommentMeta>
+        <CommentAuthor>{comment.authorLogin}</CommentAuthor>
+        <span>{formatForumDate(comment.createdAt)}</span>
+      </CommentMeta>
+      <CommentMessage>{comment.message}</CommentMessage>
+      <ForumCommentReactions
+        reactions={comment.reactions ?? []}
+        onReact={handleReact}
+        disabled={isReactionPending}
+        error={commentReactionError}
+      />
+      {comment.replies.length > 0 && (
+        <Replies>
+          {comment.replies.map(reply => (
+            <li key={reply.id}>
+              <CommentNode comment={reply} />
+            </li>
+          ))}
+        </Replies>
+      )}
+    </Comment>
+  )
+}
 
 export const ForumTopic = ({ topicId, isValidTopicId }: ForumTopicProps) => {
   const dispatch = useDispatch()
