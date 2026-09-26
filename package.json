@@ -2,15 +2,24 @@
   "name": "client-server-template-with-vite",
   "private": true,
   "scripts": {
-    "bootstrap": "yarn && node init.js && lerna clean && yarn && lerna bootstrap",
+    "bootstrap": "yarn && node init.js && lerna clean && yarn && lerna bootstrap && yarn build:shared",
     "build": "lerna run build",
-    "dev:client": "lerna run dev  --scope=client",
+    "build:shared": "lerna run build --scope=@warchest/shared",
+    "build:client": "lerna run build --scope=client --include-dependencies",
+    "build:server": "lerna run build --scope=server --include-dependencies",
+    "setup": "lefthook install",
+    "dev:client": "lerna run dev --scope=client",
     "dev:server": "lerna run dev --scope=server",
     "dev": "lerna run dev",
+    "db:migrate": "lerna run db:migrate --scope=server",
+    "db:migrate:undo": "lerna run db:migrate:undo --scope=server",
+    "db:migrate:undo:all": "lerna run db:migrate:undo:all --scope=server",
     "test": "lerna run test",
+    "test:integration": "lerna run test:integration --scope=server",
     "lint": "lerna run lint",
     "format": "lerna run format",
-    "preview": "lerna run preview"
+    "preview": "lerna run preview",
+    "memory:check": "node scripts/memory-check.mjs"
   },
   "license": "MIT",
   "workspaces": [
@@ -22,5 +31,12 @@
   "devDependencies": {
     "@evilmartians/lefthook": "^1.3.9",
     "lerna": "^5.4.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "react": "^18.2.0"
+  },
+  "resolutions": {
+    "@types/react": "^18.3.31"
   }
 }

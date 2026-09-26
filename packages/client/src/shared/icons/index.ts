@@ -1,0 +1,6 @@
+export type { IconProps } from './types'
+export { GameIcon } from './GameIcon'
+export { ForumIcon } from './ForumIcon'
+export { LeaderboardIcon } from './LeaderboardIcon'
+export { ProfileIcon } from './ProfileIcon'
+export { YandexIcon } from './YandexIcon'

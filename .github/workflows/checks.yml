@@ -8,18 +8,54 @@ on:
       - dev
 
 jobs:
-  eslint:
+  lint:
+    name: Lint & Format Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
-      - name: Install main deps
-        run: yarn
-      - name: Initialize
+          node-version: 22
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install
+      - name: Bootstrap packages
         run: yarn lerna bootstrap
-      - name: Lint
+      - name: Run ESLint
         run: yarn lint
-      - name: Test
+      - name: Check formatting
+        run: yarn prettier --check "**/*.{js,ts,jsx,tsx,css,json,md}"
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install
+      - name: Bootstrap packages
+        run: yarn lerna bootstrap
+      - name: Build shared package
+        run: yarn build:shared
+      - name: Run tests
         run: yarn test
+  type-check:
+    name: TypeScript Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install
+      - name: Bootstrap packages
+        run: yarn lerna bootstrap
+      - name: Build shared package
+        run: yarn build:shared
+      - name: Type check
+        run: yarn lerna run type-check

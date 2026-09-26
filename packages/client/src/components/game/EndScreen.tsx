@@ -1,0 +1,142 @@
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from '../../store'
+import { selectUser } from '../../slices/userSlice'
+import { submitGameResultThunk } from '../../thunks/leaderboardThunks'
+import { useEffect, useRef } from 'react'
+import {
+  CONTROL_MARKERS_PER_PLAYER,
+  otherPlayer,
+  PlayerState,
+} from '@warchest/shared'
+import type { MatchState, PlayerIndex } from '@warchest/shared'
+
+import { GameIcon } from '../../shared/icons'
+import {
+  PrimaryAction,
+  ResultActions,
+  ResultBadge,
+  ResultGlow,
+  ResultHero,
+  ResultReason,
+  ResultTitle,
+  ResultStats,
+  RoundLabel,
+  SecondaryAction,
+  StatDivider,
+  StatItem,
+  StatLabel,
+  StatValue,
+} from './EndScreen.styles'
+
+const REASON_LABELS: Record<string, { won: string; lost: string }> = {
+  control: {
+    won: 'Вы разместили все маркеры контроля',
+    lost: 'Противник разместил все маркеры контроля',
+  },
+  elimination: {
+    won: 'Все фишки противника уничтожены',
+    lost: 'Все ваши фишки уничтожены',
+  },
+  resign: { won: 'Противник сдался', lost: 'Вы сдались' },
+  disconnect: { won: 'Противник отключился', lost: 'Вы отключились' },
+}
+
+interface EndScreenProps {
+  won: boolean
+  reason: string
+  matchState: MatchState | null
+  you: PlayerIndex | null
+  gameId: string
+  onPlayAgain: () => void
+}
+
+const markersPlaced = (markersLeft: number) =>
+  CONTROL_MARKERS_PER_PLAYER - markersLeft
+
+export const EndScreen = ({
+  won,
+  reason,
+  matchState,
+  you,
+  gameId,
+  onPlayAgain,
+}: EndScreenProps) => {
+  const submittedGameRef = useRef<string | null>(null)
+  const dispatch = useDispatch()
+  const user = useSelector(selectUser)
+  const navigate = useNavigate()
+  const me = you !== null ? matchState?.players[you] : undefined
+  const opponent =
+    you !== null ? matchState?.players[otherPlayer(you)] : undefined
+
+  const calculateRating = (player: PlayerState, won: boolean): number => {
+    const baseRating = won ? 100 : 50
+    const markersBonus = markersPlaced(player.controlMarkersLeft) * 10
+    return baseRating + markersBonus
+  }
+
+  useEffect(() => {
+    if (submittedGameRef.current === gameId) {
+      return
+    }
+
+    if (me && user) {
+      const wins = won ? 1 : 0
+      const losses = won ? 0 : 1
+      const rating = calculateRating(me, won)
+
+      dispatch(
+        submitGameResultThunk(
+          user.login || user.display_name || 'Игрок',
+          user.avatar || null,
+          wins,
+          losses,
+          rating
+        )
+      )
+
+      submittedGameRef.current = gameId
+    }
+  }, [me, user, won, dispatch])
+
+  return (
+    <ResultHero $won={won}>
+      <ResultGlow $won={won} />
+      <ResultBadge $won={won}>
+        <GameIcon width={32} height={32} />
+      </ResultBadge>
+      <ResultTitle>{won ? 'Победа!' : 'Поражение'}</ResultTitle>
+      <ResultReason>
+        {REASON_LABELS[reason]?.[won ? 'won' : 'lost']}.
+      </ResultReason>
+      {me && opponent && (
+        <>
+          <ResultStats>
+            <StatItem>
+              <StatLabel>Вы</StatLabel>
+              <StatValue>
+                {markersPlaced(me.controlMarkersLeft)}/
+                {CONTROL_MARKERS_PER_PLAYER}
+              </StatValue>
+            </StatItem>
+            <StatDivider />
+            <StatItem>
+              <StatLabel>{opponent.login}</StatLabel>
+              <StatValue>
+                {markersPlaced(opponent.controlMarkersLeft)}/
+                {CONTROL_MARKERS_PER_PLAYER}
+              </StatValue>
+            </StatItem>
+          </ResultStats>
+          {matchState && <RoundLabel>Раунд {matchState.round}</RoundLabel>}
+        </>
+      )}
+      <ResultActions>
+        <PrimaryAction onClick={onPlayAgain}>Сыграть ещё</PrimaryAction>
+        <SecondaryAction type="button" onClick={() => navigate('/')}>
+          Вернуться в главное меню
+        </SecondaryAction>
+      </ResultActions>
+    </ResultHero>
+  )
+}
