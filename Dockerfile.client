@@ -13,6 +13,14 @@ RUN yarn install --frozen-lockfile --ignore-scripts
 COPY . .
 
 RUN yarn lerna bootstrap
+
+ARG EXTERNAL_SERVER_URL
+ARG INTERNAL_SERVER_URL=http://server:3001
+ARG TEAM_NAME
+ENV EXTERNAL_SERVER_URL=$EXTERNAL_SERVER_URL \
+    INTERNAL_SERVER_URL=$INTERNAL_SERVER_URL \
+    TEAM_NAME=$TEAM_NAME
+
 RUN rm -rf /app/packages/shared/dist/ /app/packages/client/dist/ && yarn build:client
 
 FROM node:$NODE_VERSION-bookworm-slim AS production
