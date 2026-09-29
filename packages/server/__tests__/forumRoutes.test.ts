@@ -119,6 +119,68 @@ describe('forum routes', () => {
     expect(res.body.message).not.toContain('onerror')
   })
 
+  it('экранирует спецсимволы в заголовке и тексте топика', async () => {
+    authorize({ id: 1, login: 'stepa' })
+
+    const res = await request(app)
+      .post('/forum/topics')
+      .send({ title: 'Tom & Jerry', message: '1 < 2 и "кавычки"' })
+
+    expect(res.status).toBe(201)
+    expect(res.body.title).toBe('Tom &amp; Jerry')
+    expect(res.body.message).toBe('1 &lt; 2 и &quot;кавычки&quot;')
+  })
+
+  it('отклоняет топик, если после экранирования текст не влезает в лимит', async () => {
+    authorize({ id: 1, login: 'stepa' })
+
+    const res = await request(app)
+      .post('/forum/topics')
+      .send({ title: '&'.repeat(100), message: 'Текст' })
+
+    expect(res.status).toBe(400)
+  })
+
+  it('отклоняет заголовок, состоящий только из html-тегов', async () => {
+    authorize({ id: 1, login: 'stepa' })
+
+    const res = await request(app)
+      .post('/forum/topics')
+      .send({ title: '<script>alert(1)</script>', message: 'Текст' })
+
+    expect(res.status).toBe(400)
+  })
+
+  it('вырезает html из комментариев и ответов (XSS)', async () => {
+    authorize({ id: 1, login: 'stepa' })
+    const topicRes = await request(app)
+      .post('/forum/topics')
+      .send({ title: 'Топик', message: 'Сообщение' })
+    const topicId = topicRes.body.id
+
+    const commentRes = await request(app)
+      .post(`/forum/topics/${topicId}/comments`)
+      .send({ message: '<img src=x onerror=alert(1)>Комментарий' })
+    expect(commentRes.status).toBe(201)
+    expect(commentRes.body.message).toBe('Комментарий')
+
+    const replyRes = await request(app)
+      .post(`/forum/comments/${commentRes.body.id}/replies`)
+      .send({ message: '<svg onload=alert(1)>Ответ' })
+    expect(replyRes.status).toBe(201)
+    expect(replyRes.body.message).toBe('Ответ')
+  })
+
+  it('отклоняет нестроковые значения в теле запроса', async () => {
+    authorize({ id: 1, login: 'stepa' })
+
+    const res = await request(app)
+      .post('/forum/topics')
+      .send({ title: { $ne: null }, message: ['<script>'] })
+
+    expect(res.status).toBe(400)
+  })
+
   it('строит дерево комментариев и ответов для топика', async () => {
     authorize({ id: 1, login: 'stepa' })
 

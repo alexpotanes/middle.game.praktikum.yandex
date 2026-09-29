@@ -1,12 +1,23 @@
 import { Link } from 'react-router-dom'
-import { styled } from 'styled-components'
+import { css, styled } from 'styled-components'
 
 import { colors, shadows } from '../../styles/theme'
+
+const breakLongText = css`
+  min-width: 0;
+  overflow-wrap: anywhere;
+`
 
 export const Page = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-width: 0;
+
+  > * {
+    min-width: 0;
+    max-width: 100%;
+  }
 `
 
 export const BackLink = styled(Link)`
@@ -21,6 +32,7 @@ export const BackLink = styled(Link)`
 `
 
 export const Topic = styled.article`
+  min-width: 0;
   padding: 24px;
   border: 1px solid rgba(86, 72, 68, 0.16);
   border-radius: 8px;
@@ -29,6 +41,7 @@ export const Topic = styled.article`
 `
 
 export const Title = styled.h1`
+  ${breakLongText};
   margin: 0;
   color: ${colors.heading};
   font-size: clamp(24px, 3.5vw, 30px);
@@ -36,13 +49,17 @@ export const Title = styled.h1`
 
 export const Meta = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
+  min-width: 0;
   margin-top: 8px;
   color: ${colors.muted};
   font-size: 13px;
+  ${breakLongText};
 `
 
 export const Message = styled.p`
+  ${breakLongText};
   margin: 16px 0 0;
   color: ${colors.text};
   font-size: 16px;
@@ -66,12 +83,19 @@ export const CommentList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
+
+  > li {
+    min-width: 0;
+    max-width: 100%;
+  }
 `
 
 export const Comment = styled.li`
+  min-width: 0;
   padding: 16px 20px;
   border: 1px solid rgba(86, 72, 68, 0.16);
   border-radius: 8px;
@@ -80,17 +104,22 @@ export const Comment = styled.li`
 
 export const CommentMeta = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
+  min-width: 0;
   color: ${colors.muted};
   font-size: 12px;
+  ${breakLongText};
 `
 
 export const CommentAuthor = styled.span`
+  ${breakLongText};
   color: ${colors.heading};
   font-weight: 700;
 `
 
 export const CommentMessage = styled.p`
+  ${breakLongText};
   margin: 6px 0 0;
   color: ${colors.text};
   font-size: 15px;
@@ -102,11 +131,17 @@ export const Replies = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
   margin: 12px 0 0;
   padding: 12px 0 0 20px;
   border-top: 1px dashed rgba(86, 72, 68, 0.16);
   border-left: 2px solid rgba(86, 72, 68, 0.16);
   list-style: none;
+
+  > li {
+    min-width: 0;
+    max-width: 100%;
+  }
 `
 
 export const Empty = styled.p`

@@ -1,5 +1,11 @@
 import { request } from './http'
 import {
+  decodeComment,
+  decodeTopic,
+  decodeTopicDetailsResponse,
+  decodeTopicsResponse,
+} from './forumDecode'
+import {
   AddForumCommentReactionRequest,
   CreateForumCommentRequest,
   CreateForumTopicRequest,
@@ -12,26 +18,36 @@ import {
 
 const TOPICS_PAGE_SIZE = 100
 
-export const getTopics = () =>
-  request<ForumTopicsResponse>(`/forum/topics?limit=${TOPICS_PAGE_SIZE}`)
+export const getTopics = async () =>
+  decodeTopicsResponse(
+    await request<ForumTopicsResponse>(
+      `/forum/topics?limit=${TOPICS_PAGE_SIZE}`
+    )
+  )
 
-export const getTopic = (topicId: number) =>
-  request<ForumTopicDetailsResponse>(`/forum/topics/${topicId}`)
+export const getTopic = async (topicId: number) =>
+  decodeTopicDetailsResponse(
+    await request<ForumTopicDetailsResponse>(`/forum/topics/${topicId}`)
+  )
 
-export const createTopic = (data: CreateForumTopicRequest) =>
-  request<ForumTopic>('/forum/topics', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  })
+export const createTopic = async (data: CreateForumTopicRequest) =>
+  decodeTopic(
+    await request<ForumTopic>('/forum/topics', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  )
 
-export const createComment = (
+export const createComment = async (
   topicId: number,
   data: CreateForumCommentRequest
 ) =>
-  request<ForumComment>(`/forum/topics/${topicId}/comments`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-  })
+  decodeComment(
+    await request<ForumComment>(`/forum/topics/${topicId}/comments`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  )
 
 export const getCommentReactions = (commentId: number) =>
   request<ForumCommentReaction[]>(`/forum/comments/${commentId}/reactions`)

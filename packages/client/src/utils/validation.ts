@@ -6,6 +6,27 @@ const EMAIL = /^[A-Za-z\d._%+-]+@[A-Za-z\d-]+\.[A-Za-z]{2,}$/
 const PASSWORD = /^(?=.*[A-Z])(?=.*\d).{8,40}$/
 const PHONE = /^\+?\d{10,15}$/
 
+const DISPLAY_NAME = /^[\p{L}\p{N} ._-]{1,50}$/u
+
+export const FORUM_LIMITS = {
+  title: 200,
+  topicMessage: 10000,
+  commentMessage: 5000,
+} as const
+
+const HTML_TAG_LIKE = /<\s*[/!a-zA-Z?]/
+
+export const validateForumText = (
+  value: string,
+  { required, max }: { required: string; max: number }
+): string | undefined => {
+  const trimmed = value.trim()
+  if (!trimmed) return required
+  if (trimmed.length > max) return `Не более ${max} символов`
+  if (HTML_TAG_LIKE.test(trimmed))
+    return 'HTML-теги не поддерживаются, уберите символы «<» и «>»'
+}
+
 export const validators = {
   first_name: (v: string) => {
     if (!v) return 'Обязательное поле'
@@ -35,7 +56,10 @@ export const validators = {
     if (!v) return 'Обязательное поле'
     if (!PHONE.test(v)) return 'От 10 до 15 цифр, допускается «+» в начале'
   },
-  display_name: () => undefined,
+  display_name: (v: string) => {
+    if (v && !DISPLAY_NAME.test(v))
+      return 'До 50 символов: буквы, цифры, пробел, точка, дефис или _'
+  },
   oldPassword: (v: string) => {
     if (!v) return 'Обязательное поле'
   },
