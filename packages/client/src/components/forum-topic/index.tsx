@@ -22,6 +22,7 @@ import {
   createForumCommentThunk,
 } from '../../thunks/forumThunks'
 import { STATUS } from '../../slices/constants'
+import { FORUM_LIMITS, validateForumText } from '../../utils/validation'
 import {
   BackLink,
   Comment,
@@ -117,8 +118,12 @@ export const ForumTopic = ({ topicId, isValidTopicId }: ForumTopicProps) => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const trimmed = message.trim()
-    if (!trimmed) {
-      setValidationError('Введите текст комментария')
+    const error = validateForumText(trimmed, {
+      required: 'Введите текст комментария',
+      max: FORUM_LIMITS.commentMessage,
+    })
+    if (error) {
+      setValidationError(error)
       return
     }
 

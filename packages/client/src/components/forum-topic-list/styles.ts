@@ -7,13 +7,21 @@ export const List = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
+
+  > li {
+    min-width: 0;
+    max-width: 100%;
+  }
 `
 
 export const Card = styled(Link)`
   display: block;
+  min-width: 0;
+  max-width: 100%;
   padding: 20px 24px;
   border: 1px solid rgba(86, 72, 68, 0.16);
   border-radius: 8px;
@@ -36,29 +44,37 @@ export const CardHeader = styled.div`
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
 `
 
 export const Title = styled.h2`
+  min-width: 0;
   margin: 0;
+  overflow-wrap: anywhere;
   color: ${colors.heading};
   font-size: 20px;
   line-height: 1.3;
 `
 
 export const Excerpt = styled.p`
+  min-width: 0;
   margin: 8px 0 0;
   overflow: hidden;
+  overflow-wrap: anywhere;
   color: ${colors.text};
   font-size: 15px;
   line-height: 1.5;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: wrap;
 `
 
 export const Meta = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
+  min-width: 0;
   margin-top: 12px;
+  overflow-wrap: anywhere;
   color: ${colors.muted};
   font-size: 13px;
 `

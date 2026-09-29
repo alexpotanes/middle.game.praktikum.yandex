@@ -13,6 +13,7 @@ import {
 } from '../../slices/forumSlice'
 import { createForumTopicThunk } from '../../thunks/forumThunks'
 import { STATUS } from '../../slices/constants'
+import { FORUM_LIMITS, validateForumText } from '../../utils/validation'
 
 type FormValues = {
   title: string
@@ -25,8 +26,16 @@ const initialValues: FormValues = { title: '', message: '' }
 
 const validate = (values: FormValues): FormErrors => {
   const nextErrors: FormErrors = {}
-  if (!values.title.trim()) nextErrors.title = 'Укажите заголовок топика'
-  if (!values.message.trim()) nextErrors.message = 'Опишите тему обсуждения'
+  const titleError = validateForumText(values.title, {
+    required: 'Укажите заголовок топика',
+    max: FORUM_LIMITS.title,
+  })
+  const messageError = validateForumText(values.message, {
+    required: 'Опишите тему обсуждения',
+    max: FORUM_LIMITS.topicMessage,
+  })
+  if (titleError) nextErrors.title = titleError
+  if (messageError) nextErrors.message = messageError
   return nextErrors
 }
 
