@@ -7,20 +7,25 @@ services:
       dockerfile: Dockerfile.client
       args:
         CLIENT_PORT: ${CLIENT_PORT}
+        EXTERNAL_SERVER_URL: ${EXTERNAL_SERVER_URL}
+        INTERNAL_SERVER_URL: ${INTERNAL_SERVER_URL}
+        TEAM_NAME: ${TEAM_NAME}
     restart: always
     ports:
       - '${CLIENT_PORT}:${CLIENT_PORT}'
     env_file:
       - .env
     environment:
-      - CLIENT_PORT=${CLIENT_PORT}
+      CLIENT_PORT: ${CLIENT_PORT}
     depends_on:
-      - server
+      server:
+        condition: service_healthy
     networks:
       - game
+
   server:
     container_name: prakticum-server
-    image: prackicum-server
+    image: prakticum-server
     build:
       context: .
       dockerfile: Dockerfile.server
@@ -38,18 +43,31 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:'+process.env.SERVER_PORT+'/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
     networks:
       - game
 
   postgres:
     image: postgres:16
+    container_name: prakticum-postgres
     restart: always
     ports:
       - '${POSTGRES_PORT}:5432'
-    env_file:
-      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - ./tmp/pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test:
         [
@@ -62,6 +80,9 @@ services:
       start_period: 10s
     networks:
       - game
+
+volumes:
+  pgdata:
 
 networks:
   game:
